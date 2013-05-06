@@ -1,0 +1,9 @@
+*.suo
+packages
+
+AppPackages
+bin
+obj
+*.csproj.user
+
+Thumbs.db
