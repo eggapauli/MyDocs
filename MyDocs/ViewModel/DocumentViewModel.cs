@@ -34,6 +34,7 @@ namespace MyDocs.ViewModel
 
 		//private ObservableCollection<Category> categories;
 		private Document selectedDocument;
+		private bool isLoaded = false;
 		private bool inZoomedInView;
 
 		public bool InZoomedInView
@@ -51,21 +52,30 @@ namespace MyDocs.ViewModel
 
 		public bool InZoomedOutView { get { return !InZoomedInView; } }
 
-		public IEnumerable<Category> Categories
+		public bool IsLoaded
 		{
-			get { return documentService.Categories; }
-			//set
-			//{
-			//	if (categories != value) {
-			//		categories = value;
-			//		RaisePropertyChanged(() => Categories);
-			//		RaisePropertyChanged(() => CategoriesEmpty);
-			//		RaisePropertyChanged(() => CategoriesNotEmpty);
-			//	}
-			//}
+			get { return isLoaded; }
+			set
+			{
+				if (isLoaded != value) {
+					isLoaded = value;
+					RaisePropertyChanged(() => IsLoaded);
+					RaisePropertyChanged(() => Categories);
+					RaisePropertyChanged(() => CategoriesEmpty);
+					RaisePropertyChanged(() => CategoriesNotEmpty);
+				}
+			}
 		}
 
-		public bool CategoriesEmpty { get { return Categories == null || !Categories.Any(); } }
+		public SortedObservableCollection<Category> Categories
+		{
+			get { return documentService.Categories; }
+		}
+
+		public bool CategoriesEmpty
+		{
+			get { return IsLoaded && Categories.Count == 0; }
+		}
 		public bool CategoriesNotEmpty { get { return !CategoriesEmpty; } }
 
 		public Document SelectedDocument
@@ -83,6 +93,24 @@ namespace MyDocs.ViewModel
 			}
 		}
 
+		public Guid SelectedDocumentId
+		{
+			set
+			{
+				SelectedDocument = null;
+				documentService.GetDocumentById(value).ContinueWith(t =>
+				{
+					if (t.IsFaulted) {
+						// TODO show error
+						SelectedDocument = new Document();
+					}
+					else {
+						SelectedDocument = t.Result;
+					}
+				}, TaskScheduler.FromCurrentSynchronizationContext());
+			}
+		}
+
 		#endregion
 
 		public DocumentViewModel(IDocumentService documentService, INavigationService navigationService)
@@ -92,6 +120,8 @@ namespace MyDocs.ViewModel
 
 			CreateCommands();
 			CreateDesignTimeData();
+
+			InZoomedInView = true;
 		}
 
 		[Conditional("DEBUG")]
@@ -108,7 +138,7 @@ namespace MyDocs.ViewModel
 		public async Task LoadAsync()
 		{
 			await documentService.LoadCategoriesAsync();
-			//Categories = new ObservableCollection<Category>(documentService.Categories);
+			IsLoaded = true;
 		}
 
 		#region Commands
@@ -134,13 +164,12 @@ namespace MyDocs.ViewModel
 
 		private void AddDocumentCommandHandler()
 		{
-			SelectedDocument = new Document();
-			navigationService.Navigate(typeof(EditDocumentPage), SelectedDocument);
+			navigationService.Navigate(typeof(EditDocumentPage));
 		}
 
 		private void EditDocumentCommandHandler()
 		{
-			navigationService.Navigate(typeof(EditDocumentPage), SelectedDocument);
+			navigationService.Navigate(typeof(EditDocumentPage), SelectedDocument.Id);
 		}
 
 		private void DeleteDocumentHandler()
@@ -157,7 +186,7 @@ namespace MyDocs.ViewModel
 
 		private void ShowDocumentCommandHandler(Document doc)
 		{
-			navigationService.Navigate(typeof(ShowDocumentPage), doc);
+			navigationService.Navigate(typeof(ShowDocumentPage), doc.Id);
 		}
 
 		#endregion

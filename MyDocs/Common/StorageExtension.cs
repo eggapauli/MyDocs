@@ -38,26 +38,35 @@ namespace MyDocs.Common
 		public static ApplicationDataCompositeValue ConvertToStoredDocument(this Document doc)
 		{
 			return new ApplicationDataCompositeValue {
-				new KeyValuePair<string, object>("Id", doc.Id),
-				new KeyValuePair<string, object>("Category", doc.Category),
-				new KeyValuePair<string, object>("PhotoFileNames", doc.Photos.Count > 0 ? doc.Photos.Select(p => p.File.GetRelativePath()).ToArray() : null),
-				new KeyValuePair<string, object>("PhotoIsLocal", doc.Photos.Count > 0 ? doc.Photos.Select(p => p.File.IsInFolder(ApplicationData.Current.LocalFolder)).ToArray() : null),
-				new KeyValuePair<string, object>("Tags", doc.Tags.ToArray()),
-				new KeyValuePair<string, object>("DateAdded", (DateTimeOffset)doc.DateAdded),
-				new KeyValuePair<string, object>("Lifespan", doc.Lifespan),
-				new KeyValuePair<string, object>("HasLimitedLifespan", doc.HasLimitedLifespan)
+				{ "Id", doc.Id },
+				{ "Category", doc.Category },
+				{ "PhotoFileNames", doc.Photos.Count > 0 ? doc.Photos.Select(p => p.File.GetRelativePath()).ToArray() : null },
+				{ "PhotoIsTemp", doc.Photos.Count > 0 ? doc.Photos.Select(p => p.File.IsInFolder(ApplicationData.Current.TemporaryFolder)).ToArray() : null },
+				{ "PhotoIsLocal", doc.Photos.Count > 0 ? doc.Photos.Select(p => p.File.IsInFolder(ApplicationData.Current.LocalFolder)).ToArray() : null },
+				{ "Tags", doc.Tags.Count > 0 ? doc.Tags.ToArray() : null },
+				{ "DateAdded", (DateTimeOffset)doc.DateAdded },
+				{ "Lifespan", doc.Lifespan },
+				{ "HasLimitedLifespan", doc.HasLimitedLifespan }
 			};
 		}
 
-		public static async Task<Document> ConvertToDocumentAsync(this ApplicationDataCompositeValue data)
+		public static void ConvertToRestorableDocument(this Document doc, IDictionary<string, object> container)
+		{
+			var data = doc.ConvertToStoredDocument();
+			foreach (var entry in data) {
+				container.Add(entry);
+			}
+		}
+
+		public static async Task<Document> ConvertToDocumentAsync(this IDictionary<string, object> data)
 		{
 			Document doc = new Document(
 				(Guid)data["Id"],
-				(string)data["Category"],
+				data.ContainsKey("Category") ? (string)data["Category"] : null,
 				((DateTimeOffset)data["DateAdded"]).Date,
 				(TimeSpan)data["Lifespan"],
 				(bool)data["HasLimitedLifespan"],
-				(string[])data["Tags"]
+				data.ContainsKey("Tags") ? (string[])data["Tags"] : null
 			);
 
 			// not working properly because if a FileNotFoundException occurs, no photo is loaded into the collection
@@ -72,24 +81,34 @@ namespace MyDocs.Common
 			//	// TODO ?
 			//}
 
-			string[] photoFileNames = (string[])data["PhotoFileNames"];
-			bool[] photoIsLocal = (bool[])data["PhotoIsLocal"];
-			if (photoFileNames != null && photoIsLocal != null) {
-				for (int i = 0; i < photoFileNames.Length; i++) {
-					try {
-						StorageFile file;
-						if (photoIsLocal[i]) {
-							string path = Path.Combine(ApplicationData.Current.LocalFolder.Path, photoFileNames[i]);
-							file = await StorageFile.GetFileFromPathAsync(path);
+			if (data.ContainsKey("PhotoFileNames")
+					&& data.ContainsKey("PhotoIsLocal")
+					&& data.ContainsKey("PhotoIsTemp")) {
+				string[] photoFileNames = (string[])data["PhotoFileNames"];
+				bool[] photoIsLocal = (bool[])data["PhotoIsLocal"];
+				bool[] photoIsTemp = (bool[])data["PhotoIsTemp"];
+
+				if (photoFileNames != null && photoIsLocal != null && photoIsTemp != null) {
+					for (int i = 0; i < photoFileNames.Length; i++) {
+						try {
+							StorageFile file;
+							if (photoIsLocal[i]) {
+								string path = Path.Combine(ApplicationData.Current.LocalFolder.Path, photoFileNames[i]);
+								file = await StorageFile.GetFileFromPathAsync(path);
+							}
+							else if (photoIsTemp[i]) {
+								string path = Path.Combine(ApplicationData.Current.TemporaryFolder.Path, photoFileNames[i]);
+								file = await StorageFile.GetFileFromPathAsync(path);
+							}
+							else {
+								string path = Path.Combine(ApplicationData.Current.RoamingFolder.Path, photoFileNames[i]);
+								file = await StorageFile.GetFileFromPathAsync(path);
+							}
+							doc.Photos.Add(new Photo(file));
 						}
-						else {
-							string path = Path.Combine(ApplicationData.Current.RoamingFolder.Path, photoFileNames[i]);
-							file = await StorageFile.GetFileFromPathAsync(path);
+						catch (FileNotFoundException) {
+							// should not occur, unless the user manually deleted the file
 						}
-						doc.Photos.Add(new Photo(file));
-					}
-					catch (FileNotFoundException) {
-						// should not occur, unless the user manually deleted the file
 					}
 				}
 			}

@@ -128,7 +128,6 @@
     <Compile Include="Common\Converter\BooleanToVisibilityConverter.cs" />
     <Compile Include="Common\Converter\BooleanNegationConverter.cs" />
     <Compile Include="Common\LayoutAwarePage.cs" />
-    <Compile Include="Common\RichTextColumns.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="SearchResultsPage.xaml.cs">
       <DependentUpon>SearchResultsPage.xaml</DependentUpon>
@@ -143,9 +142,6 @@
     <Compile Include="ShowDocumentPage.xaml.cs">
       <DependentUpon>ShowDocumentPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Splash.xaml.cs">
-      <DependentUpon>Splash.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ViewModel\DocumentViewModel.cs" />
     <Compile Include="ViewModel\EditDocumentViewModel.cs" />
     <Compile Include="ViewModel\SearchViewModel.cs" />
@@ -156,7 +152,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="Common\ReadMe.txt" />
     <None Include="MyDocs_StoreKey.pfx" />
     <None Include="MyDocs_TemporaryKey.pfx" />
     <None Include="packages.config" />
@@ -199,10 +194,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ShowDocumentPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Splash.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

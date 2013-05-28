@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -30,10 +31,7 @@ namespace MyDocs
 
 		public DocumentViewModel ViewModel
 		{
-			get
-			{
-				return this.DataContext as DocumentViewModel;
-			}
+			get { return this.DataContext as DocumentViewModel; }
 		}
 
 		protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -63,8 +61,9 @@ namespace MyDocs
 
 		protected override void LoadState(object navigationParameter, Dictionary<string, object> pageState)
 		{
-			Document doc = navigationParameter as Document;
-			ViewModel.SelectedDocument = doc;
+			if (navigationParameter != null) {
+				ViewModel.SelectedDocumentId = (Guid)navigationParameter;
+			}
 		}
 
 		protected override void OnNavigatedFrom(NavigationEventArgs e)

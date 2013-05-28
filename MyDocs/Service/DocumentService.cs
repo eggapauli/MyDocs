@@ -36,6 +36,8 @@ namespace MyDocs.Service
 
 			docsDataContainer = settingsService.SettingsContainer
 				.CreateContainer("docs", ApplicationDataCreateDisposition.Always);
+
+			categories = new SortedObservableCollection<Category>(new CategoryComparer());
 		}
 
 		private async Task ClearAllData()
@@ -72,10 +74,11 @@ namespace MyDocs.Service
 		{
 			//await ClearAllData();
 			//await InsertTestData();
-
-			if (categories != null) {
+			if (categories.Count > 0) {
 				return;
 			}
+			//await Task.Delay(2000);
+			//categories.Clear();
 
 			var data = from obj in docsDataContainer.Values.Values
 					   let item = obj as ApplicationDataCompositeValue
@@ -85,7 +88,6 @@ namespace MyDocs.Service
 					   group item by categoryName into category
 					   select category;
 
-			categories = new SortedObservableCollection<Category>(new CategoryComparer());
 			var i = 0;
 			foreach (var group in data) {
 				IList<Task<Document>> tasks = new List<Task<Document>>();
@@ -121,11 +123,18 @@ namespace MyDocs.Service
 			return cat;
 		}
 
+		public async Task<Document> GetDocumentById(Guid id)
+		{
+			await LoadCategoriesAsync();
+			return Categories.SelectMany(c => c.Documents).FirstOrDefault(d => d.Id == id);
+		}
+
 		public void DetachDocument(Document doc)
 		{
-			Category cat = Categories.FirstOrDefault(c => c.Documents.Contains(doc));
+			Document docRef = Categories.SelectMany(c => c.Documents).FirstOrDefault(d => d.Id == doc.Id);
+			Category cat = Categories.FirstOrDefault(c => c.Documents.Contains(docRef));
 			if (cat != null) {
-				cat.Documents.Remove(doc);
+				cat.Documents.Remove(docRef);
 				if (!cat.Documents.Any(d => !(d is AdDocument))) {
 					categories.Remove(cat);
 				}

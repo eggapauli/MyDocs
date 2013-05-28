@@ -1,4 +1,5 @@
 ﻿using MyDocs.Common;
+using MyDocs.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -50,6 +51,10 @@ namespace MyDocs
 
 			Frame rootFrame = Window.Current.Content as Frame;
 
+			SuspensionManager.KnownTypes.Add(typeof(DateTimeOffset));
+			SuspensionManager.KnownTypes.Add(typeof(string[]));
+			SuspensionManager.KnownTypes.Add(typeof(bool[]));
+
 			// Do not repeat app initialization when the Window already has content,
 			// just ensure that the window is active
 
@@ -77,12 +82,9 @@ namespace MyDocs
 				// When the navigation stack isn't restored navigate to the first page,
 				// configuring the new page by passing required information as a navigation
 				// parameter
-				//if (!rootFrame.Navigate(typeof(MainPage))) {
-				//	throw new Exception("Failed to create initial page");
-				//}
-
-				Splash splashPage = new Splash(args.SplashScreen, rootFrame);
-				Window.Current.Content = splashPage;
+				if (!rootFrame.Navigate(typeof(MainPage))) {
+					throw new Exception("Failed to create initial page");
+				}
 			}
 			// Ensure the current window is active
 			Window.Current.Activate();

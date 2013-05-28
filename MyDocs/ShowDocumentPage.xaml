@@ -30,9 +30,7 @@
 			<FlipView.ItemTemplate>
 				<DataTemplate>
 					<Grid>
-						<Image Width="{Binding Window.Current.Bounds.Width}"
-						   Height="{Binding Window.Current.Bounds.Height}"
-						   Source="{Binding Image}" />
+						<Image Source="{Binding Image}" />
 						<ProgressRing IsActive="{Binding ImageLoaded, Converter={StaticResource BooleanNegationConverter}}" Width="100" Height="100" />
 					</Grid>
 				</DataTemplate>

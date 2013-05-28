@@ -130,7 +130,7 @@
 						  ItemTemplate="{Binding Source={StaticResource PhotoTemplate}}"
 						  SelectionMode="Single"
 						  SelectedItem="{Binding SelectedPhoto, Mode=TwoWay}"
-						  Margin="100,0,0,0"/>
+						  Margin="30,0,0,0"/>
 				<ListView Grid.Row="1"
 						  x:Name="photoListView"
 						  ItemsSource="{Binding EditingDocument.Photos}"

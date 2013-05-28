@@ -92,7 +92,7 @@ namespace MyDocs.ViewModel
 
 		private void ShowDocumentCommandHandler(Document doc)
 		{
-			navigationService.Navigate(typeof(ShowDocumentPage), doc);
+			navigationService.Navigate(typeof(ShowDocumentPage), doc.Id);
 		}
 
 		#endregion

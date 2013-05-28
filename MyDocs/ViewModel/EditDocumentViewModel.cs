@@ -108,6 +108,24 @@ namespace MyDocs.ViewModel
 			}
 		}
 
+		public Guid EditingDocumentId
+		{
+			set
+			{
+				EditingDocument = null;
+				documentService.GetDocumentById(value).ContinueWith(t =>
+				{
+					if (t.IsFaulted) {
+						// TODO show error
+						EditingDocument = new Document();
+					}
+					else {
+						EditingDocument = t.Result;
+					}
+				}, TaskScheduler.FromCurrentSynchronizationContext());
+			}
+		}
+
 		private void EditingDocumentChangedHandler(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == "Tags" || e.PropertyName == "Category") {
@@ -195,6 +213,11 @@ namespace MyDocs.ViewModel
 			}
 		}
 
+		public async Task LoadAsync()
+		{
+			await documentService.LoadCategoriesAsync();
+		}
+
 		#region Commands
 
 		public RelayCommand ShowNewCategoryCommand { get; set; }
@@ -260,7 +283,7 @@ namespace MyDocs.ViewModel
 					//		}
 					//	}, TaskScheduler.FromCurrentSynchronizationContext());
 					//}
-					navigationService.Navigate(typeof(MainPage), originalDocument);
+					navigationService.Navigate(typeof(MainPage), originalDocument.Id);
 				}
 			}, TaskScheduler.FromCurrentSynchronizationContext());
 		}

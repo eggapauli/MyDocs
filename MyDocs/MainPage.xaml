@@ -23,7 +23,7 @@
 			<Grid HorizontalAlignment="Left" Width="250" Height="250">
 				<Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
 					<Grid>
-						<Image Source="{Binding TitlePhoto.Thumbnail}" Stretch="UniformToFill" AutomationProperties.Name="{Binding Title}"/>
+						<Image Source="{Binding TitlePhoto.Thumbnail}" Stretch="UniformToFill" AutomationProperties.Name="{Binding TagsString}"/>
 						<ProgressRing IsActive="{Binding TitlePhoto.ThumbnailLoaded, Converter={StaticResource BooleanNegationConverter}}" />
 					</Grid>
 				</Border>
@@ -64,7 +64,7 @@
 			<Grid HorizontalAlignment="Left" Width="250" Height="250">
 				<Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
 					<Grid>
-						<Image Source="{Binding Group.TitlePhoto.Thumbnail}" Stretch="UniformToFill" AutomationProperties.Name="{Binding Title}"/>
+						<Image Source="{Binding Group.TitlePhoto.Thumbnail}" Stretch="UniformToFill" AutomationProperties.Name="{Binding Group.Name}"/>
 						<ProgressRing IsActive="{Binding Group.TitlePhoto.ThumbnailLoaded, Converter={StaticResource BooleanNegationConverter}}" />
 					</Grid>
 				</Border>
@@ -151,6 +151,13 @@
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
 
+		<ProgressRing Grid.RowSpan="2" IsActive="{Binding IsLoaded, Converter={StaticResource BooleanNegationConverter}}" Width="100" Height="100" />
+		
+		<StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="36,0,0,0" Visibility="{Binding CategoriesEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
+			<TextBlock x:Uid="NoDocuments" x:Name="noDocumentsText" Text="No documents stored." Style="{StaticResource PageSubheaderTextStyle}" VerticalAlignment="Center" />
+			<Button Style="{StaticResource AddAppBarButtonStyle}" Command="{Binding AddDocumentCommand}" />
+		</StackPanel>
+		
 		<SemanticZoom Grid.Row="1" x:Name="semanticZoom" IsZoomOutButtonEnabled="{Binding CategoriesNotEmpty}">
 			<SemanticZoom.ZoomedOutView>
 				<GridView
@@ -236,11 +243,6 @@
 				</ListView>
 			</SemanticZoom.ZoomedInView>
 		</SemanticZoom>
-
-		<StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="36,0,0,0" Visibility="{Binding CategoriesEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
-			<TextBlock x:Uid="NoDocuments" x:Name="noDocumentsText" Text="No documents stored." Style="{StaticResource PageSubheaderTextStyle}" VerticalAlignment="Center" />
-			<Button Style="{StaticResource AddAppBarButtonStyle}" Command="{Binding AddDocumentCommand}" />
-		</StackPanel>
 		
 		<!-- Back button and page title -->
 		<StackPanel Orientation="Horizontal">

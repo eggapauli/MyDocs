@@ -44,15 +44,22 @@ namespace MyDocs
 
 		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
 		{
-			Document doc = navigationParameter as Document;
-			if (doc != null) {
-				ViewModel.SelectedDocument = doc;
-			}
-			if (groupedDocumentsViewSource.View != null) {
-				var collectionGroups = groupedDocumentsViewSource.View.CollectionGroups;
-				((ListViewBase)this.semanticZoom.ZoomedOutView).ItemsSource = collectionGroups;
-				((ListViewBase)this.semanticZoomSnapped.ZoomedOutView).ItemsSource = collectionGroups;
-			}
+			ViewModel.LoadAsync().ContinueWith(t =>
+			{
+				if (t.IsFaulted) {
+					// TODO show error
+				}
+				else {
+					if (navigationParameter != null) {
+						ViewModel.SelectedDocumentId = (Guid)navigationParameter;
+					}
+					if (groupedDocumentsViewSource.View != null) {
+						var collectionGroups = groupedDocumentsViewSource.View.CollectionGroups;
+						((ListViewBase)this.semanticZoom.ZoomedOutView).ItemsSource = collectionGroups;
+						((ListViewBase)this.semanticZoomSnapped.ZoomedOutView).ItemsSource = collectionGroups;
+					}
+				}
+			}, TaskScheduler.FromCurrentSynchronizationContext());
 		}
 
 		private void WindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)

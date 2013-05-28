@@ -15,6 +15,7 @@ namespace MyDocs.Contract.Service
 		IEnumerable<string> GetCategoryNames();
 		Category GetCategoryByName(string name);
 
+		Task<Document> GetDocumentById(Guid id);
 		void DetachDocument(Document doc);
 		Task SaveDocumentAsync(Document doc);
 		Task DeleteDocumentAsync(Document doc);

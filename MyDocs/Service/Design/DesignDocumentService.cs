@@ -90,5 +90,10 @@ namespace MyDocs.Service.Design
 		{
 			throw new NotImplementedException();
 		}
+
+		public Task<Document> GetDocumentById(Guid id)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
