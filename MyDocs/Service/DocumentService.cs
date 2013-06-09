@@ -145,7 +145,7 @@ namespace MyDocs.Service
 		{
 			List<Task> tasks = new List<Task>();
 			foreach (Photo photo in doc.Photos) {
-				if (photo.File.IsInFolder(ApplicationData.Current.TemporaryFolder)) {
+				if (!photo.File.IsInFolder(settingsService.PhotoFolder)) {
 					string name = Path.GetRandomFileName() + Path.GetExtension(photo.File.Path);
 					Task t = photo.File.MoveAsync(settingsService.PhotoFolder, name).AsTask();
 					tasks.Add(t);

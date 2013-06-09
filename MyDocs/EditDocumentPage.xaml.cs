@@ -39,7 +39,7 @@ namespace MyDocs
 					// TODO show error
 				}
 			});
-			if (pageState != null) {
+			if (pageState != null && pageState.ContainsKey("Id")) {
 				pageState.ConvertToDocumentAsync().ContinueWith(t =>
 				{
 					if (t.IsFaulted) {

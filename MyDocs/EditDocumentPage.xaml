@@ -30,6 +30,12 @@
 			<Setter Property="Margin" Value="0,0,10,0" />
 			<!--<Setter Property="Padding" Value="10,0,30,0" />-->
 		</Style>
+		<Style x:Key="AddFromCameraAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource PhotoAppBarButtonStyle}">
+			<Setter Property="AutomationProperties.Name" Value="Take a picture"/>
+		</Style>
+		<Style x:Key="AddFromFileAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource OpenFileAppBarButtonStyle}">
+			<Setter Property="AutomationProperties.Name" Value="Add from file"/>
+		</Style>
 		<DataTemplate x:Key="PhotoTemplate">
 			<Grid>
 				<Image Source="{Binding Thumbnail}" Width="250" Height="250"/>
@@ -121,7 +127,8 @@
 				</Grid.RowDefinitions>
 
 				<StackPanel Orientation="Horizontal">
-					<Button x:Name="addPhotoButton" Command="{Binding AddPhotoCommand}" Style="{StaticResource AddAppBarButtonStyle}" HorizontalAlignment="Right" />
+					<Button x:Name="addPhotoFromCameraButton" Command="{Binding AddPhotoFromCameraCommand}" Style="{StaticResource AddFromCameraAppBarButtonStyle}" HorizontalAlignment="Right" />
+					<Button x:Name="addPhotoFromFileButton" Command="{Binding AddPhotoFromFileCommand}" Style="{StaticResource AddFromFileAppBarButtonStyle}" HorizontalAlignment="Right" />
 					<Button Command="{Binding RemovePhotoCommand}" Style="{StaticResource RemoveAppBarButtonStyle}" HorizontalAlignment="Right" />
 				</StackPanel>
 				<GridView Grid.Row="1"
@@ -172,7 +179,10 @@
 							<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
 						</ObjectAnimationUsingKeyFrames>-->
 
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="addPhotoButton" Storyboard.TargetProperty="IsEnabled">
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="addPhotoFromCameraButton" Storyboard.TargetProperty="IsEnabled">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="False"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="addPhotoFromFileButton" Storyboard.TargetProperty="IsEnabled">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="False"/>
 						</ObjectAnimationUsingKeyFrames>
 

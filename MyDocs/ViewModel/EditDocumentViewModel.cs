@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 using Windows.Media.Capture;
 using Windows.UI.Popups;
+using Windows.Storage.Pickers;
+using Windows.Storage;
 
 namespace MyDocs.ViewModel
 {
@@ -222,13 +224,15 @@ namespace MyDocs.ViewModel
 
 		public RelayCommand ShowNewCategoryCommand { get; set; }
 		public RelayCommand ShowUseCategoryCommand { get; set; }
-		public RelayCommand AddPhotoCommand { get; set; }
+		public RelayCommand AddPhotoFromCameraCommand { get; set; }
+		public RelayCommand AddPhotoFromFileCommand { get; set; }
 		public RelayCommand RemovePhotoCommand { get; set; }
 		public RelayCommand SaveDocumentCommand { get; set; }
 
 		private void CreateCommands()
 		{
-			AddPhotoCommand = new RelayCommand(AddPhotoHandler);
+			AddPhotoFromCameraCommand = new RelayCommand(AddPhotoFromCameraHandler);
+			AddPhotoFromFileCommand = new RelayCommand(AddPhotoFromFileHandler);
 			RemovePhotoCommand = new RelayCommand(RemovePhotoHandler, () => SelectedPhoto != null);
 			SaveDocumentCommand = new RelayCommand(SaveDocumentHandler, () =>
 				EditingDocument != null
@@ -288,7 +292,7 @@ namespace MyDocs.ViewModel
 			}, TaskScheduler.FromCurrentSynchronizationContext());
 		}
 
-		private void AddPhotoHandler()
+		private void AddPhotoFromCameraHandler()
 		{
 			CameraCaptureUI camera = new CameraCaptureUI();
 			camera.CaptureFileAsync(CameraCaptureUIMode.Photo).AsTask().ContinueWith(t =>
@@ -299,6 +303,29 @@ namespace MyDocs.ViewModel
 				else {
 					if (t.Result != null) {
 						EditingDocument.Photos.Add(new Photo(t.Result));
+					}
+				}
+			}, TaskScheduler.FromCurrentSynchronizationContext());
+		}
+
+		private void AddPhotoFromFileHandler()
+		{
+			FileOpenPicker filePicker = new FileOpenPicker();
+			filePicker.FileTypeFilter.Add(".png");
+			filePicker.FileTypeFilter.Add(".jpg");
+			filePicker.FileTypeFilter.Add(".jpeg");
+			filePicker.FileTypeFilter.Add(".gif");
+			filePicker.FileTypeFilter.Add(".bmp");
+			filePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+			filePicker.ViewMode = PickerViewMode.List;
+			filePicker.PickMultipleFilesAsync().AsTask().ContinueWith(t =>
+			{
+				if (t.IsFaulted) {
+					// TODO show error
+				}
+				else {
+					foreach (StorageFile file in t.Result) {
+						EditingDocument.Photos.Add(new Photo(file));
 					}
 				}
 			}, TaskScheduler.FromCurrentSynchronizationContext());
@@ -318,7 +345,7 @@ namespace MyDocs.ViewModel
 			if (String.IsNullOrEmpty(msg)) {
 				msg = "An error occured.";
 			}
-			return await new MessageDialog(msg).ShowAsync().AsTask();
+			return await new MessageDialog(msg).ShowAsync();
 		}
 	}
 }

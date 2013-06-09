@@ -22,11 +22,16 @@ namespace MyDocs.Service.Design
 			get { return categories; }
 		}
 
+		public DesignDocumentService()
+		{
+			categories = new SortedObservableCollection<Category>(new CategoryComparer());
+		}
+
 		public async Task LoadCategoriesAsync()
 		{
-			StorageFolder folder = await ApplicationData.Current.LocalFolder.GetFolderAsync("design");
-			IEnumerable<StorageFile> photos = await folder.GetFilesAsync();
-			categories = new SortedObservableCollection<Category>(CreateCategories(photos.ToList()), new CategoryComparer());
+			//StorageFolder folder = await ApplicationData.Current.LocalFolder.GetFolderAsync("design");
+			//IEnumerable<StorageFile> photos = await folder.GetFilesAsync();
+			//categories = new SortedObservableCollection<Category>(CreateCategories(photos.ToList()), new CategoryComparer());
 		}
 
 		public IEnumerable<string> GetCategoryNames()

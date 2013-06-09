@@ -200,7 +200,7 @@ namespace MyDocs.ViewModel
 			if (String.IsNullOrEmpty(msg)) {
 				msg = "An error occured.";
 			}
-			return await new MessageDialog(msg).ShowAsync().AsTask();
+			return await new MessageDialog(msg).ShowAsync();
 		}
 
 		#endregion
