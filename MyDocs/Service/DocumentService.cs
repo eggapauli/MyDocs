@@ -147,8 +147,17 @@ namespace MyDocs.Service
 			foreach (Photo photo in doc.Photos) {
 				if (!photo.File.IsInFolder(settingsService.PhotoFolder)) {
 					string name = Path.GetRandomFileName() + Path.GetExtension(photo.File.Path);
-					Task t = photo.File.MoveAsync(settingsService.PhotoFolder, name).AsTask();
-					tasks.Add(t);
+					Task task;
+					if (photo.File.IsInFolder(ApplicationData.Current.TemporaryFolder)) {
+						task = photo.File.MoveAsync(settingsService.PhotoFolder, name).AsTask();
+					}
+					else {
+						task = photo.File.CopyAsync(settingsService.PhotoFolder, name).AsTask().ContinueWith(t =>
+						{
+							photo.File = t.Result;
+						}, TaskScheduler.FromCurrentSynchronizationContext());
+					}
+					tasks.Add(task);
 				}
 			}
 			await Task.WhenAll(tasks);

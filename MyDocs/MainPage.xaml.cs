@@ -39,6 +39,10 @@ namespace MyDocs
 
 			Window.Current.SizeChanged += WindowSizeChanged;
 
+			if (ViewModel.CategoriesEmpty) {
+				appBar.IsOpen = true;
+			}
+
 			RefreshLayout();
 		}
 

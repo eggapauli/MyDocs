@@ -29,6 +29,7 @@ namespace MyDocs.Service.Design
 
 		public async Task LoadCategoriesAsync()
 		{
+			await Task.Yield();
 			//StorageFolder folder = await ApplicationData.Current.LocalFolder.GetFolderAsync("design");
 			//IEnumerable<StorageFile> photos = await folder.GetFilesAsync();
 			//categories = new SortedObservableCollection<Category>(CreateCategories(photos.ToList()), new CategoryComparer());

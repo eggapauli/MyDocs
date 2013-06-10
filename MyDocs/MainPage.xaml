@@ -136,7 +136,7 @@
 	</Page.Resources>
 
 	<Page.BottomAppBar>
-		<AppBar>
+		<AppBar x:Name="appBar">
 			<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
 				<Button x:Name="addDocButton" Style="{StaticResource AddAppBarButtonStyle}" Command="{Binding AddDocumentCommand}" />
 				<Button x:Name="editDocButton" Style="{StaticResource EditAppBarButtonStyle}" Command="{Binding EditDocumentCommand}" />
@@ -236,7 +236,7 @@
 		
 		<StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="36,0,0,0" Visibility="{Binding CategoriesEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
 			<TextBlock x:Uid="NoDocuments" x:Name="noDocumentsText" Text="No documents stored." Style="{StaticResource PageSubheaderTextStyle}" VerticalAlignment="Center" />
-			<Button Style="{StaticResource AddAppBarButtonStyle}" Command="{Binding AddDocumentCommand}" />
+			<!--<Button Style="{StaticResource AddAppBarButtonStyle}" Command="{Binding AddDocumentCommand}" />-->
 		</StackPanel>
 		
 		<!-- Back button and page title -->

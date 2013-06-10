@@ -431,12 +431,12 @@
 	-->
 	<Style x:Key="EditAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
 		<Setter Property="AutomationProperties.AutomationId" Value="EditAppBarButton"/>
-		<Setter Property="AutomationProperties.Name" Value="Edit"/>
+		<Setter x:Uid="BtnEdit" Property="AutomationProperties.Name" Value="Edit"/>
 		<Setter Property="Content" Value="&#xE104;"/>
 	</Style>
 	<Style x:Key="SaveAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
 		<Setter Property="AutomationProperties.AutomationId" Value="SaveAppBarButton"/>
-		<Setter Property="AutomationProperties.Name" Value="Save"/>
+		<Setter x:Uid="BtnSave" Property="AutomationProperties.Name" Value="Save"/>
 		<Setter Property="Content" Value="&#xE105;"/>
 	</Style>
 	<!--
@@ -453,12 +453,12 @@
 	-->
 	<Style x:Key="RemoveAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
 		<Setter Property="AutomationProperties.AutomationId" Value="RemoveAppBarButton"/>
-		<Setter Property="AutomationProperties.Name" Value="Remove"/>
+		<Setter x:Uid="BtnRemove" Property="AutomationProperties.Name" Value="Remove"/>
 		<Setter Property="Content" Value="&#xE108;"/>
 	</Style>
 	<Style x:Key="AddAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
 		<Setter Property="AutomationProperties.AutomationId" Value="AddAppBarButton"/>
-		<Setter Property="AutomationProperties.Name" Value="Add"/>
+		<Setter x:Uid="BtnAdd" Property="AutomationProperties.Name" Value="Add"/>
 		<Setter Property="Content" Value="&#xE109;"/>
 	</Style>
 	<!--
@@ -843,13 +843,11 @@
 		<Setter Property="AutomationProperties.Name" Value="Pictures"/>
 		<Setter Property="Content" Value="&#xE158;"/>
 	</Style>
-	-->
 	<Style x:Key="SaveLocalAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
 		<Setter Property="AutomationProperties.AutomationId" Value="SaveLocalAppBarButton"/>
 		<Setter Property="AutomationProperties.Name" Value="Save Local"/>
 		<Setter Property="Content" Value="&#xE159;"/>
 	</Style>
-	<!--
 	<Style x:Key="CaptionAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
 		<Setter Property="AutomationProperties.AutomationId" Value="CaptionAppBarButton"/>
 		<Setter Property="AutomationProperties.Name" Value="Caption"/>

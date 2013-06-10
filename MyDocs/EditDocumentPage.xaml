@@ -31,10 +31,10 @@
 			<!--<Setter Property="Padding" Value="10,0,30,0" />-->
 		</Style>
 		<Style x:Key="AddFromCameraAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource PhotoAppBarButtonStyle}">
-			<Setter Property="AutomationProperties.Name" Value="Take a picture"/>
+			<Setter x:Uid="BtnAddFromCamera" Property="AutomationProperties.Name" Value="Take a picture"/>
 		</Style>
 		<Style x:Key="AddFromFileAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource OpenFileAppBarButtonStyle}">
-			<Setter Property="AutomationProperties.Name" Value="Add from file"/>
+			<Setter x:Uid="BtnAddFromFile" Property="AutomationProperties.Name" Value="Add from file"/>
 		</Style>
 		<DataTemplate x:Key="PhotoTemplate">
 			<Grid>

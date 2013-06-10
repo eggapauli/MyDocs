@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="33108JohannesEgger.MyDocs" Publisher="CN=5A8B3D00-8FD6-45C1-8434-44D01F6EBB40" Version="1.1.0.5" />
+  <Identity Name="33108JohannesEgger.MyDocs" Publisher="CN=5A8B3D00-8FD6-45C1-8434-44D01F6EBB40" Version="1.2.0.7" />
   <Properties>
     <DisplayName>My Docs</DisplayName>
     <PublisherDisplayName>Johannes Egger</PublisherDisplayName>

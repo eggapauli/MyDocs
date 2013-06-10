@@ -162,4 +162,25 @@
   <data name="privacyStatement" xml:space="preserve">
     <value>Privacy Statement</value>
   </data>
+  <data name="BtnAdd.Value" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="BtnAddFromCamera.Value" xml:space="preserve">
+    <value>Take a picture</value>
+  </data>
+  <data name="BtnAddFromFile.Value" xml:space="preserve">
+    <value>Add from file</value>
+  </data>
+  <data name="BtnEdit.Value" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="BtnRemove.Value" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="BtnSave.Value" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Photos.Text" xml:space="preserve">
+    <value>Photos</value>
+  </data>
 </root>
