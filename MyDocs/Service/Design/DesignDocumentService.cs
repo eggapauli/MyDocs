@@ -1,17 +1,14 @@
-﻿using MyDocs.Common;
-using MyDocs.Contract;
-using MyDocs.Contract.Service;
-using MyDocs.Model;
+﻿using MyDocs.Common.Collection;
+using MyDocs.Common.Comparer;
+using MyDocs.Common.Contract.Service;
+using MyDocs.Common.Contract.Storage;
+using MyDocs.Common.Model;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.Storage;
-using Windows.UI.Xaml.Media.Imaging;
 
-namespace MyDocs.Service.Design
+namespace MyDocs.WindowsStoreFrontend.Service.Design
 {
 	public class DesignDocumentService : IDocumentService
 	{
@@ -40,7 +37,7 @@ namespace MyDocs.Service.Design
 			return Enumerable.Range(1, 5).Select(i => "Category " + i);
 		}
 
-		private IEnumerable<Category> CreateCategories(IList<StorageFile> photos)
+		private IEnumerable<Category> CreateCategories(IList<IFile> photos)
 		{
 			for (int i = 0; i < 2; i++) {
 				Category cat = new Category("Category " + (i + 1));
@@ -61,7 +58,7 @@ namespace MyDocs.Service.Design
 		}
 
 		private Random rand = new Random();
-		private IEnumerable<Photo> GetRandomPhotos(IList<StorageFile> photos)
+		private IEnumerable<Photo> GetRandomPhotos(IList<IFile> photos)
 		{
 			int count = rand.Next(1, 4);
 			while (count > 0 && photos.Count > 0) {
@@ -82,7 +79,7 @@ namespace MyDocs.Service.Design
 			throw new NotImplementedException();
 		}
 
-		public Task RemovePhotosAsync(IEnumerable<StorageFile> photos)
+		public Task RemovePhotosAsync(IEnumerable<IFile> photos)
 		{
 			throw new NotImplementedException();
 		}

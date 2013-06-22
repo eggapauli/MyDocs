@@ -1,34 +1,21 @@
-﻿using MyDocs.Common;
-using MyDocs.Contract;
-using MyDocs.Contract.Service;
-using MyDocs.Model;
-using GalaSoft.MvvmLight;
+﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Ioc;
+using MyDocs.Common.Collection;
+using MyDocs.Common.Contract.Page;
+using MyDocs.Common.Contract.Service;
+using MyDocs.Common.Model;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Resources;
-using Windows.Media.Capture;
-using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.UI.Popups;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 
-namespace MyDocs.ViewModel
+namespace MyDocs.Common.ViewModel
 {
 	public class DocumentViewModel : ViewModelBase
 	{
 		private readonly IDocumentService documentService;
 		private readonly INavigationService navigationService;
-
-		private ResourceLoader rl = new ResourceLoader();
+		private readonly IUserInterfaceService uiService;
 
 		#region Properties
 
@@ -113,10 +100,13 @@ namespace MyDocs.ViewModel
 
 		#endregion
 
-		public DocumentViewModel(IDocumentService documentService, INavigationService navigationService)
+		public DocumentViewModel(IDocumentService documentService,
+			IUserInterfaceService uiService,
+			INavigationService navigationService)
 		{
 			this.documentService = documentService;
 			this.navigationService = navigationService;
+			this.uiService = uiService;
 
 			CreateCommands();
 			CreateDesignTimeData();
@@ -164,12 +154,12 @@ namespace MyDocs.ViewModel
 
 		private void AddDocumentCommandHandler()
 		{
-			navigationService.Navigate(typeof(EditDocumentPage));
+			navigationService.Navigate(typeof(IEditDocumentPage));
 		}
 
 		private void EditDocumentCommandHandler()
 		{
-			navigationService.Navigate(typeof(EditDocumentPage), SelectedDocument.Id);
+			navigationService.Navigate(typeof(IEditDocumentPage), SelectedDocument.Id);
 		}
 
 		private void DeleteDocumentHandler()
@@ -177,7 +167,7 @@ namespace MyDocs.ViewModel
 			documentService.DeleteDocumentAsync(SelectedDocument).ContinueWith(t =>
 			{
 				if (t.IsFaulted) {
-					var tmp = ShowErrorAsync("deleteDocError");
+					var tmp = uiService.ShowErrorAsync("deleteDocError");
 				}
 				RaisePropertyChanged(() => CategoriesEmpty);
 				RaisePropertyChanged(() => CategoriesNotEmpty);
@@ -186,21 +176,7 @@ namespace MyDocs.ViewModel
 
 		private void ShowDocumentCommandHandler(Document doc)
 		{
-			navigationService.Navigate(typeof(ShowDocumentPage), doc.Id);
-		}
-
-		#endregion
-
-		#region Helper
-
-		// TODO remove UI logic from ViewModel
-		private async Task<IUICommand> ShowErrorAsync(string msgKey)
-		{
-			string msg = rl.GetString(msgKey);
-			if (String.IsNullOrEmpty(msg)) {
-				msg = "An error occured.";
-			}
-			return await new MessageDialog(msg).ShowAsync();
+			navigationService.Navigate(typeof(IShowDocumentPage), doc.Id);
 		}
 
 		#endregion

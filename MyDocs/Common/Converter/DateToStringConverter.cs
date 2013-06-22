@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Globalization.DateTimeFormatting;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace MyDocs.Common.Converter
+namespace MyDocs.WindowsStoreFrontend.Common.Converter
 {
 	public class DateToStringConverter : IValueConverter
 	{

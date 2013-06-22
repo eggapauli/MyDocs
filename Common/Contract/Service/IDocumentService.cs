@@ -1,12 +1,11 @@
-﻿using MyDocs.Common;
-using MyDocs.Model;
+﻿using MyDocs.Common.Collection;
+using MyDocs.Common.Contract.Storage;
+using MyDocs.Common.Model;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Windows.Storage;
 
-namespace MyDocs.Contract.Service
+namespace MyDocs.Common.Contract.Service
 {
 	public interface IDocumentService
 	{
@@ -20,6 +19,6 @@ namespace MyDocs.Contract.Service
 		Task SaveDocumentAsync(Document doc);
 		Task DeleteDocumentAsync(Document doc);
 
-		Task RemovePhotosAsync(IEnumerable<StorageFile> photos);
+		Task RemovePhotosAsync(IEnumerable<IFile> photos);
 	}
 }

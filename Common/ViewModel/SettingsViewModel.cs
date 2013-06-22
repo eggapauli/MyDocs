@@ -1,11 +1,7 @@
-﻿using MyDocs.Contract.Service;
-using GalaSoft.MvvmLight;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using GalaSoft.MvvmLight;
+using MyDocs.Common.Contract.Service;
 
-namespace MyDocs.ViewModel
+namespace MyDocs.Common.ViewModel
 {
 	public class SettingsViewModel : ViewModelBase
 	{

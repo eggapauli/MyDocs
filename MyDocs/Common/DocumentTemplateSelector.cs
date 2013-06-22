@@ -1,13 +1,8 @@
-﻿using MyDocs.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MyDocs.Common.Model;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-namespace MyDocs.Common
+namespace MyDocs.WindowsStoreFrontend.Common
 {
 	public class DocumentTemplateSelector : DataTemplateSelector
 	{

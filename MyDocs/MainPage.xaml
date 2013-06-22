@@ -1,11 +1,10 @@
 ﻿<common:LayoutAwarePage
 	x:Name="pageRoot"
-	x:Class="MyDocs.MainPage"
+	x:Class="MyDocs.WindowsStoreFrontend.MainPage"
 	DataContext="{Binding DocumentVM, Source={StaticResource Locator}}"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:local="using:MyDocs"
-	xmlns:common="using:MyDocs.Common"
+	xmlns:common="using:MyDocs.WindowsStoreFrontend.Common"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:UI="using:Microsoft.Advertising.WinRT.UI"
@@ -23,7 +22,7 @@
 			<Grid HorizontalAlignment="Left" Width="250" Height="250">
 				<Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
 					<Grid>
-						<Image Source="{Binding TitlePhoto.Thumbnail}" Stretch="UniformToFill" AutomationProperties.Name="{Binding TagsString}"/>
+						<Image Source="{Binding TitlePhoto.Thumbnail.Image}" Stretch="UniformToFill" AutomationProperties.Name="{Binding TagsString}"/>
 						<ProgressRing IsActive="{Binding TitlePhoto.ThumbnailLoaded, Converter={StaticResource BooleanNegationConverter}}" />
 					</Grid>
 				</Border>
@@ -64,7 +63,7 @@
 			<Grid HorizontalAlignment="Left" Width="250" Height="250">
 				<Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
 					<Grid>
-						<Image Source="{Binding Group.TitlePhoto.Thumbnail}" Stretch="UniformToFill" AutomationProperties.Name="{Binding Group.Name}"/>
+						<Image Source="{Binding Group.TitlePhoto.Thumbnail.Image}" Stretch="UniformToFill" AutomationProperties.Name="{Binding Group.Name}"/>
 						<ProgressRing IsActive="{Binding Group.TitlePhoto.ThumbnailLoaded, Converter={StaticResource BooleanNegationConverter}}" />
 					</Grid>
 				</Border>

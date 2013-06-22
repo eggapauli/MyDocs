@@ -1,32 +1,26 @@
-﻿using MyDocs.Common;
-using GalaSoft.MvvmLight;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using GalaSoft.MvvmLight;
+using MyDocs.Common.Contract.Storage;
 using System.Threading.Tasks;
-using Windows.Storage;
-using Windows.UI.Xaml.Media.Imaging;
 
-namespace MyDocs.Model
+namespace MyDocs.Common.Model
 {
 	public class Photo : ObservableObject
 	{
-		private StorageFile file;
-		private BitmapImage image;
-		private BitmapImage thumbnail;
+		private IFile file;
+		private IBitmapImage image;
+		private IBitmapImage thumbnail;
 
 		private bool imageGenerationStarted;
 		private bool imageLoaded;
 		private bool thumbnailGenerationStarted;
 		private bool thumbnailLoaded;
 
-		public Photo(StorageFile file)
+		public Photo(IFile file)
 		{
 			this.file = file;
 		}
 
-		public StorageFile File
+		public IFile File
 		{
 			get { return file; }
 			set
@@ -40,7 +34,7 @@ namespace MyDocs.Model
 			}
 		}
 
-		public BitmapImage Image
+		public IBitmapImage Image
 		{
 			get
 			{
@@ -68,7 +62,7 @@ namespace MyDocs.Model
 			}
 		}
 
-		public BitmapImage Thumbnail
+		public IBitmapImage Thumbnail
 		{
 			get
 			{

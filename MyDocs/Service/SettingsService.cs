@@ -1,37 +1,34 @@
-﻿using MyDocs.Contract.Service;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MyDocs.Common.Contract.Service;
+using MyDocs.Common.Contract.Storage;
+using MyDocs.WindowsStoreFrontend.Storage;
 using Windows.Storage;
 
-namespace MyDocs.Common
+namespace MyDocs.WindowsStoreFrontend.Service
 {
 	public class SettingsService : ISettingsService
 	{
 		private enum FolderType { Local, Roaming }
 		private static readonly string syncEnabledKey = "isSyncEnabled";
 
-		public StorageFolder PhotoFolder
+		public IFolder PhotoFolder
 		{
 			get
 			{
 				if (IsSyncEnabled) {
-					return ApplicationData.Current.RoamingFolder;
+					return new WindowsStoreFolder(ApplicationData.Current.RoamingFolder);
 				}
-				return ApplicationData.Current.LocalFolder;
+				return new WindowsStoreFolder(ApplicationData.Current.LocalFolder);
 			}
 		}
 
-		public ApplicationDataContainer SettingsContainer
+		public IApplicationDataContainer SettingsContainer
 		{
 			get
 			{
 				if (IsSyncEnabled) {
-					return ApplicationData.Current.RoamingSettings;
+					return new WindowsStoreApplicationDataContainer(ApplicationData.Current.RoamingSettings);
 				}
-				return ApplicationData.Current.LocalSettings;
+				return new WindowsStoreApplicationDataContainer(ApplicationData.Current.LocalSettings);
 			}
 		}
 

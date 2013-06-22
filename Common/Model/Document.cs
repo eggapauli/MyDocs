@@ -1,22 +1,13 @@
-﻿using MyDocs.Common;
-using GalaSoft.MvvmLight;
+﻿using GalaSoft.MvvmLight;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Resources;
-using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.UI.Xaml.Media.Imaging;
 
-namespace MyDocs.Model
+namespace MyDocs.Common.Model
 {
 	public class Document : ObservableObject
 	{
-		private ResourceLoader rl = new ResourceLoader();
-
 		private Guid id;
 		private string category;
 		private ObservableCollection<Photo> photos;
@@ -106,7 +97,7 @@ namespace MyDocs.Model
 					RaisePropertyChanged(() => DateRemovedDay);
 					RaisePropertyChanged(() => DateRemovedMonth);
 					RaisePropertyChanged(() => DateRemovedYear);
-					RaisePropertyChanged(() => TimeToRemoval);
+					//RaisePropertyChanged(() => TimeToRemoval);
 				}
 			}
 		}
@@ -177,14 +168,15 @@ namespace MyDocs.Model
 			}
 		}
 
-		public string TimeToRemoval
-		{
-			get
-			{
-				int days = Convert.ToInt32(DateRemoved.Subtract(DateTime.Today).TotalDays);
-				return String.Format(rl.GetString("countDaysFormat"), days);
-			}
-		}
+		// TODO SoC
+		//public string TimeToRemoval
+		//{
+		//	get
+		//	{
+		//		int days = Convert.ToInt32(DateRemoved.Subtract(DateTime.Today).TotalDays);
+		//		return String.Format(rl.GetString("countDaysFormat"), days);
+		//	}
+		//}
 
 		public Document()
 		{

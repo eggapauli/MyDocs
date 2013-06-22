@@ -1,28 +1,18 @@
-﻿using MyDocs.Model;
-using MyDocs.ViewModel;
+﻿using MyDocs.Common.Model;
+using MyDocs.Common.ViewModel;
+using MyDocs.WindowsStoreFrontend.Common;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
-namespace MyDocs
+namespace MyDocs.WindowsStoreFrontend
 {
-	public sealed partial class SearchResultsPage : MyDocs.Common.LayoutAwarePage
+	public sealed partial class SearchResultsPage : LayoutAwarePage
 	{
-
 		public SearchResultsPage()
 		{
 			this.InitializeComponent();

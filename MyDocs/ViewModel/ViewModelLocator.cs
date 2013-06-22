@@ -12,17 +12,16 @@
   See http://www.galasoft.ch/mvvm
 */
 
-using MyDocs.Common;
-using MyDocs.Contract;
-using MyDocs.Contract.Service;
-using MyDocs.Service;
-using MyDocs.Service.Design;
-using MyDocs.ViewModel;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
+using MyDocs.Common.Contract.Page;
+using MyDocs.Common.Contract.Service;
+using MyDocs.Common.ViewModel;
+using MyDocs.WindowsStoreFrontend.Service;
+using MyDocs.WindowsStoreFrontend.Service.Design;
 
-namespace MyDocs.ViewModel
+namespace MyDocs.WindowsStoreFrontend.ViewModel
 {
 	/// <summary>
 	/// This class contains static references to all the view models in the
@@ -52,6 +51,34 @@ namespace MyDocs.ViewModel
 
 			if (!SimpleIoc.Default.IsRegistered<ISettingsService>()) {
 				SimpleIoc.Default.Register<ISettingsService, SettingsService>();
+			}
+
+			if (!SimpleIoc.Default.IsRegistered<IUserInterfaceService>()) {
+				SimpleIoc.Default.Register<IUserInterfaceService, ModernUIService>();
+			}
+
+			if (!SimpleIoc.Default.IsRegistered<ICameraService>()) {
+				SimpleIoc.Default.Register<ICameraService, CameraService>();
+			}
+
+			if (!SimpleIoc.Default.IsRegistered<IFilePickerService>()) {
+				SimpleIoc.Default.Register<IFilePickerService, FilePickerService>();
+			}
+
+			if (!SimpleIoc.Default.IsRegistered<ITranslatorService>()) {
+				SimpleIoc.Default.Register<ITranslatorService, TranslatorService>();
+			}
+
+			if (!SimpleIoc.Default.IsRegistered<IMainPage>()) {
+				SimpleIoc.Default.Register<IMainPage, MainPage>();
+			}
+
+			if (!SimpleIoc.Default.IsRegistered<IEditDocumentPage>()) {
+				SimpleIoc.Default.Register<IEditDocumentPage, EditDocumentPage>();
+			}
+
+			if (!SimpleIoc.Default.IsRegistered<IShowDocumentPage>()) {
+				SimpleIoc.Default.Register<IShowDocumentPage, ShowDocumentPage>();
 			}
 
 			SimpleIoc.Default.Register<DocumentViewModel>();

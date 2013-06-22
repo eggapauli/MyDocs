@@ -1,28 +1,18 @@
-﻿using MyDocs.Common;
-using MyDocs.Model;
+﻿using MyDocs.WindowsStoreFrontend.Common;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Resources;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.System;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Xaml.Navigation;
 
 // The Grid App template is documented at http://go.microsoft.com/fwlink/?LinkId=234226
 
-namespace MyDocs
+namespace MyDocs.WindowsStoreFrontend
 {
 	/// <summary>
 	/// Provides application-specific behavior to supplement the default Application class.
@@ -162,14 +152,14 @@ namespace MyDocs
 				// Create a Frame to act as the navigation context and associate it with
 				// a SuspensionManager key
 				frame = new Frame();
-				MyDocs.Common.SuspensionManager.RegisterFrame(frame, "AppFrame");
+				SuspensionManager.RegisterFrame(frame, "AppFrame");
 
 				if (args.PreviousExecutionState == ApplicationExecutionState.Terminated) {
 					// Restore the saved session state only when appropriate
 					try {
-						await MyDocs.Common.SuspensionManager.RestoreAsync();
+						await SuspensionManager.RestoreAsync();
 					}
-					catch (MyDocs.Common.SuspensionManagerException) {
+					catch (SuspensionManagerException) {
 						//Something went wrong restoring state.
 						//Assume there is no state and continue
 					}

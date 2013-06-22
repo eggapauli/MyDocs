@@ -1,11 +1,10 @@
 ﻿<common:LayoutAwarePage
 	x:Name="pageRoot"
-	x:Class="MyDocs.SearchResultsPage"
+	x:Class="MyDocs.WindowsStoreFrontend.SearchResultsPage"
 	DataContext="{Binding SearchVM, Source={StaticResource Locator}}"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:local="using:MyDocs"
-	xmlns:common="using:MyDocs.Common"
+	xmlns:common="using:MyDocs.WindowsStoreFrontend.Common"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
@@ -23,7 +22,7 @@
 				</Grid.ColumnDefinitions>
 				<Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Margin="0,0,0,10" Width="40" Height="40">
 					<Grid>
-						<Image Source="{Binding TitlePhoto.Thumbnail}" Stretch="UniformToFill"/>
+						<Image Source="{Binding TitlePhoto.Thumbnail.Image}" Stretch="UniformToFill"/>
 						<ProgressRing IsActive="{Binding TitlePhoto.ThumbnailLoaded, Converter={StaticResource BooleanNegationConverter}}" />
 					</Grid>
 				</Border>

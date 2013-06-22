@@ -1,43 +1,33 @@
-﻿using MyDocs.Common;
-using MyDocs.Contract;
-using MyDocs.Contract.Service;
-using MyDocs.Model;
+﻿using MyDocs.Common.Collection;
+using MyDocs.Common.Comparer;
+using MyDocs.Common.Contract.Service;
+using MyDocs.Common.Contract.Storage;
+using MyDocs.Common.Model;
+using MyDocs.WindowsStoreFrontend.Common;
+using MyDocs.WindowsStoreFrontend.Storage;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.Foundation;
 using Windows.Storage;
-using Windows.Storage.Search;
-using Windows.Storage.Streams;
-using Windows.UI.Xaml.Media.Imaging;
 
-namespace MyDocs.Service
+namespace MyDocs.WindowsStoreFrontend.Service
 {
 	public class DocumentService : IDocumentService
 	{
 		private ISettingsService settingsService;
-		private ApplicationDataContainer docsDataContainer;
+		private IApplicationDataContainer docsDataContainer;
 
-		private SortedObservableCollection<Category> categories;
-
-		public SortedObservableCollection<Category> Categories
-		{
-			get { return categories; }
-		}
+		public SortedObservableCollection<Category> Categories { get; private set; }
 
 		public DocumentService(ISettingsService settingsService)
 		{
 			this.settingsService = settingsService;
+			Categories = new SortedObservableCollection<Category>(new CategoryComparer());
 
-			docsDataContainer = settingsService.SettingsContainer
-				.CreateContainer("docs", ApplicationDataCreateDisposition.Always);
+			docsDataContainer = settingsService.SettingsContainer.CreateContainer("docs");
 
-			categories = new SortedObservableCollection<Category>(new CategoryComparer());
 		}
 
 		private async Task ClearAllData()
@@ -52,15 +42,15 @@ namespace MyDocs.Service
 
 			List<Task> tasks = new List<Task>();
 			foreach (StorageFolder folder in folders) {
-				Task<IReadOnlyList<StorageFile>> t = folder.GetFilesAsync().AsTask();
-				tasks.AddRange(t.Result.Select(f => f.DeleteAsync().AsTask()));
+				var task = folder.GetFilesAsync().AsTask();
+				tasks.AddRange(task.Result.Select(f => f.DeleteAsync().AsTask()));
 			}
 			await Task.WhenAll(tasks);
 		}
 
 		private async Task InsertTestData()
 		{
-			MyDocs.Service.Design.DesignDocumentService service = new MyDocs.Service.Design.DesignDocumentService();
+			var service = new MyDocs.WindowsStoreFrontend.Service.Design.DesignDocumentService();
 			await service.LoadCategoriesAsync();
 			IEnumerable<Document> docs = service.Categories.SelectMany(c => c.Documents);
 			IList<Task> tasks = new List<Task>();
@@ -74,7 +64,7 @@ namespace MyDocs.Service
 		{
 			//await ClearAllData();
 			//await InsertTestData();
-			if (categories.Count > 0) {
+			if (Categories.Count > 0) {
 				return;
 			}
 			//await Task.Delay(2000);
@@ -97,10 +87,10 @@ namespace MyDocs.Service
 						tasks.Add(Task.Run<Document>(() => new AdDocument()));
 					}
 				}
-				categories.Add(new Category(group.Key, await Task.WhenAll(tasks)));
+				Categories.Add(new Category(group.Key, await Task.WhenAll(tasks)));
 			}
 
-			await RemoveOutdatedDocuments(categories);
+			await RemoveOutdatedDocuments(Categories);
 		}
 
 		public IEnumerable<string> GetCategoryNames()
@@ -118,7 +108,7 @@ namespace MyDocs.Service
 			Category cat = Categories.FirstOrDefault(c => c.Name == name);
 			if (cat == null) {
 				cat = new Category(name);
-				categories.Add(cat);
+				Categories.Add(cat);
 			}
 			return cat;
 		}
@@ -136,7 +126,7 @@ namespace MyDocs.Service
 			if (cat != null) {
 				cat.Documents.Remove(docRef);
 				if (!cat.Documents.Any(d => !(d is AdDocument))) {
-					categories.Remove(cat);
+					Categories.Remove(cat);
 				}
 			}
 		}
@@ -148,11 +138,11 @@ namespace MyDocs.Service
 				if (!photo.File.IsInFolder(settingsService.PhotoFolder)) {
 					string name = Path.GetRandomFileName() + Path.GetExtension(photo.File.Path);
 					Task task;
-					if (photo.File.IsInFolder(ApplicationData.Current.TemporaryFolder)) {
-						task = photo.File.MoveAsync(settingsService.PhotoFolder, name).AsTask();
+					if (photo.File.IsInFolder(new WindowsStoreFolder(ApplicationData.Current.TemporaryFolder))) {
+						task = photo.File.MoveAsync(settingsService.PhotoFolder, name);
 					}
 					else {
-						task = photo.File.CopyAsync(settingsService.PhotoFolder, name).AsTask().ContinueWith(t =>
+						task = photo.File.CopyAsync(settingsService.PhotoFolder, name).ContinueWith(t =>
 						{
 							photo.File = t.Result;
 						}, TaskScheduler.FromCurrentSynchronizationContext());
@@ -169,8 +159,8 @@ namespace MyDocs.Service
 		{
 			List<Task> tasks = new List<Task>();
 			foreach (Photo photo in doc.Photos) {
-				Task t = photo.File.MoveAsync(ApplicationData.Current.TemporaryFolder).AsTask();
-				tasks.Add(t);
+				Task task = photo.File.MoveAsync(new WindowsStoreFolder(ApplicationData.Current.TemporaryFolder));
+				tasks.Add(task);
 			}
 			await Task.WhenAll(tasks);
 
@@ -179,12 +169,12 @@ namespace MyDocs.Service
 			DetachDocument(doc);
 		}
 
-		public async Task RemovePhotosAsync(IEnumerable<StorageFile> photos)
+		public async Task RemovePhotosAsync(IEnumerable<IFile> photos)
 		{
 			IList<Task> tasks = new List<Task>();
-			foreach (StorageFile photo in photos) {
+			foreach (var photo in photos) {
 				//if (!photo.IsInFolder(ApplicationData.Current.TemporaryFolder)) {
-				tasks.Add(photo.DeleteAsync().AsTask());
+				tasks.Add(photo.DeleteAsync());
 				//}
 			}
 			await Task.WhenAll(tasks);

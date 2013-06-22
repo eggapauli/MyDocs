@@ -1,26 +1,16 @@
-﻿using MyDocs.Common;
-using MyDocs.Model;
-using MyDocs.ViewModel;
+﻿using MyDocs.Common.Contract.Page;
+using MyDocs.Common.ViewModel;
+using MyDocs.WindowsStoreFrontend.Common;
+using MyDocs.WindowsStoreFrontend.Storage;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-namespace MyDocs
+namespace MyDocs.WindowsStoreFrontend
 {
-	public sealed partial class ShowDocumentPage : LayoutAwarePage
+	public sealed partial class ShowDocumentPage : LayoutAwarePage, IShowDocumentPage
 	{
 		private DataTransferManager dtm;
 
@@ -52,7 +42,7 @@ namespace MyDocs
 
 			try {
 				var files = ViewModel.SelectedDocument.Photos.Select(p => p.File);
-				data.SetStorageItems(files);
+				data.SetStorageItems(files.Select(f => ((WindowsStoreFile)f).File));
 			}
 			finally {
 				waiter.Complete();

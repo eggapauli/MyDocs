@@ -1,28 +1,25 @@
-﻿using MyDocs.Contract.Service;
-using MyDocs.Model;
-using GalaSoft.MvvmLight;
+﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using MyDocs.Common.Contract.Page;
+using MyDocs.Common.Contract.Service;
+using MyDocs.Common.Model;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Resources;
-using Windows.Media.Capture;
-using Windows.UI.Popups;
-using Windows.Storage.Pickers;
-using Windows.Storage;
 
-namespace MyDocs.ViewModel
+namespace MyDocs.Common.ViewModel
 {
 	public class EditDocumentViewModel : ViewModelBase
 	{
 		private readonly IDocumentService documentService;
-		private readonly INavigationService navigationService;
-		private ResourceLoader rl = new ResourceLoader();
+		private readonly INavigationService navigator;
+		private readonly ITranslatorService translator;
+		private readonly IUserInterfaceService uiService;
+		private readonly ICameraService cameraService;
+		private readonly IFilePickerService filePicker;
 
 		#region Properties
 
@@ -188,15 +185,25 @@ namespace MyDocs.ViewModel
 			}
 		}
 
-		public string LifespanInfiniteText { get { return rl.GetString("lifespanInfiniteText"); } }
-		public string LifespanLimitedText { get { return rl.GetString("lifespanLimitedText"); } }
+		public string LifespanInfiniteText { get { return translator.Translate("lifespanInfiniteText"); } }
+		public string LifespanLimitedText { get { return translator.Translate("lifespanLimitedText"); } }
 
 		#endregion
 
-		public EditDocumentViewModel(IDocumentService documentService, INavigationService navigationService)
+		public EditDocumentViewModel(
+			IDocumentService documentService,
+			INavigationService navigator,
+			ITranslatorService translator,
+			IUserInterfaceService uiService,
+			ICameraService cameraService,
+			IFilePickerService filePicker)
 		{
 			this.documentService = documentService;
-			this.navigationService = navigationService;
+			this.navigator = navigator;
+			this.translator = translator;
+			this.uiService = uiService;
+			this.cameraService = cameraService;
+			this.filePicker = filePicker;
 
 			CreateCommands();
 			CreateDesignTimeData();
@@ -251,7 +258,7 @@ namespace MyDocs.ViewModel
 			documentService.SaveDocumentAsync(EditingDocument).ContinueWith(t =>
 			{
 				if (t.IsFaulted) {
-					var tmp = ShowErrorAsync("saveDocError");
+					var tmp = uiService.ShowErrorAsync("saveDocError");
 				}
 				else {
 					// remove deleted photos
@@ -260,7 +267,7 @@ namespace MyDocs.ViewModel
 						documentService.RemovePhotosAsync(deletedPhotos).ContinueWith(t2 =>
 						{
 							if (t.IsFaulted) {
-								var tmp = ShowErrorAsync("saveDocError");
+								var tmp = uiService.ShowErrorAsync("saveDocError");
 							}
 						});
 					}
@@ -287,18 +294,17 @@ namespace MyDocs.ViewModel
 					//		}
 					//	}, TaskScheduler.FromCurrentSynchronizationContext());
 					//}
-					navigationService.Navigate(typeof(MainPage), originalDocument.Id);
+					navigator.Navigate(typeof(IMainPage), originalDocument.Id);
 				}
 			}, TaskScheduler.FromCurrentSynchronizationContext());
 		}
 
 		private void AddPhotoFromCameraHandler()
 		{
-			CameraCaptureUI camera = new CameraCaptureUI();
-			camera.CaptureFileAsync(CameraCaptureUIMode.Photo).AsTask().ContinueWith(t =>
+			cameraService.CaptureFileAsync().ContinueWith(t =>
 			{
 				if (t.IsFaulted) {
-					var tmp = ShowErrorAsync("addPhotoError");
+					var tmp = uiService.ShowErrorAsync("addPhotoError");
 				}
 				else {
 					if (t.Result != null) {
@@ -310,21 +316,13 @@ namespace MyDocs.ViewModel
 
 		private void AddPhotoFromFileHandler()
 		{
-			FileOpenPicker filePicker = new FileOpenPicker();
-			filePicker.FileTypeFilter.Add(".png");
-			filePicker.FileTypeFilter.Add(".jpg");
-			filePicker.FileTypeFilter.Add(".jpeg");
-			filePicker.FileTypeFilter.Add(".gif");
-			filePicker.FileTypeFilter.Add(".bmp");
-			filePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
-			filePicker.ViewMode = PickerViewMode.List;
-			filePicker.PickMultipleFilesAsync().AsTask().ContinueWith(t =>
+			filePicker.PickMultipleImagesAsync().ContinueWith(t =>
 			{
 				if (t.IsFaulted) {
 					// TODO show error
 				}
 				else {
-					foreach (StorageFile file in t.Result) {
+					foreach (var file in t.Result) {
 						EditingDocument.Photos.Add(new Photo(file));
 					}
 				}
@@ -337,15 +335,5 @@ namespace MyDocs.ViewModel
 		}
 
 		#endregion
-
-		// TODO remove UI logic from ViewModel
-		private async Task<IUICommand> ShowErrorAsync(string msgKey)
-		{
-			string msg = rl.GetString(msgKey);
-			if (String.IsNullOrEmpty(msg)) {
-				msg = "An error occured.";
-			}
-			return await new MessageDialog(msg).ShowAsync();
-		}
 	}
 }

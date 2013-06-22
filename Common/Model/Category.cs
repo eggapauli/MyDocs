@@ -1,21 +1,13 @@
-﻿using MyDocs.Common;
-using GalaSoft.MvvmLight;
-using System;
+﻿using GalaSoft.MvvmLight;
+using MyDocs.Common.Collection;
+using MyDocs.Common.Comparer;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Resources;
-using Windows.Storage;
-using Windows.UI.Xaml.Media.Imaging;
 
-namespace MyDocs.Model
+namespace MyDocs.Common.Model
 {
 	public class Category : ObservableObject
 	{
-		private ResourceLoader rl = new ResourceLoader();
-
 		private string name;
 		private SortedObservableCollection<Document> documents;
 
@@ -43,14 +35,15 @@ namespace MyDocs.Model
 			}
 		}
 
-		public string CountDocumentsText
-		{
-			get
-			{
-				int count = Documents.Count(d => !(d is AdDocument));
-				return String.Format(rl.GetString("countDocumentsFormat"), count);
-			}
-		}
+		// TODO SoC
+		//public string CountDocumentsText
+		//{
+		//	get
+		//	{
+		//		int count = Documents.Count(d => !(d is AdDocument));
+		//		return String.Format(rl.GetString("countDocumentsFormat"), count);
+		//	}
+		//}
 
 		public Photo TitlePhoto
 		{

@@ -1,16 +1,15 @@
-﻿using MyDocs.Contract.Service;
-using MyDocs.Model;
-using GalaSoft.MvvmLight;
+﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using MyDocs.Common.Contract.Page;
+using MyDocs.Common.Contract.Service;
+using MyDocs.Common.Model;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace MyDocs.ViewModel
+namespace MyDocs.Common.ViewModel
 {
 	public class SearchViewModel : ViewModelBase
 	{
@@ -92,7 +91,7 @@ namespace MyDocs.ViewModel
 
 		private void ShowDocumentCommandHandler(Document doc)
 		{
-			navigationService.Navigate(typeof(ShowDocumentPage), doc.Id);
+			navigationService.Navigate(typeof(IShowDocumentPage), doc.Id);
 		}
 
 		#endregion
