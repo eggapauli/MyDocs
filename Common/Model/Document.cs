@@ -97,7 +97,7 @@ namespace MyDocs.Common.Model
 					RaisePropertyChanged(() => DateRemovedDay);
 					RaisePropertyChanged(() => DateRemovedMonth);
 					RaisePropertyChanged(() => DateRemovedYear);
-					//RaisePropertyChanged(() => TimeToRemoval);
+					RaisePropertyChanged(() => DaysToRemoval);
 				}
 			}
 		}
@@ -168,15 +168,13 @@ namespace MyDocs.Common.Model
 			}
 		}
 
-		// TODO SoC
-		//public string TimeToRemoval
-		//{
-		//	get
-		//	{
-		//		int days = Convert.ToInt32(DateRemoved.Subtract(DateTime.Today).TotalDays);
-		//		return String.Format(rl.GetString("countDaysFormat"), days);
-		//	}
-		//}
+		public int DaysToRemoval
+		{
+			get
+			{
+				return Convert.ToInt32(DateRemoved.Subtract(DateTime.Today).TotalDays);
+			}
+		}
 
 		public Document()
 		{

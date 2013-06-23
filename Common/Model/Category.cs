@@ -31,19 +31,18 @@ namespace MyDocs.Common.Model
 				if (documents != value) {
 					documents = value;
 					RaisePropertyChanged(() => Documents);
+					RaisePropertyChanged(() => CountDocuments);
 				}
 			}
 		}
 
-		// TODO SoC
-		//public string CountDocumentsText
-		//{
-		//	get
-		//	{
-		//		int count = Documents.Count(d => !(d is AdDocument));
-		//		return String.Format(rl.GetString("countDocumentsFormat"), count);
-		//	}
-		//}
+		public int CountDocuments
+		{
+			get
+			{
+				return Documents.Count(d => !(d is AdDocument));
+			}
+		}
 
 		public Photo TitlePhoto
 		{

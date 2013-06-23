@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsStoreFrontend", "MyDocs\WindowsStoreFrontend.csproj", "{CC54F3CE-79C3-4613-A766-3E31D6660370}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsStore", "WindowsStore\WindowsStore.csproj", "{CC54F3CE-79C3-4613-A766-3E31D6660370}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{6666FF12-6C2C-4AED-A1DD-F1E1F08445F8}"
 EndProject
