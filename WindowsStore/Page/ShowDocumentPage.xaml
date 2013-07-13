@@ -10,7 +10,7 @@
 	mc:Ignorable="d">
 	
 	<Page.Resources>
-		<Style x:Key="PhotoDetailTextStyle" TargetType="TextBlock" BasedOn="{StaticResource PageSubheaderTextStyle}">
+		<Style x:Key="PhotoDetailTextStyle" TargetType="TextBlock" BasedOn="{StaticResource SubheaderTextBlockStyle}">
 			<Setter Property="Margin" Value="50,0,0,20" />
 		</Style>
 		<Style x:Key="SnappedPhotoDetailTextStyle" TargetType="TextBlock" BasedOn="{StaticResource PhotoDetailTextStyle}">
@@ -25,23 +25,33 @@
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 
-		<FlipView Grid.RowSpan="2" ItemsSource="{Binding Photos}">
-			<FlipView.ItemTemplate>
-				<DataTemplate>
-					<Grid>
-						<Image Source="{Binding Image.Image}" />
-						<ProgressRing IsActive="{Binding ImageLoaded, Converter={StaticResource BooleanNegationConverter}}" Width="100" Height="100" />
-					</Grid>
-				</DataTemplate>
-			</FlipView.ItemTemplate>
-		</FlipView>
+        <FlipView Grid.RowSpan="2" ItemsSource="{Binding Photos}">
+            <FlipView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Image Source="{Binding Image.Image}" />
+                        <ProgressRing IsActive="{Binding ImageLoaded, Converter={StaticResource BooleanNegationConverter}}" Width="100" Height="100" />
+                    </Grid>
+                </DataTemplate>
+            </FlipView.ItemTemplate>
+        </FlipView>
 
-		<StackPanel Orientation="Horizontal">
-			<Button x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}"/>
-			<TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" IsHitTestVisible="false" Style="{StaticResource PageHeaderTextStyle}"/>
-		</StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <AppBarButton x:Name="backButton" Icon="Back" Height="95" Margin="10,46,10,0"
+                          Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}" 
+                          Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource Mode=Self}}"
+                          AutomationProperties.Name="Back"
+                          AutomationProperties.AutomationId="BackButton"
+                          AutomationProperties.ItemType="Navigation Button"/>
+            <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
+        </Grid>
 
-		<StackPanel Grid.Row="1" VerticalAlignment="Bottom" Orientation="Vertical" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
+        <StackPanel Grid.Row="1" VerticalAlignment="Bottom" Orientation="Vertical" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
 			<TextBlock x:Name="category" Text="{Binding Category}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextStyle}" TextWrapping="NoWrap" />
 			<TextBlock x:Name="tags" Text="{Binding TagsString}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextStyle}" TextWrapping="Wrap" />
 			<TextBlock x:Name="lifespan" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextStyle}" TextWrapping="NoWrap">
@@ -55,30 +65,30 @@
 
 			<!-- Visual states reflect the application's view state -->
 			<VisualStateGroup x:Name="ApplicationViewStates">
-				<VisualState x:Name="FullScreenLandscape"/>
-				<VisualState x:Name="Filled"/>
+				<VisualState x:Name="DefaultLayout"/>
+				<!--<VisualState x:Name="Filled"/>-->
 
 				<!-- The entire page respects the narrower 100-pixel margin convention for portrait -->
-				<VisualState x:Name="FullScreenPortrait">
+				<!--<VisualState x:Name="FullScreenPortrait">
 					<Storyboard>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PortraitBackButtonStyle}"/>
 						</ObjectAnimationUsingKeyFrames>
 					</Storyboard>
-				</VisualState>
+				</VisualState>-->
 
 				<!--
 					The back button and title have different styles when snapped, and the list representation is substituted
 					for the grid displayed in all other view states
 				-->
-				<VisualState x:Name="Snapped">
+                <VisualState x:Name="TightLayout">
 					<Storyboard>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
+						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedBackButtonStyle}"/>
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPageHeaderTextStyle}"/>
-						</ObjectAnimationUsingKeyFrames>
+						</ObjectAnimationUsingKeyFrames>-->
 
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="category" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPhotoDetailTextStyle}"/>

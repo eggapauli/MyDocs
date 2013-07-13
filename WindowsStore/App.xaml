@@ -8,25 +8,22 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d">
 
-	<Application.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
+    <Application.Resources>
+        <ResourceDictionary>
+            <!--<ResourceDictionary.MergedDictionaries>
+				--><!--Styles that define common aspects of the platform look and feel
+				Required by Visual Studio project and item templates--><!--
+                <ResourceDictionary Source="Common/StandardStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>-->
 
-				<!-- 
-					Styles that define common aspects of the platform look and feel
-					Required by Visual Studio project and item templates
-				 -->
-				<ResourceDictionary Source="Common/StandardStyles.xaml"/>
-			</ResourceDictionary.MergedDictionaries>
-			
-			<x:String x:Key="AppName">My Docs</x:String>
-			
-			<vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
-			
-			<converter:BooleanNegationConverter x:Key="BooleanNegationConverter" />
-			<converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-			<converter:DateToStringConverter x:Key="DateToStringConverter" />
-			<converter:TranslationConverter x:Key="TranslationConverter" />
-		</ResourceDictionary>
-	</Application.Resources>
+            <x:String x:Key="AppName">My Docs</x:String>
+
+            <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
+
+            <converter:BooleanNegationConverter x:Key="BooleanNegationConverter" />
+            <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converter:DateToStringConverter x:Key="DateToStringConverter" />
+            <converter:TranslationConverter x:Key="TranslationConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>

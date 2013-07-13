@@ -49,10 +49,11 @@ namespace MyDocs.WindowsStore.Page
 			}
 		}
 
-		protected override void LoadState(object navigationParameter, Dictionary<string, object> pageState)
+		protected override void LoadState(object sender, LoadStateEventArgs args)
 		{
-			if (navigationParameter != null) {
-				ViewModel.SelectedDocumentId = (Guid)navigationParameter;
+            if (args.NavigationParameter != null)
+            {
+                ViewModel.SelectedDocumentId = (Guid)args.NavigationParameter;
 			}
 		}
 

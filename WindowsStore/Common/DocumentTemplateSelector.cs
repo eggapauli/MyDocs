@@ -11,9 +11,10 @@ namespace MyDocs.WindowsStore.Common
 
 		protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
 		{
-			if (item is AdDocument) {
-				return AdTemplate;
-			}
+            // TODO add MSAdvSDK8.1
+            //if (item is AdDocument) {
+            //    return AdTemplate;
+            //}
 
 			return DocumentTemplate;
 		}

@@ -29,14 +29,14 @@ namespace MyDocs.WindowsStore.Page
 			base.OnNavigatedTo(e);
 
 			this.semanticZoom.ViewChangeCompleted += semanticZoom_ViewChangeCompleted;
-			this.semanticZoomSnapped.ViewChangeCompleted += semanticZoom_ViewChangeCompleted;
+            this.semanticZoomTight.ViewChangeCompleted += semanticZoom_ViewChangeCompleted;
 
 			Window.Current.SizeChanged += WindowSizeChanged;
 
 			RefreshLayout();
 		}
 
-		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
+		protected override void LoadState(object sender, LoadStateEventArgs args)
 		{
 			ViewModel.LoadAsync().ContinueWith(t =>
 			{
@@ -44,13 +44,14 @@ namespace MyDocs.WindowsStore.Page
 					// TODO show error
 				}
 				else {
-					if (navigationParameter != null) {
-						ViewModel.SelectedDocumentId = (Guid)navigationParameter;
+                    if (args.NavigationParameter != null)
+                    {
+                        ViewModel.SelectedDocumentId = (Guid)args.NavigationParameter;
 					}
 					if (groupedDocumentsViewSource.View != null) {
 						var collectionGroups = groupedDocumentsViewSource.View.CollectionGroups;
 						((ListViewBase)this.semanticZoom.ZoomedOutView).ItemsSource = collectionGroups;
-						((ListViewBase)this.semanticZoomSnapped.ZoomedOutView).ItemsSource = collectionGroups;
+                        ((ListViewBase)this.semanticZoomTight.ZoomedOutView).ItemsSource = collectionGroups;
 					}
 				}
 			}, TaskScheduler.FromCurrentSynchronizationContext());
@@ -63,11 +64,11 @@ namespace MyDocs.WindowsStore.Page
 
 		private void RefreshLayout()
 		{
-			bool zoomedIn = (ApplicationView.Value == ApplicationViewState.Snapped ?
-				this.semanticZoomSnapped.IsZoomedInViewActive :
-				this.semanticZoom.IsZoomedInViewActive);
-			this.editDocButton.IsEnabled = zoomedIn;
-			this.deleteDocButton.IsEnabled = zoomedIn;
+			bool zoomedIn = (ApplicationView.GetForCurrentView().IsFullScreen ?
+				this.semanticZoom.IsZoomedInViewActive :
+                this.semanticZoomTight.IsZoomedInViewActive);
+            this.editDocButton.IsEnabled = zoomedIn;
+            this.deleteDocButton.IsEnabled = zoomedIn;
 
 			ViewModel.InZoomedInView = zoomedIn;
 		}
@@ -77,7 +78,7 @@ namespace MyDocs.WindowsStore.Page
 			base.OnNavigatedFrom(e);
 
 			this.semanticZoom.ViewChangeCompleted -= semanticZoom_ViewChangeCompleted;
-			this.semanticZoomSnapped.ViewChangeCompleted -= semanticZoom_ViewChangeCompleted;
+            this.semanticZoomTight.ViewChangeCompleted -= semanticZoom_ViewChangeCompleted;
 
 			Window.Current.SizeChanged -= WindowSizeChanged;
 		}

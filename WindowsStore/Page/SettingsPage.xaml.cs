@@ -21,8 +21,8 @@ namespace MyDocs.WindowsStore.Page
 				parent.IsOpen = false;
 			}
 
-			// If the app is not snapped, then the back button shows the Settings pane again.
-			if (Windows.UI.ViewManagement.ApplicationView.Value != Windows.UI.ViewManagement.ApplicationViewState.Snapped) {
+			// If the app is in fullscreen, then the back button shows the Settings pane again.
+			if (Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().IsFullScreen) {
 				SettingsPane.Show();
 			}
 		}

@@ -23,9 +23,9 @@ namespace MyDocs.WindowsStore.Page
 			get { return this.DataContext as SearchViewModel; }
 		}
 
-		protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
+		protected override void LoadState(object sender, LoadStateEventArgs args)
 		{
-			var queryText = navigationParameter as string;
+            var queryText = args.NavigationParameter as string;
 
 			// TODO: Application-specific searching logic.  The search process is responsible for
 			//       creating a list of user-selectable result categories:

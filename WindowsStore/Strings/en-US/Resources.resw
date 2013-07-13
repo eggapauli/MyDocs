@@ -117,23 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Category.Text" xml:space="preserve">
-    <value>Category</value>
-  </data>
   <data name="countDocumentsFormat" xml:space="preserve">
     <value>{0} document(s)</value>
   </data>
-  <data name="Lifespan.Text" xml:space="preserve">
-    <value>Lifespan</value>
-  </data>
   <data name="NoDocuments.Text" xml:space="preserve">
     <value>No documents stored.</value>
-  </data>
-  <data name="TagsInput.Text" xml:space="preserve">
-    <value>Tags (comma-separated)</value>
-  </data>
-  <data name="Tags.Text" xml:space="preserve">
-    <value>Tags</value>
   </data>
   <data name="countDaysFormat" xml:space="preserve">
     <value>{0} day(s) remaining</value>
@@ -141,19 +129,19 @@
   <data name="settings" xml:space="preserve">
     <value>Settings</value>
   </data>
-  <data name="settings.Text" xml:space="preserve">
+  <data name="settingsTitle.Text" xml:space="preserve">
     <value>Settings</value>
   </data>
-  <data name="NewCategory.Content" xml:space="preserve">
+  <data name="BtnNewCategory.Content" xml:space="preserve">
     <value>Add a new category</value>
   </data>
-  <data name="UseCategory.Content" xml:space="preserve">
+  <data name="BtnUseCategory.Content" xml:space="preserve">
     <value>Use an existing category</value>
   </data>
-  <data name="lifespanInfiniteText" xml:space="preserve">
-    <value>Infinite</value>
+  <data name="SwcLifespan.OffContent" xml:space="preserve">
+    <value>Unlimited</value>
   </data>
-  <data name="lifespanLimitedText" xml:space="preserve">
+  <data name="SwcLifespan.OnContent" xml:space="preserve">
     <value>Limited</value>
   </data>
   <data name="deleteDocError" xml:space="preserve">
@@ -162,25 +150,49 @@
   <data name="privacyStatement" xml:space="preserve">
     <value>Privacy Statement</value>
   </data>
-  <data name="BtnAdd.Value" xml:space="preserve">
+  <data name="BtnAddDoc.Label" xml:space="preserve">
     <value>Add</value>
   </data>
-  <data name="BtnAddFromCamera.Value" xml:space="preserve">
+  <data name="BtnAddPhotoFromCamera.Label" xml:space="preserve">
     <value>Take a picture</value>
   </data>
-  <data name="BtnAddFromFile.Value" xml:space="preserve">
+  <data name="BtnAddPhotoFromFile.Label" xml:space="preserve">
     <value>Add from file</value>
   </data>
-  <data name="BtnEdit.Value" xml:space="preserve">
+  <data name="BtnEditDoc.Label" xml:space="preserve">
     <value>Edit</value>
   </data>
-  <data name="BtnRemove.Value" xml:space="preserve">
+  <data name="BtnRemoveDoc.Label" xml:space="preserve">
     <value>Remove</value>
   </data>
-  <data name="BtnSave.Value" xml:space="preserve">
+  <data name="BtnSaveDoc.Label" xml:space="preserve">
     <value>Save</value>
   </data>
   <data name="Photos.Text" xml:space="preserve">
     <value>Photos</value>
+  </data>
+  <data name="BtnRemovePhoto.Label" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="TxtNewCategoryName.Header" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="TxtNewCategoryName.PlaceholderText" xml:space="preserve">
+    <value>Enter a category</value>
+  </data>
+  <data name="TxtTagsInput.Header" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="TxtTagsInput.PlaceholderText" xml:space="preserve">
+    <value>Enter comma-separated list of tags</value>
+  </data>
+  <data name="TxtUseCategoryName.Header" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="TxtUseCategoryName.PlaceholderText" xml:space="preserve">
+    <value>Choose a category</value>
+  </data>
+  <data name="SwcLifespan.Header" xml:space="preserve">
+    <value>Lifespan</value>
   </data>
 </root>

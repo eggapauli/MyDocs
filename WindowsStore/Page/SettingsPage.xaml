@@ -10,7 +10,7 @@
 	d:DesignWidth="646">
 	
 	<UserControl.Resources>
-		<Style x:Name="SettingTitleStyle" TargetType="TextBlock" BasedOn="{StaticResource SubtitleTextStyle}">
+		<Style x:Name="SettingTitleStyle" TargetType="TextBlock" BasedOn="{StaticResource SubtitleTextBlockStyle}">
 			<Setter Property="Margin" Value="0,12,0,0" />
 		</Style>
 	</UserControl.Resources>
@@ -29,8 +29,8 @@
 				</Grid.ColumnDefinitions>
 
 				<StackPanel Orientation="Horizontal" Grid.Column="0" Margin="40, 32, 17, 13">
-					<Button x:Name="BackButton" Margin="0,3,0,0" Style="{StaticResource BackButtonStyle}" Click="GoBack"/>
-					<TextBlock x:Uid="settings" Margin="10,10,0,0" FontFamily="Segoe UI" FontWeight="SemiLight" FontSize="24.6667" Text="Settings" Foreground="White"/>
+					<AppBarButton x:Name="BackButton" Icon="Back" Margin="0,3,0,0" Click="GoBack"/>
+					<TextBlock x:Uid="settingsTitle" Margin="10,10,0,0" FontFamily="Segoe UI" FontWeight="SemiLight" FontSize="24.6667" Text="Settings" Foreground="White"/>
 				</StackPanel>
 				<Image Grid.Column="1" Source="Assets/SmallLogo.png" Width="29" Height="29" Margin="0,46,30,21" />
 			</Grid>

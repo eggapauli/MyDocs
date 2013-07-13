@@ -12,9 +12,10 @@
 	<Page.Resources>
 		<Style x:Key="TextBoxStyle" TargetType="TextBox">
 			<Setter Property="Margin" Value="30,10,30,10" />
-			<Setter Property="Padding" Value="6,4,0,0" />
+            <Setter Property="Padding" Value="6,4,0,0" />
+            <Setter Property="Height" Value="60" />
 		</Style>
-		<Style x:Key="TextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextStyle}">
+		<Style x:Key="TextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
 			<Setter Property="HorizontalAlignment" Value="Right" />
 			<Setter Property="Margin" Value="100,12,0,0" />
 		</Style>
@@ -22,19 +23,19 @@
 			<Setter Property="HorizontalAlignment" Value="Left" />
 			<Setter Property="Margin" Value="30,10,0,0" />
 		</Style>
-		<Style x:Key="SnappedSaveAppBarButtonStyle" TargetType="TextBlock" BasedOn="{StaticResource SaveAppBarButtonStyle}">
+		<!--<Style x:Key="SnappedSaveAppBarButtonStyle" TargetType="TextBlock" BasedOn="{StaticResource SaveAppBarButtonStyle}">
 			<Setter Property="HorizontalAlignment" Value="Right" />
-		</Style>
+		</Style>-->
 		<Style x:Key="DateCbxStyle" TargetType="ComboBox">
 			<Setter Property="Margin" Value="0,0,10,0" />
 			<!--<Setter Property="Padding" Value="10,0,30,0" />-->
 		</Style>
-		<Style x:Key="AddFromCameraAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource PhotoAppBarButtonStyle}">
+		<!--<Style x:Key="AddFromCameraAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource PhotoAppBarButtonStyle}">
 			<Setter x:Uid="BtnAddFromCamera" Property="AutomationProperties.Name" Value="Take a picture"/>
 		</Style>
 		<Style x:Key="AddFromFileAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource OpenFileAppBarButtonStyle}">
 			<Setter x:Uid="BtnAddFromFile" Property="AutomationProperties.Name" Value="Add from file"/>
-		</Style>
+		</Style>-->
 		<DataTemplate x:Key="PhotoTemplate">
 			<Grid>
 				<Image Source="{Binding Thumbnail.Image}" Width="250" Height="250"/>
@@ -43,28 +44,31 @@
 		</DataTemplate>
 	</Page.Resources>
 
-	<Grid Style="{StaticResource LayoutRootStyle}">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="140"/>
-			<RowDefinition Height="*"/>
-		</Grid.RowDefinitions>
+	<Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="140"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-		<Grid>
+        <Grid>
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="120" />
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
-			<Button x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}"/>
-			<TextBlock x:Name="pageTitle" Grid.Column="1" Text="{StaticResource AppName}" Style="{StaticResource PageHeaderTextStyle}"/>
-			<Button Grid.Column="2" Style="{StaticResource SaveAppBarButtonStyle}" Command="{Binding SaveDocumentCommand}" VerticalAlignment="Bottom" Margin="0,0,0,10"/>
+            <AppBarButton x:Name="backButton" Icon="Back" Height="95" Margin="10,46,10,0"
+                          Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}" 
+                          Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource Mode=Self}}"
+                          AutomationProperties.Name="Back"
+                          AutomationProperties.AutomationId="BackButton"
+                          AutomationProperties.ItemType="Navigation Button"/>
+            <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
+            <AppBarButton x:Uid="BtnSaveDoc" Grid.Column="2" Icon="Save" Label="Save" Command="{Binding SaveDocumentCommand}" VerticalAlignment="Bottom" Margin="0,0,0,10"/>
 		</Grid>
 
-		<Grid Grid.Row="1">
-			<Grid.RenderTransform>
-				<CompositeTransform/>
-			</Grid.RenderTransform>
-			<Grid.RowDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
@@ -75,60 +79,59 @@
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
 
-			<Grid.ColumnDefinitions>
+			<!--<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" />
-			</Grid.ColumnDefinitions>
+			</Grid.ColumnDefinitions>-->
 
-			<TextBlock Grid.Row="1" x:Uid="Category" x:Name="categoryTitle" Text="Category" Style="{StaticResource TextBlockStyle}" />
+			<!--<TextBlock Grid.Row="1" x:Uid="Category" x:Name="categoryTitle" Text="Category" Style="{StaticResource TextBlockStyle}" />-->
 			
-			<Grid Grid.Row="1" Grid.Column="1" >
-				<Grid.RowDefinitions>
+			<Grid Grid.Row="1">
+				<!--<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-				</Grid.RowDefinitions>
+				</Grid.RowDefinitions>-->
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="Auto" />
 				</Grid.ColumnDefinitions>
 
-				<TextBox Text="{Binding NewCategoryName, Mode=TwoWay}" Visibility="{Binding ShowNewCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Style="{StaticResource TextBoxStyle}" />
-				<ComboBox ItemsSource="{Binding CategoryNames}" SelectedItem="{Binding UseCategoryName, Mode=TwoWay}" Visibility="{Binding ShowUseCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="30,10,30,10" />
+				<TextBox x:Uid="TxtNewCategoryName" Header="Category" PlaceholderText="Enter a category" Text="{Binding NewCategoryName, Mode=TwoWay}" Visibility="{Binding ShowNewCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Style="{StaticResource TextBoxStyle}" />
+                <ComboBox x:Uid="TxtUseCategoryName" Header="Category" PlaceholderText="Choose a category" ItemsSource="{Binding CategoryNames}" SelectedItem="{Binding UseCategoryName, Mode=TwoWay}" Visibility="{Binding ShowUseCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="30,12,30,10" />
 
-				<Grid x:Name="categoryButtons" Grid.Column="1">
-					<Button x:Uid="NewCategory" x:Name="newCategoryButton" Visibility="{Binding ShowUseCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Content="Add a new category" Command="{Binding ShowNewCategoryCommand}" Margin="0,0,30,0" />
-					<Button x:Uid="UseCategory" x:Name="useCategoryButton" Visibility="{Binding ShowNewCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Content="Use an existing category" Command="{Binding ShowUseCategoryCommand}" Margin="0,0,30,0" />
+				<Grid x:Name="categoryButtons" Grid.Column="1" VerticalAlignment="Bottom" Margin="0,0,0,7">
+					<Button x:Uid="BtnNewCategory" x:Name="newCategoryButton" Visibility="{Binding ShowUseCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Content="Add a new category" Command="{Binding ShowNewCategoryCommand}" Margin="0,0,30,0" />
+					<Button x:Uid="BtnUseCategory" x:Name="useCategoryButton" Visibility="{Binding ShowNewCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Content="Use an existing category" Command="{Binding ShowUseCategoryCommand}" Margin="0,0,30,0" />
 				</Grid>
 			</Grid>
 
-			<TextBlock Grid.Row="3" x:Uid="TagsInput" x:Name="tagsTitle" Text="Tags" Style="{StaticResource TextBlockStyle}" />
-			<TextBox Grid.Row="3" Grid.Column="1" Text="{Binding EditingDocument.TagsString, Mode=TwoWay}" Style="{StaticResource TextBoxStyle}" />
+			<!--<TextBlock Grid.Row="3" x:Uid="TagsInput" x:Name="tagsTitle" Text="Tags" Style="{StaticResource TextBlockStyle}" />-->
+            <TextBox x:Uid="TxtTagsInput" Grid.Row="3" Grid.Column="1" Header="Tags" PlaceholderText="Enter comma-separated list of tags" Text="{Binding EditingDocument.TagsString, Mode=TwoWay}" Style="{StaticResource TextBoxStyle}" />
 
-			<TextBlock Grid.Row="5" x:Name="lifespanTitleText" x:Uid="Lifespan" Text="Lifespan" Style="{StaticResource TextBlockStyle}" />
+			<!--<TextBlock Grid.Row="5" x:Name="lifespanTitleText" x:Uid="Lifespan" Text="Lifespan" Style="{StaticResource TextBlockStyle}" />
 			<StackPanel Grid.Row="4" Grid.Column="1" x:Name="lifespanTitleSnapped" Visibility="Collapsed" Orientation="Horizontal">
 				<TextBlock x:Uid="Lifespan" x:Name="lifespanTitleTextSnapped" Text="Lifespan" Style="{StaticResource SnappedTextBlockStyle}" />
 				<ToggleSwitch x:Name="limitedLifespanSwitchSnapped" IsOn="{Binding EditingDocument.HasLimitedLifespan, Mode=TwoWay}"  OffContent="{Binding LifespanInfiniteText}" OnContent="{Binding LifespanLimitedText}" Margin="30,0,0,0" />
-			</StackPanel>
-			<StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal">
-				<ToggleSwitch x:Name="limitedLifespanSwitch" IsOn="{Binding EditingDocument.HasLimitedLifespan, Mode=TwoWay}" OffContent="{Binding LifespanInfiniteText}" OnContent="{Binding LifespanLimitedText}" Margin="30,0,0,0" />
-				<StackPanel x:Name="dateRemovedContainer" Orientation="Horizontal" Visibility="{Binding EditingDocument.HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}">
-					<ComboBox ItemsSource="{Binding DateRemovedDays}" SelectedItem="{Binding EditingDocument.DateRemovedDay, Mode=TwoWay}" Style="{StaticResource DateCbxStyle}" />
-					<ComboBox ItemsSource="{Binding DateRemovedMonths}" SelectedItem="{Binding EditingDocument.DateRemovedMonth, Mode=TwoWay}" Style="{StaticResource DateCbxStyle}" />
-					<ComboBox ItemsSource="{Binding DateRemovedYears}" SelectedItem="{Binding EditingDocument.DateRemovedYear, Mode=TwoWay}" Style="{StaticResource DateCbxStyle}" />
-				</StackPanel>
+			</StackPanel>-->
+			<StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
+				<ToggleSwitch x:Uid="SwcLifespan" x:Name="limitedLifespanSwitch" Header="Lifespan" IsOn="{Binding EditingDocument.HasLimitedLifespan, Mode=TwoWay}" OnContent="Limited" OffContent="Unlimited" Margin="25,0,0,0" />
+                <DatePicker MinYear="{Binding EditingDocument.DateAdded.Year}" Date="{Binding EditingDocument.DateRemoved, Mode=TwoWay}" Visibility="{Binding EditingDocument.HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,8,0,0" />
 			</StackPanel>
 
-			<TextBlock x:Uid="Photos" Grid.Row="7" x:Name="photosTitle" Text="Photos" Style="{StaticResource TextBlockStyle}" />
+			<!--<TextBlock x:Uid="Photos" Grid.Row="7" x:Name="photosTitle" Text="Photos" Style="{StaticResource TextBlockStyle}" />-->
 			<Grid Grid.Row="7" Grid.Column="1">
 				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" />
+                    <!--<RowDefinition Height="Auto" />-->
+                    <RowDefinition Height="Auto" />
 					<RowDefinition Height="*" />
 				</Grid.RowDefinitions>
 
-				<StackPanel Orientation="Horizontal">
-					<Button x:Name="addPhotoFromCameraButton" Command="{Binding AddPhotoFromCameraCommand}" Style="{StaticResource AddFromCameraAppBarButtonStyle}" HorizontalAlignment="Right" />
-					<Button x:Name="addPhotoFromFileButton" Command="{Binding AddPhotoFromFileCommand}" Style="{StaticResource AddFromFileAppBarButtonStyle}" HorizontalAlignment="Right" />
-					<Button Command="{Binding RemovePhotoCommand}" Style="{StaticResource RemoveAppBarButtonStyle}" HorizontalAlignment="Right" />
+                <!--<TextBlock x:Uid="PhotosTitle" Text="Photos" Margin="30,0,0,0" FontSize="14" />
+                <TextBox Grid.Row="1" x:Uid="PhotosTitle" Text="Photos" Header="Photos" Margin="30,0,0,0" />-->
+                
+				<StackPanel Grid.Row="0" Orientation="Horizontal" Margin="30,0,0,0">
+                    <AppBarButton x:Uid="BtnAddPhotoFromCamera" x:Name="addPhotoFromCameraButton" Icon="Camera" Label="Take a picture" Command="{Binding AddPhotoFromCameraCommand}" HorizontalAlignment="Right" />
+                    <AppBarButton x:Uid="BtnAddPhotoFromFile" x:Name="addPhotoFromFileButton" Icon="Document" Label="Add from file"  Command="{Binding AddPhotoFromFileCommand}" HorizontalAlignment="Right" />
+                    <AppBarButton x:Uid="BtnRemovePhoto" Icon="Remove" Label="Remove" Command="{Binding RemovePhotoCommand}" HorizontalAlignment="Right" />
 				</StackPanel>
 				<GridView Grid.Row="1"
 						  x:Name="photoGridView"
@@ -153,27 +156,26 @@
 
 			<!-- Visual states reflect the application's view state -->
 			<VisualStateGroup x:Name="ApplicationViewStates">
-				<VisualState x:Name="FullScreenLandscape"/>
-				<VisualState x:Name="Filled"/>
+                <VisualState x:Name="DefaultLayout"/>
 
 				<!-- The entire page respects the narrower 100-pixel margin convention for portrait -->
-				<VisualState x:Name="FullScreenPortrait">
+				<!--<VisualState x:Name="FullScreenPortrait">
 					<Storyboard>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PortraitBackButtonStyle}"/>
 						</ObjectAnimationUsingKeyFrames>
 					</Storyboard>
-				</VisualState>
+				</VisualState>-->
 
 				<!-- The back button and title have different styles when snapped -->
-				<VisualState x:Name="Snapped">
+				<VisualState x:Name="TightLayout">
 					<Storyboard>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
+						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedBackButtonStyle}"/>
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPageHeaderTextStyle}"/>
-						</ObjectAnimationUsingKeyFrames>
+						</ObjectAnimationUsingKeyFrames>-->
 						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Visibility">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
 						</ObjectAnimationUsingKeyFrames>-->

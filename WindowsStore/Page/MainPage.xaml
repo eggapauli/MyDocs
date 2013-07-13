@@ -30,12 +30,12 @@
 					<TextBlock
 						Text="{Binding TagsString}"
 						Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}"
-						Style="{StaticResource TitleTextStyle}"
+						Style="{StaticResource TitleTextBlockStyle}"
 						Margin="15,0,15,0"/>
 					<TextBlock
 						Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}"
 						Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
-						Style="{StaticResource CaptionTextStyle}"
+						Style="{StaticResource CaptionTextBlockStyle}"
 						TextWrapping="NoWrap"
 						Margin="15,0,15,0">
 							<Run Text="{Binding DateAdded, Converter={StaticResource DateToStringConverter}}" /> -
@@ -44,7 +44,7 @@
 					<TextBlock
 						Visibility="{Binding HasInfiniteLifespan, Converter={StaticResource BooleanToVisibilityConverter}}"
 						Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
-						Style="{StaticResource CaptionTextStyle}"
+						Style="{StaticResource CaptionTextBlockStyle}"
 						TextWrapping="NoWrap"
 						Margin="15,0,15,10">
 							<Run Text="{Binding DateAdded, Converter={StaticResource DateToStringConverter}}" />
@@ -53,7 +53,7 @@
 						Text="{Binding DaysToRemoval, Converter={StaticResource TranslationConverter}, ConverterParameter='countDaysFormat'}"
 						Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}"
 						Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
-						Style="{StaticResource CaptionTextStyle}"
+						Style="{StaticResource CaptionTextBlockStyle}"
 						TextWrapping="NoWrap"
 						Margin="15,0,15,10" />
 				</StackPanel>
@@ -88,13 +88,14 @@
 					</Grid>
 				</Border>
 				<StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
-					<TextBlock Text="{Binding Group.Name}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextStyle}" Margin="15,0,15,20"/>
-					<TextBlock Text="{Binding Group.CountDocuments, Converter={StaticResource TranslationConverter}, ConverterParameter='countDocumentsFormat'}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource CaptionTextStyle}" TextWrapping="NoWrap" Margin="15,0,15,10" />
+					<TextBlock Text="{Binding Group.Name}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextBlockStyle}" Margin="15,0,15,20"/>
+					<TextBlock Text="{Binding Group.CountDocuments, Converter={StaticResource TranslationConverter}, ConverterParameter='countDocumentsFormat'}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="NoWrap" Margin="15,0,15,10" />
 				</StackPanel>
 			</Grid>
 		</DataTemplate>
 
-		<DataTemplate x:Key="AdTemplateFinance250x250">
+        <!-- TODO add MSAdvSDK8.1 -->
+		<!--<DataTemplate x:Key="AdTemplateFinance250x250">
 			<UI:AdControl
 				Visibility="{Binding DataContext.InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=pageRoot}"
 				ApplicationId="13b9c6b5-4d40-4077-bf6c-118dcb076e40"
@@ -105,7 +106,7 @@
 				VerticalAlignment="Top"
 				Width="250"
 				IsPerformanceScrollingEnabled="True"/>
-		</DataTemplate>
+		</DataTemplate>-->
 
 		<!--<DataTemplate x:Key="AdTemplateShopping250x250">
 			<UI:AdControl
@@ -133,14 +134,16 @@
 				IsPerformanceScrollingEnabled="True"/>
 		</DataTemplate>-->
 
-		<common:DocumentTemplateSelector x:Key="DefaultDocumentTemplateSelector"
+		<!--<common:DocumentTemplateSelector x:Key="DefaultDocumentTemplateSelector"
 										 AdTemplate="{StaticResource AdTemplateFinance250x250}"
+										 DocumentTemplate="{StaticResource DocumentTemplate}" />-->
+        <common:DocumentTemplateSelector x:Key="DefaultDocumentTemplateSelector"
 										 DocumentTemplate="{StaticResource DocumentTemplate}" />
 
 		<DataTemplate x:Key="DefaultGroupStyleHeaderTemplate">
 			<Grid Margin="10,0,0,10">
 				<StackPanel Orientation="Horizontal">
-					<TextBlock Text="{Binding Name}" Style="{StaticResource GroupHeaderTextStyle}" />
+                    <TextBlock Text="{Binding Name}" Style="{StaticResource SubheaderTextBlockStyle}" />
 				</StackPanel>
 			</Grid>
 		</DataTemplate>
@@ -149,28 +152,31 @@
 			<VariableSizedWrapGrid Orientation="Vertical" Margin="0,0,0,0"/>
 		</ItemsPanelTemplate>
 
-		<Style x:Name="SnappedPageSubheaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource PageSubheaderTextStyle}">
+        <!--<Style x:Name="SnappedPageSubheaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource SubheaderTextBlockStyle}">
 			<Setter Property="FontSize" Value="20" />
-		</Style>
+		</Style>-->
 	</Page.Resources>
 
+    <!-- TODO CommandBar doesn't load AppBarButtons (editDocButton is null in OnNavigatedTo) -->
 	<Page.BottomAppBar>
-		<AppBar IsOpen="{Binding CategoriesEmpty, Mode=OneWay}">
-			<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-				<Button x:Name="addDocButton" Style="{StaticResource AddAppBarButtonStyle}" Command="{Binding AddDocumentCommand}" />
-				<Button x:Name="editDocButton" Style="{StaticResource EditAppBarButtonStyle}" Command="{Binding EditDocumentCommand}" />
-				<Button x:Name="deleteDocButton" Style="{StaticResource RemoveAppBarButtonStyle}" Command="{Binding DeleteDocumentCommand}" />
-			</StackPanel>
-		</AppBar>
-	</Page.BottomAppBar>
+		<!--<CommandBar IsOpen="{Binding CategoriesEmpty}">-->
+        <AppBar IsOpen="{Binding CategoriesEmpty}">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <AppBarButton x:Uid="BtnAddDoc" x:Name="addDocButton" Icon="Add" Label="Add" Command="{Binding AddDocumentCommand}" />
+                <AppBarButton x:Uid="BtnEditDoc" x:Name="editDocButton" Icon="Edit" Label="Edit" Command="{Binding EditDocumentCommand}" />
+                <AppBarButton x:Uid="BtnDeleteDoc" x:Name="deleteDocButton" Icon="Remove" Label="Remove" Command="{Binding DeleteDocumentCommand}" />
+            </StackPanel>
+        </AppBar>
+        <!--</CommandBar>-->
+    </Page.BottomAppBar>
 
-	<Grid Style="{StaticResource LayoutRootStyle}">
+	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="140"/>
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
-
-		<ProgressRing Grid.RowSpan="2" IsActive="{Binding IsLoaded, Converter={StaticResource BooleanNegationConverter}}" Width="100" Height="100" />
+        
+        <ProgressRing Grid.RowSpan="2" IsActive="{Binding IsLoaded, Converter={StaticResource BooleanNegationConverter}}" Width="100" Height="100" />
 		
 		<SemanticZoom Grid.Row="1" x:Name="semanticZoom" IsZoomOutButtonEnabled="{Binding CategoriesNotEmpty}">
 			<SemanticZoom.ZoomedOutView>
@@ -214,7 +220,7 @@
 			</SemanticZoom.ZoomedInView>
 		</SemanticZoom>
 
-		<SemanticZoom Grid.Row="1" x:Name="semanticZoomSnapped" Visibility="Collapsed" IsZoomOutButtonEnabled="{Binding CategoriesNotEmpty}">
+		<SemanticZoom Grid.Row="1" x:Name="semanticZoomTight" Visibility="Collapsed" IsZoomOutButtonEnabled="{Binding CategoriesNotEmpty}">
 			<SemanticZoom.ZoomedOutView>
 				<ListView
 					x:Name="categoryListView"
@@ -254,24 +260,34 @@
 		</SemanticZoom>
 		
 		<StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="36,0,0,0" Visibility="{Binding CategoriesEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
-			<TextBlock x:Uid="NoDocuments" x:Name="noDocumentsText" Text="No documents stored." Style="{StaticResource PageSubheaderTextStyle}" VerticalAlignment="Center" />
+            <TextBlock x:Uid="NoDocuments" x:Name="noDocumentsText" Text="No documents stored." Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Center" />
 			<!--<Button Style="{StaticResource AddAppBarButtonStyle}" Command="{Binding AddDocumentCommand}" />-->
 		</StackPanel>
 		
 		<!-- Back button and page title -->
-		<StackPanel Orientation="Horizontal">
-			<Button x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}"/>
-			<TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" IsHitTestVisible="false" Style="{StaticResource PageHeaderTextStyle}"/>
-		</StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <AppBarButton x:Name="backButton" Icon="Back" Height="95" Margin="10,46,10,0"
+                          Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}" 
+                          Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource Mode=Self}}"
+                          AutomationProperties.Name="Back"
+                          AutomationProperties.AutomationId="BackButton"
+                          AutomationProperties.ItemType="Navigation Button"/>
+            <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
+        </Grid>
 
-		<VisualStateManager.VisualStateGroups>
+        <VisualStateManager.VisualStateGroups>
 
 			<!-- Visual states reflect the application's view state -->
 			<VisualStateGroup x:Name="ApplicationViewStates">
-				<VisualState x:Name="FullScreenLandscape"/>
-				<VisualState x:Name="Filled"/>
+                <VisualState x:Name="DefaultLayout"/>
+				<!--<VisualState x:Name="Filled"/>
 
-				<!-- The entire page respects the narrower 100-pixel margin convention for portrait -->
+				--><!-- The entire page respects the narrower 100-pixel margin convention for portrait --><!--
 				<VisualState x:Name="FullScreenPortrait">
 					<Storyboard>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
@@ -284,15 +300,15 @@
 							<DiscreteObjectKeyFrame KeyTime="0" Value="96,136,86,56"/>
 						</ObjectAnimationUsingKeyFrames>
 					</Storyboard>
-				</VisualState>
+				</VisualState>-->
 
 				<!--
 					The back button and title have different styles when snapped, and the list representation is substituted
 					for the grid displayed in all other view states
 				-->
-				<VisualState x:Name="Snapped">
+                <VisualState x:Name="TightLayout">
 					<Storyboard>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
+						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedBackButtonStyle}"/>
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
@@ -300,15 +316,25 @@
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="noDocumentsText" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPageSubheaderTextStyle}"/>
-						</ObjectAnimationUsingKeyFrames>
+						</ObjectAnimationUsingKeyFrames>-->
 
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="semanticZoomSnapped" Storyboard.TargetProperty="Visibility">
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="semanticZoomTight" Storyboard.TargetProperty="Visibility">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="semanticZoom" Storyboard.TargetProperty="Visibility">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
 						</ObjectAnimationUsingKeyFrames>
-					</Storyboard>
+
+                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="addDocButton" Storyboard.TargetProperty="IsCompact">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="True"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="editDocButton" Storyboard.TargetProperty="IsCompact">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="True"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="deleteDocButton" Storyboard.TargetProperty="IsCompact">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="True"/>
+                        </ObjectAnimationUsingKeyFrames>-->
+                    </Storyboard>
 				</VisualState>
 			</VisualStateGroup>
 

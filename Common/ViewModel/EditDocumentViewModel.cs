@@ -16,7 +16,6 @@ namespace MyDocs.Common.ViewModel
 	{
 		private readonly IDocumentService documentService;
 		private readonly INavigationService navigator;
-		private readonly ITranslatorService translator;
 		private readonly IUserInterfaceService uiService;
 		private readonly ICameraService cameraService;
 		private readonly IFilePickerService filePicker;
@@ -130,46 +129,11 @@ namespace MyDocs.Common.ViewModel
 			if (e.PropertyName == "Tags" || e.PropertyName == "Category") {
 				SaveDocumentCommand.RaiseCanExecuteChanged();
 			}
-			if (e.PropertyName == "DateRemoved") {
-				RaisePropertyChanged(() => DateRemovedDays);
-			}
 		}
 
 		private void EditingDocumentPhotoCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
 			SaveDocumentCommand.RaiseCanExecuteChanged();
-		}
-
-		public IEnumerable<int> DateRemovedDays
-		{
-			get
-			{
-				int days;
-				if (EditingDocument != null) {
-					var date = EditingDocument.DateRemoved;
-					days = DateTime.DaysInMonth(date.Year, date.Month);
-				}
-				else {
-					days = 31;
-				}
-				return Enumerable.Range(1, days);
-			}
-		}
-
-		public IEnumerable<int> DateRemovedMonths
-		{
-			get
-			{
-				return Enumerable.Range(1, 12);
-			}
-		}
-
-		public IEnumerable<int> DateRemovedYears
-		{
-			get
-			{
-				return Enumerable.Range(DateTime.Today.Year, 20);
-			}
 		}
 
 		public Photo SelectedPhoto
@@ -185,22 +149,17 @@ namespace MyDocs.Common.ViewModel
 			}
 		}
 
-		public string LifespanInfiniteText { get { return translator.Translate("lifespanInfiniteText"); } }
-		public string LifespanLimitedText { get { return translator.Translate("lifespanLimitedText"); } }
-
 		#endregion
 
 		public EditDocumentViewModel(
 			IDocumentService documentService,
 			INavigationService navigator,
-			ITranslatorService translator,
 			IUserInterfaceService uiService,
 			ICameraService cameraService,
 			IFilePickerService filePicker)
 		{
 			this.documentService = documentService;
 			this.navigator = navigator;
-			this.translator = translator;
 			this.uiService = uiService;
 			this.cameraService = cameraService;
 			this.filePicker = filePicker;
