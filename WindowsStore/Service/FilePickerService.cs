@@ -11,14 +11,15 @@ namespace MyDocs.WindowsStore.Service
 {
 	public class FilePickerService : IFilePickerService
 	{
-		public async Task<IEnumerable<IFile>> PickMultipleImagesAsync()
+		public async Task<IEnumerable<IFile>> PickMultipleFilesAsync()
 		{
 			FileOpenPicker filePicker = new FileOpenPicker();
-			filePicker.FileTypeFilter.Add(".png");
-			filePicker.FileTypeFilter.Add(".jpg");
-			filePicker.FileTypeFilter.Add(".jpeg");
-			filePicker.FileTypeFilter.Add(".gif");
-			filePicker.FileTypeFilter.Add(".bmp");
+			filePicker.FileTypeFilter.Add("*");
+			//filePicker.FileTypeFilter.Add(".png");
+			//filePicker.FileTypeFilter.Add(".jpg");
+			//filePicker.FileTypeFilter.Add(".jpeg");
+			//filePicker.FileTypeFilter.Add(".gif");
+			//filePicker.FileTypeFilter.Add(".bmp");
 			filePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
 			filePicker.ViewMode = PickerViewMode.List;
 			return (await filePicker.PickMultipleFilesAsync()).Select(f => new WindowsStoreFile(f));

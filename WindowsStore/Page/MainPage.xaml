@@ -21,10 +21,7 @@
 		<DataTemplate x:Key="DocumentTemplate">
 			<Grid HorizontalAlignment="Left" Width="250" Height="250">
 				<Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
-					<Grid>
-						<Image Source="{Binding TitlePhoto.Thumbnail.Image}" Stretch="UniformToFill" AutomationProperties.Name="{Binding TagsString}"/>
-						<ProgressRing IsActive="{Binding TitlePhoto.ThumbnailLoaded, Converter={StaticResource BooleanNegationConverter}}" />
-					</Grid>
+					<common:FilePreview File="{Binding TitlePhoto}" FileSize="SMALL" />
 				</Border>
 				<StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
 					<TextBlock
@@ -82,10 +79,7 @@
 		<DataTemplate x:Key="CategoryTemplate">
 			<Grid HorizontalAlignment="Left" Width="250" Height="250">
 				<Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
-					<Grid>
-						<Image Source="{Binding Group.TitlePhoto.Thumbnail.Image}" Stretch="UniformToFill" AutomationProperties.Name="{Binding Group.Name}"/>
-						<ProgressRing IsActive="{Binding Group.TitlePhoto.ThumbnailLoaded, Converter={StaticResource BooleanNegationConverter}}" />
-					</Grid>
+					<common:FilePreview File="{Binding Group.TitlePhoto}" FileSize="SMALL" />
 				</Border>
 				<StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
 					<TextBlock Text="{Binding Group.Name}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextStyle}" Margin="15,0,15,20"/>

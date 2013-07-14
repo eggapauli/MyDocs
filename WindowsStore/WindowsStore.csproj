@@ -15,6 +15,8 @@
     <PackageCertificateKeyFile>MyDocs_StoreKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <PackageCertificateThumbprint>262A57619D859EA779356180D63EC04E20A4C2DF</PackageCertificateThumbprint>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -108,6 +110,9 @@
     <Compile Include="Common\Converter\DateToStringConverter.cs" />
     <Compile Include="Common\Converter\TranslationConverter.cs" />
     <Compile Include="Common\DocumentTemplateSelector.cs" />
+    <Compile Include="Common\FilePreview.xaml.cs">
+      <DependentUpon>FilePreview.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Service\CameraService.cs" />
     <Compile Include="Service\ModernUIService.cs" />
     <Compile Include="Service\SettingsService.cs" />
@@ -150,8 +155,8 @@
     <None Include="MyDocs_StoreKey.pfx" />
     <None Include="MyDocs_TemporaryKey.pfx" />
     <None Include="packages.config" />
-    <PRIResource Include="Strings\de-DE\Resources.resw" />
-    <PRIResource Include="Strings\en-US\Resources.resw" />
+    <PRIResource Include="Locale\de-DE\Resources.resw" />
+    <PRIResource Include="Locale\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.png" />
@@ -168,6 +173,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Common\FilePreview.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Common\StandardStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -226,7 +235,8 @@
     <VisualStudioVersion>11.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
-  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.7\tools\Microsoft.Bcl.Build.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <!--<Import Project="..\packages\Microsoft.Bcl.Build.1.0.7\tools\Microsoft.Bcl.Build.targets" />-->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

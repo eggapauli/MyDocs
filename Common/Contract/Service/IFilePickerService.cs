@@ -6,6 +6,6 @@ namespace MyDocs.Common.Contract.Service
 {
 	public interface IFilePickerService
 	{
-		Task<IEnumerable<IFile>> PickMultipleImagesAsync();
+		Task<IEnumerable<IFile>> PickMultipleFilesAsync();
 	}
 }
