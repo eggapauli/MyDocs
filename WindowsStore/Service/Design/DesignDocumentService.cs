@@ -3,10 +3,12 @@ using MyDocs.Common.Comparer;
 using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Contract.Storage;
 using MyDocs.Common.Model;
+using MyDocs.WindowsStore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace MyDocs.WindowsStore.Service.Design
 {
@@ -26,10 +28,9 @@ namespace MyDocs.WindowsStore.Service.Design
 
 		public async Task LoadCategoriesAsync()
 		{
-			await Task.Yield();
-			//StorageFolder folder = await ApplicationData.Current.LocalFolder.GetFolderAsync("design");
-			//IEnumerable<StorageFile> photos = await folder.GetFilesAsync();
-			//categories = new SortedObservableCollection<Category>(CreateCategories(photos.ToList()), new CategoryComparer());
+			StorageFolder folder = await ApplicationData.Current.LocalFolder.GetFolderAsync("design");
+			IList<IFile> photos = (await folder.GetFilesAsync()).Select<StorageFile, IFile>(f => new WindowsStoreFile(f)).ToList();
+			categories = new SortedObservableCollection<Category>(CreateCategories(photos.ToList()), new CategoryComparer());
 		}
 
 		public IEnumerable<string> GetCategoryNames()

@@ -51,7 +51,7 @@ namespace MyDocs.WindowsStore.Page
 					if (groupedDocumentsViewSource.View != null) {
 						var collectionGroups = groupedDocumentsViewSource.View.CollectionGroups;
 						((ListViewBase)this.semanticZoom.ZoomedOutView).ItemsSource = collectionGroups;
-                        ((ListViewBase)this.semanticZoomTight.ZoomedOutView).ItemsSource = collectionGroups;
+						((ListViewBase)this.semanticZoomTight.ZoomedOutView).ItemsSource = collectionGroups;
 					}
 				}
 			}, TaskScheduler.FromCurrentSynchronizationContext());
@@ -67,8 +67,8 @@ namespace MyDocs.WindowsStore.Page
 			bool zoomedIn = (ApplicationView.GetForCurrentView().IsFullScreen ?
 				this.semanticZoom.IsZoomedInViewActive :
                 this.semanticZoomTight.IsZoomedInViewActive);
-            this.editDocButton.IsEnabled = zoomedIn;
-            this.deleteDocButton.IsEnabled = zoomedIn;
+			//this.editDocButton.IsEnabled = zoomedIn;
+			//this.deleteDocButton.IsEnabled = zoomedIn;
 
 			ViewModel.InZoomedInView = zoomedIn;
 		}

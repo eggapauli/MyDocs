@@ -21,6 +21,7 @@ namespace MyDocs.Common.ViewModel
 
 		//private ObservableCollection<Category> categories;
 		private Document selectedDocument;
+		private Category selectedCategory;
 		private bool isLoaded = false;
 		private bool inZoomedInView;
 
@@ -73,12 +74,15 @@ namespace MyDocs.Common.ViewModel
 				if (selectedDocument != value) {
 					selectedDocument = value;
 					RaisePropertyChanged(() => SelectedDocument);
+					RaisePropertyChanged(() => HasSelectedDocument);
 
 					DeleteDocumentCommand.RaiseCanExecuteChanged();
 					EditDocumentCommand.RaiseCanExecuteChanged();
 				}
 			}
 		}
+
+		public bool HasSelectedDocument { get { return SelectedDocument != null; } }
 
 		public Guid SelectedDocumentId
 		{
@@ -97,6 +101,24 @@ namespace MyDocs.Common.ViewModel
 				}, TaskScheduler.FromCurrentSynchronizationContext());
 			}
 		}
+
+		public Category SelectedCategory
+		{
+			get { return selectedCategory; }
+			set
+			{
+				if (selectedCategory != value) {
+					selectedCategory = value;
+					RaisePropertyChanged(() => SelectedCategory);
+					RaisePropertyChanged(() => HasSelectedCategory);
+
+					RenameCategoryCommand.RaiseCanExecuteChanged();
+					DeleteCategoryCommand.RaiseCanExecuteChanged();
+				}
+			}
+		}
+
+		public bool HasSelectedCategory { get { return SelectedCategory != null; } }
 
 		#endregion
 
@@ -137,6 +159,8 @@ namespace MyDocs.Common.ViewModel
 		public RelayCommand EditDocumentCommand { get; set; }
 		public RelayCommand DeleteDocumentCommand { get; set; }
 		public RelayCommand<Document> ShowDocumentCommand { get; set; }
+		public RelayCommand RenameCategoryCommand { get; set; }
+		public RelayCommand DeleteCategoryCommand { get; set; }
 
 		private void CreateCommands()
 		{
@@ -150,6 +174,9 @@ namespace MyDocs.Common.ViewModel
 			ShowDocumentCommand = new RelayCommand<Document>(ShowDocumentCommandHandler, doc =>
 				doc != null
 				&& !(doc is AdDocument));
+
+			RenameCategoryCommand = new RelayCommand(RenameCategoryCommandHandler/*, () => SelectedCategory != null*/);
+			DeleteCategoryCommand = new RelayCommand(DeleteCategoryCommandHandler/*, () => SelectedCategory != null*/);
 		}
 
 		private void AddDocumentCommandHandler()
@@ -172,6 +199,16 @@ namespace MyDocs.Common.ViewModel
 				RaisePropertyChanged(() => CategoriesEmpty);
 				RaisePropertyChanged(() => CategoriesNotEmpty);
 			}, TaskScheduler.FromCurrentSynchronizationContext());
+		}
+
+		private void RenameCategoryCommandHandler()
+		{
+			throw new NotImplementedException();
+		}
+
+		private void DeleteCategoryCommandHandler()
+		{
+			throw new NotImplementedException();
 		}
 
 		private void ShowDocumentCommandHandler(Document doc)

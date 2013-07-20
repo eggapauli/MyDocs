@@ -94,7 +94,7 @@
 			</Grid>
 		</DataTemplate>
 
-        <!-- TODO add MSAdvSDK8.1 -->
+		<!-- TODO add MSAdvSDK8.1 -->
 		<!--<DataTemplate x:Key="AdTemplateFinance250x250">
 			<UI:AdControl
 				Visibility="{Binding DataContext.InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=pageRoot}"
@@ -137,47 +137,78 @@
 		<!--<common:DocumentTemplateSelector x:Key="DefaultDocumentTemplateSelector"
 										 AdTemplate="{StaticResource AdTemplateFinance250x250}"
 										 DocumentTemplate="{StaticResource DocumentTemplate}" />-->
-        <common:DocumentTemplateSelector x:Key="DefaultDocumentTemplateSelector"
+		<common:DocumentTemplateSelector x:Key="DefaultDocumentTemplateSelector"
 										 DocumentTemplate="{StaticResource DocumentTemplate}" />
 
 		<DataTemplate x:Key="DefaultGroupStyleHeaderTemplate">
-			<Grid Margin="10,0,0,10">
-				<StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Name}" Style="{StaticResource SubheaderTextBlockStyle}" />
-				</StackPanel>
+			<Grid Width="250">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="70" />
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+
+				<TextBlock Text="{Binding Name}" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Top" Margin="10 15 0 0" />
+				<AppBarButton Grid.Column="1" x:Uid="BtnRenameCat" Icon="Rename" IsCompact="True" IsEnabled="{Binding HasSelectedCategory}" Visibility="{Binding InZoomedOutView, Converter={StaticResource BooleanToVisibilityConverter}}">
+					<AppBarButton.Flyout>
+						<Flyout>
+							<StackPanel>
+								<TextBox Text="{Binding NewCategoryName}" PlaceholderText="New category name" />
+								<Button Content="Rename" Command="{Binding RenameCategoryCommand}" />
+							</StackPanel>
+						</Flyout>
+					</AppBarButton.Flyout>
+				</AppBarButton>
+				<AppBarButton Grid.Column="2" x:Uid="BtnDeleteCat" Icon="Remove" IsCompact="True" IsEnabled="{Binding HasSelectedCategory}" Visibility="{Binding InZoomedOutView, Converter={StaticResource BooleanToVisibilityConverter}}">
+					<AppBarButton.Flyout>
+						<Flyout>
+							<StackPanel>
+								<TextBlock x:Uid="TxtDeleteCat" Text="Delete category and all of its documents?" Style="{StaticResource BodyTextBlockStyle}" Margin="0 0 0 10" />
+								<Button Content="Delete" Command="{Binding DeleteCategoryCommand}" />
+							</StackPanel>
+						</Flyout>
+					</AppBarButton.Flyout>
+				</AppBarButton>
 			</Grid>
 		</DataTemplate>
 
 		<ItemsPanelTemplate x:Key="DefaultGroupStylePanel">
-			<VariableSizedWrapGrid Orientation="Vertical" Margin="0,0,0,0"/>
+			<VariableSizedWrapGrid Orientation="Vertical"/>
 		</ItemsPanelTemplate>
 
-        <!--<Style x:Name="SnappedPageSubheaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource SubheaderTextBlockStyle}">
+		<!--<Style x:Name="SnappedPageSubheaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource SubheaderTextBlockStyle}">
 			<Setter Property="FontSize" Value="20" />
 		</Style>-->
 	</Page.Resources>
 
-    <!-- TODO CommandBar doesn't load AppBarButtons (editDocButton is null in OnNavigatedTo) -->
 	<Page.BottomAppBar>
-		<!--<CommandBar IsOpen="{Binding CategoriesEmpty}">-->
-        <AppBar IsOpen="{Binding CategoriesEmpty}">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <AppBarButton x:Uid="BtnAddDoc" x:Name="addDocButton" Icon="Add" Label="Add" Command="{Binding AddDocumentCommand}" />
-                <AppBarButton x:Uid="BtnEditDoc" x:Name="editDocButton" Icon="Edit" Label="Edit" Command="{Binding EditDocumentCommand}" />
-                <AppBarButton x:Uid="BtnDeleteDoc" x:Name="deleteDocButton" Icon="Remove" Label="Remove" Command="{Binding DeleteDocumentCommand}" />
-            </StackPanel>
-        </AppBar>
-        <!--</CommandBar>-->
-    </Page.BottomAppBar>
+		<CommandBar IsOpen="{Binding CategoriesEmpty}" x:Name="cmdBar">
+			<AppBarButton x:Uid="BtnAddDoc" Icon="Add" Label="Add" Command="{Binding AddDocumentCommand}" />
+			<AppBarButton x:Uid="BtnEditDoc" Icon="Edit" Label="Edit" Command="{Binding EditDocumentCommand}" />
+			<AppBarButton x:Uid="BtnDeleteDoc" Icon="Remove" Label="Remove" IsEnabled="{Binding HasSelectedDocument}">
+				<AppBarButton.Flyout>
+					<Flyout>
+						<StackPanel>
+							<TextBlock Text="Delete document?" />
+							<Button Content="Delete" Command="{Binding DeleteDocumentCommand}" />
+						</StackPanel>
+					</Flyout>
+				</AppBarButton.Flyout>
+			</AppBarButton>
+		</CommandBar>
+	</Page.BottomAppBar>
 
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="140"/>
 			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
-        
-        <ProgressRing Grid.RowSpan="2" IsActive="{Binding IsLoaded, Converter={StaticResource BooleanNegationConverter}}" Width="100" Height="100" />
-		
+
+		<ProgressRing Grid.RowSpan="2" IsActive="{Binding IsLoaded, Converter={StaticResource BooleanNegationConverter}}" Width="100" Height="100" />
+
 		<SemanticZoom Grid.Row="1" x:Name="semanticZoom" IsZoomOutButtonEnabled="{Binding CategoriesNotEmpty}">
 			<SemanticZoom.ZoomedOutView>
 				<GridView
@@ -187,26 +218,23 @@
 					TabIndex="1"
 					Padding="116,0,116,46"
 					ItemTemplate="{StaticResource CategoryTemplate}"
-					SelectionMode="None"
-					Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"
-					IsSwipeEnabled="false" />
+					Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" />
 			</SemanticZoom.ZoomedOutView>
 
 			<SemanticZoom.ZoomedInView>
 				<GridView
-					x:Name="documentGridView"
-					AutomationProperties.AutomationId="ItemsGridView"
-					AutomationProperties.Name="Items"
-					TabIndex="1"
-					Padding="116,0,116,46"
-					ItemsSource="{Binding Source={StaticResource groupedDocumentsViewSource}}"
-					ItemTemplateSelector="{StaticResource DefaultDocumentTemplateSelector}"
-					IsItemClickEnabled="True"
-					ItemClick="OnDocumentClick"
-					SelectionMode="Single"
-					SelectedItem="{Binding SelectedDocument, Mode=TwoWay}"
-					Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"
-					IsSwipeEnabled="true">
+						x:Name="documentGridView"
+						AutomationProperties.AutomationId="ItemsGridView"
+						AutomationProperties.Name="Items"
+						TabIndex="1"
+						Padding="116,0,116,46"
+						ItemsSource="{Binding Source={StaticResource groupedDocumentsViewSource}}"
+						ItemTemplateSelector="{StaticResource DefaultDocumentTemplateSelector}"
+						IsItemClickEnabled="True"
+						ItemClick="OnDocumentClick"
+						SelectionMode="Single"
+						SelectedItem="{Binding SelectedDocument, Mode=TwoWay}"
+						Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
 					<GridView.ItemsPanel>
 						<ItemsPanelTemplate>
 							<VirtualizingStackPanel Orientation="Horizontal"/>
@@ -235,59 +263,58 @@
 					IsSwipeEnabled="false"
 					Width="287"/>
 			</SemanticZoom.ZoomedOutView>
-			
+
 			<SemanticZoom.ZoomedInView>
 				<ListView
-					x:Name="documentListView"
-					AutomationProperties.AutomationId="ItemsListView"
-					AutomationProperties.Name="Items"
-					TabIndex="1"
-					Margin="10,0,0,0"
-					Padding="10,0,0,60"
-					ItemsSource="{Binding Source={StaticResource groupedDocumentsViewSource}}"
-					ItemTemplateSelector="{StaticResource DefaultDocumentTemplateSelector}"
-					IsItemClickEnabled="True"
-					ItemClick="OnDocumentClick"
-					SelectionMode="Single"
-					SelectedItem="{Binding SelectedDocument, Mode=TwoWay}"
-					Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"
-					IsSwipeEnabled="true">
+						x:Name="documentListView"
+						AutomationProperties.AutomationId="ItemsListView"
+						AutomationProperties.Name="Items"
+						TabIndex="1"
+						Margin="10,0,0,0"
+						Padding="10,0,0,60"
+						ItemsSource="{Binding Source={StaticResource groupedDocumentsViewSource}}"
+						ItemTemplateSelector="{StaticResource DefaultDocumentTemplateSelector}"
+						IsItemClickEnabled="True"
+						ItemClick="OnDocumentClick"
+						SelectionMode="Single"
+						SelectedItem="{Binding SelectedDocument, Mode=TwoWay}"
+						Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"
+						IsSwipeEnabled="true">
 					<ListView.GroupStyle>
 						<GroupStyle HeaderTemplate="{Binding Source={StaticResource DefaultGroupStyleHeaderTemplate}}" Panel="{Binding Source={StaticResource DefaultGroupStylePanel}}" />
 					</ListView.GroupStyle>
 				</ListView>
 			</SemanticZoom.ZoomedInView>
 		</SemanticZoom>
-		
-		<StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="36,0,0,0" Visibility="{Binding CategoriesEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <TextBlock x:Uid="NoDocuments" x:Name="noDocumentsText" Text="No documents stored." Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Center" />
-			<!--<Button Style="{StaticResource AddAppBarButtonStyle}" Command="{Binding AddDocumentCommand}" />-->
-		</StackPanel>
-		
+
+		<TextBlock Grid.Row="1" x:Uid="NoDocuments" x:Name="noDocumentsText" Text="No documents stored." Style="{StaticResource SubheaderTextBlockStyle}" Margin="120 0 0 0" Visibility="{Binding CategoriesEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
 		<!-- Back button and page title -->
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <AppBarButton x:Name="backButton" Icon="Back" Height="95" Margin="10,46,10,0"
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="120"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<AppBarButton x:Name="backButton" Icon="Back" Height="95" Margin="10,46,10,0"
                           Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}" 
                           Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource Mode=Self}}"
                           AutomationProperties.Name="Back"
                           AutomationProperties.AutomationId="BackButton"
                           AutomationProperties.ItemType="Navigation Button"/>
-            <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
+			<TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
-        </Grid>
+		</Grid>
 
-        <VisualStateManager.VisualStateGroups>
+		<VisualStateManager.VisualStateGroups>
 
 			<!-- Visual states reflect the application's view state -->
 			<VisualStateGroup x:Name="ApplicationViewStates">
-                <VisualState x:Name="DefaultLayout"/>
+				<VisualState x:Name="DefaultLayout"/>
 				<!--<VisualState x:Name="Filled"/>
 
-				--><!-- The entire page respects the narrower 100-pixel margin convention for portrait --><!--
+				-->
+				<!-- The entire page respects the narrower 100-pixel margin convention for portrait -->
+				<!--
 				<VisualState x:Name="FullScreenPortrait">
 					<Storyboard>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
@@ -306,7 +333,7 @@
 					The back button and title have different styles when snapped, and the list representation is substituted
 					for the grid displayed in all other view states
 				-->
-                <VisualState x:Name="TightLayout">
+				<VisualState x:Name="TightLayout">
 					<Storyboard>
 						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedBackButtonStyle}"/>
@@ -325,7 +352,7 @@
 							<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
 						</ObjectAnimationUsingKeyFrames>
 
-                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="addDocButton" Storyboard.TargetProperty="IsCompact">
+						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="addDocButton" Storyboard.TargetProperty="IsCompact">
                             <DiscreteObjectKeyFrame KeyTime="0" Value="True"/>
                         </ObjectAnimationUsingKeyFrames>
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="editDocButton" Storyboard.TargetProperty="IsCompact">
@@ -334,7 +361,7 @@
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="deleteDocButton" Storyboard.TargetProperty="IsCompact">
                             <DiscreteObjectKeyFrame KeyTime="0" Value="True"/>
                         </ObjectAnimationUsingKeyFrames>-->
-                    </Storyboard>
+					</Storyboard>
 				</VisualState>
 			</VisualStateGroup>
 

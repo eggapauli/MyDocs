@@ -72,10 +72,6 @@
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
 
@@ -86,7 +82,7 @@
 
 			<!--<TextBlock Grid.Row="1" x:Uid="Category" x:Name="categoryTitle" Text="Category" Style="{StaticResource TextBlockStyle}" />-->
 			
-			<Grid Grid.Row="1">
+			<Grid>
 				<!--<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
 				</Grid.RowDefinitions>-->
@@ -95,7 +91,7 @@
 					<ColumnDefinition Width="Auto" />
 				</Grid.ColumnDefinitions>
 
-				<TextBox x:Uid="TxtNewCategoryName" Header="Category" PlaceholderText="Enter a category" Text="{Binding NewCategoryName, Mode=TwoWay}" Visibility="{Binding ShowNewCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Style="{StaticResource TextBoxStyle}" />
+				<TextBox x:Uid="TxtNewCategoryName" Header="Category" PlaceholderText="Enter a category" Text="{Binding NewCategoryName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding ShowNewCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Style="{StaticResource TextBoxStyle}" />
                 <ComboBox x:Uid="TxtUseCategoryName" Header="Category" PlaceholderText="Choose a category" ItemsSource="{Binding CategoryNames}" SelectedItem="{Binding UseCategoryName, Mode=TwoWay}" Visibility="{Binding ShowUseCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="30,12,30,10" />
 
 				<Grid x:Name="categoryButtons" Grid.Column="1" VerticalAlignment="Bottom" Margin="0,0,0,7">
@@ -105,20 +101,20 @@
 			</Grid>
 
 			<!--<TextBlock Grid.Row="3" x:Uid="TagsInput" x:Name="tagsTitle" Text="Tags" Style="{StaticResource TextBlockStyle}" />-->
-            <TextBox x:Uid="TxtTagsInput" Grid.Row="3" Grid.Column="1" Header="Tags" PlaceholderText="Enter comma-separated list of tags" Text="{Binding EditingDocument.TagsString, Mode=TwoWay}" Style="{StaticResource TextBoxStyle}" />
+			<TextBox x:Uid="TxtTagsInput" Grid.Row="1" Header="Tags" PlaceholderText="Enter comma-separated list of tags" Text="{Binding EditingDocument.TagsString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBoxStyle}" />
 
 			<!--<TextBlock Grid.Row="5" x:Name="lifespanTitleText" x:Uid="Lifespan" Text="Lifespan" Style="{StaticResource TextBlockStyle}" />
 			<StackPanel Grid.Row="4" Grid.Column="1" x:Name="lifespanTitleSnapped" Visibility="Collapsed" Orientation="Horizontal">
 				<TextBlock x:Uid="Lifespan" x:Name="lifespanTitleTextSnapped" Text="Lifespan" Style="{StaticResource SnappedTextBlockStyle}" />
 				<ToggleSwitch x:Name="limitedLifespanSwitchSnapped" IsOn="{Binding EditingDocument.HasLimitedLifespan, Mode=TwoWay}"  OffContent="{Binding LifespanInfiniteText}" OnContent="{Binding LifespanLimitedText}" Margin="30,0,0,0" />
 			</StackPanel>-->
-			<StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
+			<StackPanel Grid.Row="2" Orientation="Horizontal">
 				<ToggleSwitch x:Uid="SwcLifespan" x:Name="limitedLifespanSwitch" Header="Lifespan" IsOn="{Binding EditingDocument.HasLimitedLifespan, Mode=TwoWay}" OnContent="Limited" OffContent="Unlimited" Margin="25,0,0,0" />
                 <DatePicker MinYear="{Binding EditingDocument.DateAdded.Year}" Date="{Binding EditingDocument.DateRemoved, Mode=TwoWay}" Visibility="{Binding EditingDocument.HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,8,0,0" />
 			</StackPanel>
 
 			<!--<TextBlock x:Uid="Photos" Grid.Row="7" x:Name="photosTitle" Text="Photos" Style="{StaticResource TextBlockStyle}" />-->
-			<Grid Grid.Row="7" Grid.Column="1">
+			<Grid Grid.Row="3">
 				<Grid.RowDefinitions>
                     <!--<RowDefinition Height="Auto" />-->
                     <RowDefinition Height="Auto" />
@@ -128,7 +124,7 @@
                 <!--<TextBlock x:Uid="PhotosTitle" Text="Photos" Margin="30,0,0,0" FontSize="14" />
                 <TextBox Grid.Row="1" x:Uid="PhotosTitle" Text="Photos" Header="Photos" Margin="30,0,0,0" />-->
                 
-				<StackPanel Grid.Row="0" Orientation="Horizontal" Margin="30,0,0,0">
+				<StackPanel Orientation="Horizontal" Margin="30 0 0 0">
                     <AppBarButton x:Uid="BtnAddPhotoFromCamera" x:Name="addPhotoFromCameraButton" Icon="Camera" Label="Take a picture" Command="{Binding AddPhotoFromCameraCommand}" HorizontalAlignment="Right" />
                     <AppBarButton x:Uid="BtnAddPhotoFromFile" x:Name="addPhotoFromFileButton" Icon="Document" Label="Add from file"  Command="{Binding AddPhotoFromFileCommand}" HorizontalAlignment="Right" />
                     <AppBarButton x:Uid="BtnRemovePhoto" Icon="Remove" Label="Remove" Command="{Binding RemovePhotoCommand}" HorizontalAlignment="Right" />
@@ -139,7 +135,7 @@
 						  ItemTemplate="{Binding Source={StaticResource PhotoTemplate}}"
 						  SelectionMode="Single"
 						  SelectedItem="{Binding SelectedPhoto, Mode=TwoWay}"
-						  Margin="30,0,0,0"/>
+						  Margin="30 0 0 0"/>
 				<ListView Grid.Row="1"
 						  x:Name="photoListView"
 						  ItemsSource="{Binding EditingDocument.Photos}"
@@ -194,7 +190,7 @@
 							<DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
 						</ObjectAnimationUsingKeyFrames>
 
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="categoryTitle" Storyboard.TargetProperty="(Grid.Row)">
+						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="categoryTitle" Storyboard.TargetProperty="(Grid.Row)">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="0"/>
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="tagsTitle" Storyboard.TargetProperty="(Grid.Row)">
@@ -222,9 +218,9 @@
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="photosTitle" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedTextBlockStyle}"/>
-						</ObjectAnimationUsingKeyFrames>
+						</ObjectAnimationUsingKeyFrames>-->
 
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="dateRemovedContainer" Storyboard.TargetProperty="Margin">
+						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="dateRemovedContainer" Storyboard.TargetProperty="Margin">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="30,0,0,0"/>
 						</ObjectAnimationUsingKeyFrames>
 
@@ -246,7 +242,7 @@
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="lifespanTitleText" Storyboard.TargetProperty="Visibility">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
-						</ObjectAnimationUsingKeyFrames>
+						</ObjectAnimationUsingKeyFrames>-->
 					</Storyboard>
 				</VisualState>
 			</VisualStateGroup>
