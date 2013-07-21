@@ -63,8 +63,8 @@
                           AutomationProperties.AutomationId="BackButton"
                           AutomationProperties.ItemType="Navigation Button"/>
             <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
-                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
-            <AppBarButton x:Uid="BtnSaveDoc" Grid.Column="2" Icon="Save" Label="Save" Command="{Binding SaveDocumentCommand}" VerticalAlignment="Bottom" Margin="0,0,0,10"/>
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,0,40"/>
+			<AppBarButton Grid.Column="2" x:Uid="BtnSaveDoc" x:Name="saveButton" Icon="Save" Label="Save" Command="{Binding SaveDocumentCommand}" VerticalAlignment="Bottom" Margin="0,0,0,10"/>
 		</Grid>
 
         <Grid Grid.Row="1">
@@ -83,9 +83,10 @@
 			<!--<TextBlock Grid.Row="1" x:Uid="Category" x:Name="categoryTitle" Text="Category" Style="{StaticResource TextBlockStyle}" />-->
 			
 			<Grid>
-				<!--<Grid.RowDefinitions>
+				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
-				</Grid.RowDefinitions>-->
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="Auto" />
@@ -94,7 +95,7 @@
 				<TextBox x:Uid="TxtNewCategoryName" Header="Category" PlaceholderText="Enter a category" Text="{Binding NewCategoryName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding ShowNewCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Style="{StaticResource TextBoxStyle}" />
                 <ComboBox x:Uid="TxtUseCategoryName" Header="Category" PlaceholderText="Choose a category" ItemsSource="{Binding CategoryNames}" SelectedItem="{Binding UseCategoryName, Mode=TwoWay}" Visibility="{Binding ShowUseCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="30,12,30,10" />
 
-				<Grid x:Name="categoryButtons" Grid.Column="1" VerticalAlignment="Bottom" Margin="0,0,0,7">
+				<Grid Grid.Column="1" x:Name="categoryButtons" VerticalAlignment="Bottom" Margin="0,0,0,7">
 					<Button x:Uid="BtnNewCategory" x:Name="newCategoryButton" Visibility="{Binding ShowUseCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Content="Add a new category" Command="{Binding ShowNewCategoryCommand}" Margin="0,0,30,0" />
 					<Button x:Uid="BtnUseCategory" x:Name="useCategoryButton" Visibility="{Binding ShowNewCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Content="Use an existing category" Command="{Binding ShowUseCategoryCommand}" Margin="0,0,30,0" />
 				</Grid>
@@ -108,9 +109,9 @@
 				<TextBlock x:Uid="Lifespan" x:Name="lifespanTitleTextSnapped" Text="Lifespan" Style="{StaticResource SnappedTextBlockStyle}" />
 				<ToggleSwitch x:Name="limitedLifespanSwitchSnapped" IsOn="{Binding EditingDocument.HasLimitedLifespan, Mode=TwoWay}"  OffContent="{Binding LifespanInfiniteText}" OnContent="{Binding LifespanLimitedText}" Margin="30,0,0,0" />
 			</StackPanel>-->
-			<StackPanel Grid.Row="2" Orientation="Horizontal">
+			<StackPanel Grid.Row="2" x:Name="lifespanPanel" Orientation="Horizontal">
 				<ToggleSwitch x:Uid="SwcLifespan" x:Name="limitedLifespanSwitch" Header="Lifespan" IsOn="{Binding EditingDocument.HasLimitedLifespan, Mode=TwoWay}" OnContent="Limited" OffContent="Unlimited" Margin="25,0,0,0" />
-                <DatePicker MinYear="{Binding EditingDocument.DateAdded.Year}" Date="{Binding EditingDocument.DateRemoved, Mode=TwoWay}" Visibility="{Binding EditingDocument.HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,8,0,0" />
+                <DatePicker x:Name="limitedLifespanDate" MinYear="{Binding EditingDocument.DateAdded.Year}" Date="{Binding EditingDocument.DateRemoved, Mode=TwoWay}" Visibility="{Binding EditingDocument.HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,8,0,0" />
 			</StackPanel>
 
 			<!--<TextBlock x:Uid="Photos" Grid.Row="7" x:Name="photosTitle" Text="Photos" Style="{StaticResource TextBlockStyle}" />-->
@@ -168,20 +169,20 @@
 					<Storyboard>
 						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedBackButtonStyle}"/>
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPageHeaderTextStyle}"/>
 						</ObjectAnimationUsingKeyFrames>-->
-						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Visibility">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightHeaderTextBlockStyle}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="saveButton" Storyboard.TargetProperty="IsCompact">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="True"/>
 						</ObjectAnimationUsingKeyFrames>-->
 
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="addPhotoFromCameraButton" Storyboard.TargetProperty="IsEnabled">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="False"/>
 						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="addPhotoFromFileButton" Storyboard.TargetProperty="IsEnabled">
+						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="addPhotoFromFileButton" Storyboard.TargetProperty="IsEnabled">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="False"/>
-						</ObjectAnimationUsingKeyFrames>
+						</ObjectAnimationUsingKeyFrames>-->
 
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="photoGridView" Storyboard.TargetProperty="Visibility">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
@@ -222,7 +223,7 @@
 
 						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="dateRemovedContainer" Storyboard.TargetProperty="Margin">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="30,0,0,0"/>
-						</ObjectAnimationUsingKeyFrames>
+						</ObjectAnimationUsingKeyFrames>-->
 
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="categoryButtons" Storyboard.TargetProperty="(Grid.Column)">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="0"/>
@@ -233,8 +234,15 @@
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="categoryButtons" Storyboard.TargetProperty="Margin">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="30,0,0,0"/>
 						</ObjectAnimationUsingKeyFrames>
-						
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="limitedLifespanSwitch" Storyboard.TargetProperty="Visibility">
+
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="lifespanPanel" Storyboard.TargetProperty="Orientation">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="Vertical"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="limitedLifespanDate" Storyboard.TargetProperty="Margin">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="30,0,0,0"/>
+						</ObjectAnimationUsingKeyFrames>
+
+						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="limitedLifespanSwitch" Storyboard.TargetProperty="Visibility">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="lifespanTitleSnapped" Storyboard.TargetProperty="Visibility">

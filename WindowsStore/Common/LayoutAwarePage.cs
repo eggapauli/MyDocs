@@ -159,7 +159,7 @@ namespace MyDocs.WindowsStore.Common
         /// <seealso cref="InvalidateVisualState"/> 
         protected virtual string DetermineVisualState(double width)
         {
-            return (width < 768) ? "TightLayout" : "DefaultLayout";
+            return (width < 500) ? "TightLayout" : "DefaultLayout";
         }
 
         /// <summary> 

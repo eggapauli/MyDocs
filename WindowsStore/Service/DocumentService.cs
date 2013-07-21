@@ -62,13 +62,13 @@ namespace MyDocs.WindowsStore.Service
 
 		public async Task LoadCategoriesAsync()
 		{
+			if (Categories.Count > 0) {
+				return;
+			}
 #if DEBUG
 			//await ClearAllData();
 			//await InsertTestData();
 #endif
-			if (Categories.Count > 0) {
-				return;
-			}
 			//await Task.Delay(2000);
 			//categories.Clear();
 

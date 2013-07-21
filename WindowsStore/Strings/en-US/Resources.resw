@@ -195,4 +195,7 @@
   <data name="SwcLifespan.Header" xml:space="preserve">
     <value>Lifespan</value>
   </data>
+  <data name="deleteCatError" xml:space="preserve">
+    <value>The category couldn't be deleted.</value>
+  </data>
 </root>

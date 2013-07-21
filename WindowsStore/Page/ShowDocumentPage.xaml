@@ -10,10 +10,10 @@
 	mc:Ignorable="d">
 	
 	<Page.Resources>
-		<Style x:Key="PhotoDetailTextStyle" TargetType="TextBlock" BasedOn="{StaticResource SubheaderTextBlockStyle}">
+		<Style x:Key="PhotoDetailTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource SubheaderTextBlockStyle}">
 			<Setter Property="Margin" Value="50,0,0,20" />
 		</Style>
-		<Style x:Key="SnappedPhotoDetailTextStyle" TargetType="TextBlock" BasedOn="{StaticResource PhotoDetailTextStyle}">
+		<Style x:Key="TightPhotoDetailTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource PhotoDetailTextBlockStyle}">
 			<Setter Property="Margin" Value="20,0,0,10" />
 			<Setter Property="FontSize" Value="20" />
 		</Style>
@@ -36,7 +36,7 @@
             </FlipView.ItemTemplate>
         </FlipView>
 
-        <Grid>
+		<Grid Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="120"/>
                 <ColumnDefinition Width="*"/>
@@ -52,13 +52,13 @@
         </Grid>
 
         <StackPanel Grid.Row="1" VerticalAlignment="Bottom" Orientation="Vertical" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
-			<TextBlock x:Name="category" Text="{Binding Category}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextStyle}" TextWrapping="NoWrap" />
-			<TextBlock x:Name="tags" Text="{Binding TagsString}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextStyle}" TextWrapping="Wrap" />
-			<TextBlock x:Name="lifespan" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextStyle}" TextWrapping="NoWrap">
+			<TextBlock x:Name="category" Text="{Binding Category}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextBlockStyle}" TextWrapping="NoWrap" />
+			<TextBlock x:Name="tags" Text="{Binding TagsString}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextBlockStyle}" TextWrapping="Wrap" />
+			<TextBlock x:Name="lifespan" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextBlockStyle}" TextWrapping="NoWrap">
 				<Run Text="{Binding DateAdded, Converter={StaticResource DateToStringConverter}}" /> -
 				<Run Text="{Binding DateRemoved, Converter={StaticResource DateToStringConverter}}" />
 			</TextBlock>
-			<TextBlock x:Name="timeToRemoval" Text="{Binding DaysToRemoval, Converter={StaticResource TranslationConverter}, ConverterParameter='countDaysFormat'}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextStyle}" TextWrapping="NoWrap"/>
+			<TextBlock x:Name="timeToRemoval" Text="{Binding DaysToRemoval, Converter={StaticResource TranslationConverter}, ConverterParameter='countDaysFormat'}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextBlockStyle}" TextWrapping="NoWrap"/>
 		</StackPanel>
 
 		<VisualStateManager.VisualStateGroups>
@@ -85,22 +85,22 @@
 					<Storyboard>
 						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedBackButtonStyle}"/>
-						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPageHeaderTextStyle}"/>
 						</ObjectAnimationUsingKeyFrames>-->
-
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightHeaderTextBlockStyle}"/>
+						</ObjectAnimationUsingKeyFrames>
+						
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="category" Storyboard.TargetProperty="Style">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPhotoDetailTextStyle}"/>
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightPhotoDetailTextBlockStyle}"/>
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="tags" Storyboard.TargetProperty="Style">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPhotoDetailTextStyle}"/>
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightPhotoDetailTextBlockStyle}"/>
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="lifespan" Storyboard.TargetProperty="Style">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPhotoDetailTextStyle}"/>
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightPhotoDetailTextBlockStyle}"/>
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="timeToRemoval" Storyboard.TargetProperty="Style">
-							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPhotoDetailTextStyle}"/>
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightPhotoDetailTextBlockStyle}"/>
 						</ObjectAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="timeToRemoval" Storyboard.TargetProperty="Margin">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="20,0,0,20"/>

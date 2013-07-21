@@ -195,4 +195,7 @@
   <data name="SwcLifespan.Header" xml:space="preserve">
     <value>Lebensdauer</value>
   </data>
+  <data name="deleteCatError" xml:space="preserve">
+    <value>Fehler beim Löschen der Kategorie.</value>
+  </data>
 </root>
