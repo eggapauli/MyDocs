@@ -37,7 +37,7 @@ namespace MyDocs.Common.ViewModel
 
 		public bool ShowNewCategoryInput
 		{
-			get { return showNewCategoryInput; }
+			get { return !HasCategories || showNewCategoryInput; }
 			set
 			{
 				if (showNewCategoryInput != value) {
@@ -53,6 +53,11 @@ namespace MyDocs.Common.ViewModel
 		{
 			get { return !ShowNewCategoryInput; }
 			set { ShowNewCategoryInput = !value; }
+		}
+		
+		public bool HasCategories
+		{
+			get { return CategoryNames.Any(); }
 		}
 
 		public string UseCategoryName
