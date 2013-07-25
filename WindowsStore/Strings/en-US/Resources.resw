@@ -184,7 +184,7 @@
     <value>Tags</value>
   </data>
   <data name="TxtTagsInput.PlaceholderText" xml:space="preserve">
-    <value>Enter comma-separated list of tags</value>
+    <value>Enter a comma-separated list of tags</value>
   </data>
   <data name="TxtUseCategoryName.Header" xml:space="preserve">
     <value>Category</value>

@@ -109,6 +109,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\Converter\DateTimeToDateTimeOffsetConverter.cs" />
     <Compile Include="Common\Converter\DateToStringConverter.cs" />
     <Compile Include="Common\Converter\TranslationConverter.cs" />
     <Compile Include="Common\DocumentTemplateSelector.cs" />

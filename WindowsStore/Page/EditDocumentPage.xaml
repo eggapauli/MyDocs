@@ -110,8 +110,20 @@
 				<ToggleSwitch x:Name="limitedLifespanSwitchSnapped" IsOn="{Binding EditingDocument.HasLimitedLifespan, Mode=TwoWay}"  OffContent="{Binding LifespanInfiniteText}" OnContent="{Binding LifespanLimitedText}" Margin="30,0,0,0" />
 			</StackPanel>-->
 			<StackPanel Grid.Row="2" x:Name="lifespanPanel" Orientation="Horizontal">
-				<ToggleSwitch x:Uid="SwcLifespan" x:Name="limitedLifespanSwitch" Header="Lifespan" IsOn="{Binding EditingDocument.HasLimitedLifespan, Mode=TwoWay}" OnContent="Limited" OffContent="Unlimited" Margin="25,0,0,0" />
-                <DatePicker x:Name="limitedLifespanDate" MinYear="{Binding EditingDocument.DateAdded.Year}" Date="{Binding EditingDocument.DateRemoved, Mode=TwoWay}" Visibility="{Binding EditingDocument.HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,8,0,0" />
+				<ToggleSwitch
+					x:Uid="SwcLifespan"
+					x:Name="limitedLifespanSwitch"
+					Header="Lifespan"
+					IsOn="{Binding EditingDocument.HasLimitedLifespan, Mode=TwoWay}"
+					OnContent="Limited"
+					OffContent="Unlimited"
+					Margin="25,0,0,0" />
+                <DatePicker
+					x:Name="limitedLifespanDate"
+					MinYear="{Binding EditingDocument.DateAdded, Converter={StaticResource DateTimeToDateTimeOffsetConverter}}"
+					Date="{Binding EditingDocument.DateRemoved, Converter={StaticResource DateTimeToDateTimeOffsetConverter}, Mode=TwoWay}"
+					Visibility="{Binding EditingDocument.HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}"
+					Margin="0,8,0,0" />
 			</StackPanel>
 
 			<!--<TextBlock x:Uid="Photos" Grid.Row="7" x:Name="photosTitle" Text="Photos" Style="{StaticResource TextBlockStyle}" />-->

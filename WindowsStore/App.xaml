@@ -20,6 +20,7 @@
 
             <converter:BooleanNegationConverter x:Key="BooleanNegationConverter" />
             <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+			<converter:DateTimeToDateTimeOffsetConverter x:Key="DateTimeToDateTimeOffsetConverter" />
             <converter:DateToStringConverter x:Key="DateToStringConverter" />
             <converter:TranslationConverter x:Key="TranslationConverter" />
         </ResourceDictionary>
