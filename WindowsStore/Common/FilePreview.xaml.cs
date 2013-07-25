@@ -50,6 +50,7 @@ namespace MyDocs.WindowsStore.Common
 			var photo = (Photo)e.NewValue;
 
 			self.Loading.IsActive = true;
+			// TODO handle errors?
 			self.Preview.Source = (BitmapImage)(await photo.File.GetResizedBitmapImageAsync(self.FileSize)).Image;
 			self.Loading.IsActive = false;
 		}
@@ -63,8 +64,8 @@ namespace MyDocs.WindowsStore.Common
 				self.Loading.Height = 100;
 			}
 			else {
-				self.Loading.Width = Double.NaN;
-				self.Loading.Height = Double.NaN;
+				self.Loading.Width = Double.NaN; // Auto
+				self.Loading.Height = Double.NaN; // Auto
 			}
 		}
 	}
