@@ -54,7 +54,7 @@ namespace MyDocs.Common.ViewModel
 			get { return !ShowNewCategoryInput; }
 			set { ShowNewCategoryInput = !value; }
 		}
-		
+
 		public bool HasCategories
 		{
 			get { return CategoryNames.Any(); }
@@ -306,14 +306,14 @@ namespace MyDocs.Common.ViewModel
 
 		private void AddPhotoFromCameraHandler()
 		{
-			cameraService.CaptureFileAsync().ContinueWith(t =>
+			cameraService.CapturePhotoAsync().ContinueWith(t =>
 			{
 				if (t.IsFaulted) {
 					var tmp = uiService.ShowErrorAsync("addPhotoError");
 				}
 				else {
 					if (t.Result != null) {
-						EditingDocument.Photos.Add(new Photo(t.Result));
+						EditingDocument.Photos.Add(t.Result);
 					}
 				}
 			}, TaskScheduler.FromCurrentSynchronizationContext());
@@ -321,14 +321,14 @@ namespace MyDocs.Common.ViewModel
 
 		private void AddPhotoFromFileHandler()
 		{
-			filePicker.PickMultipleFilesAsync().ContinueWith(t =>
+			filePicker.PickMultiplePhotosAsync().ContinueWith(t =>
 			{
 				if (t.IsFaulted) {
 					// TODO show error
 				}
 				else {
-					foreach (var file in t.Result) {
-						EditingDocument.Photos.Add(new Photo(file));
+					foreach (var photo in t.Result) {
+						EditingDocument.Photos.Add(photo);
 					}
 				}
 			}, TaskScheduler.FromCurrentSynchronizationContext());

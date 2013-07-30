@@ -3,7 +3,7 @@ using MyDocs.Common.Contract.Service;
 using System;
 using Windows.UI.Xaml.Data;
 
-namespace MyDocs.WindowsStore.Common.Converter
+namespace MyDocs.WindowsStore.Converter
 {
 	public class TranslationConverter : IValueConverter
 	{
