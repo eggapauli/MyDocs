@@ -5,11 +5,13 @@ namespace MyDocs.WindowsStore.Storage
 {
 	public class WindowsStoreBitmapImage : IBitmapImage
 	{
-		public BitmapImage Image { get; private set; }
+		public object Image { get; private set; }
+		public string FileName { get; private set; }
 
-		public WindowsStoreBitmapImage(BitmapImage image)
+		public WindowsStoreBitmapImage(BitmapImage image, string fileName)
 		{
 			Image = image;
+			FileName = fileName;
 		}
 	}
 }

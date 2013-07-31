@@ -28,10 +28,7 @@
         <FlipView Grid.RowSpan="2" ItemsSource="{Binding Photos}">
             <FlipView.ItemTemplate>
                 <DataTemplate>
-                    <Grid>
-                        <Image Source="{Binding Image.Image}" />
-                        <ProgressRing IsActive="{Binding ImageLoaded, Converter={StaticResource BooleanNegationConverter}}" Width="100" Height="100" />
-                    </Grid>
+                    <common:FilePreview File="{Binding}" FileSize="BIG" />
                 </DataTemplate>
             </FlipView.ItemTemplate>
         </FlipView>

@@ -37,10 +37,11 @@
 			<Setter x:Uid="BtnAddFromFile" Property="AutomationProperties.Name" Value="Add from file"/>
 		</Style>-->
 		<DataTemplate x:Key="PhotoTemplate">
-			<Grid>
+			<common:FilePreview File="{Binding}" FileSize="SMALL" Width="250" Height="250" />
+			<!--<Grid>
 				<Image Source="{Binding Thumbnail.Image}" Width="250" Height="250"/>
 				<ProgressRing IsActive="{Binding ThumbnailLoaded, Converter={StaticResource BooleanNegationConverter}}" />
-			</Grid>
+			</Grid>-->
 		</DataTemplate>
 	</Page.Resources>
 

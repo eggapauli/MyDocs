@@ -113,8 +113,12 @@
     <Compile Include="Common\Converter\DateToStringConverter.cs" />
     <Compile Include="Common\Converter\TranslationConverter.cs" />
     <Compile Include="Common\DocumentTemplateSelector.cs" />
+    <Compile Include="Common\FilePreview.xaml.cs">
+      <DependentUpon>FilePreview.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Common\NavigationHelper.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
+    </Compile>
     <Compile Include="Service\CameraService.cs" />
     <Compile Include="Service\ModernUIService.cs" />
     <Compile Include="Service\SettingsService.cs" />
@@ -157,6 +161,8 @@
     <None Include="MyDocs_StoreKey.pfx" />
     <None Include="MyDocs_TemporaryKey.pfx" />
     <None Include="packages.config" />
+    <PRIResource Include="Locale\de-DE\Resources.resw" />
+    <PRIResource Include="Locale\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.png" />
@@ -173,7 +179,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Common\FilePreview.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Common\Styles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

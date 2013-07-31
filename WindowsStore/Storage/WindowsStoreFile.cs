@@ -17,10 +17,8 @@ namespace MyDocs.WindowsStore.Storage
 			File = file;
 		}
 
-		public string Path
-		{
-			get { return File.Path; }
-		}
+		public string Name { get { return File.Name; } }
+		public string Path { get { return File.Path; } }
 
 		public string GetRelativePath()
 		{
@@ -53,7 +51,7 @@ namespace MyDocs.WindowsStore.Storage
 			BitmapImage bmp = new BitmapImage();
 			using (StorageItemThumbnail thumbnail = await File.GetThumbnailAsync(ThumbnailMode.SingleItem, (uint)size)) {
 				await bmp.SetSourceAsync(thumbnail);
-				return new WindowsStoreBitmapImage(bmp);
+				return new WindowsStoreBitmapImage(bmp, File.Name);
 			}
 		}
 

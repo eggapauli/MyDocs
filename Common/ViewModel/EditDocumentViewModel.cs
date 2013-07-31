@@ -275,7 +275,7 @@ namespace MyDocs.Common.ViewModel
 
 		private void AddPhotoFromFileHandler()
 		{
-			filePicker.PickMultipleImagesAsync().ContinueWith(t =>
+			filePicker.PickMultipleFilesAsync().ContinueWith(t =>
 			{
 				if (t.IsFaulted) {
 					// TODO show error
