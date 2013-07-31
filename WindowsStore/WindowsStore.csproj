@@ -118,7 +118,6 @@
     </Compile>
     <Compile Include="Common\NavigationHelper.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
-    </Compile>
     <Compile Include="Service\CameraService.cs" />
     <Compile Include="Service\ModernUIService.cs" />
     <Compile Include="Service\SettingsService.cs" />
@@ -188,10 +187,6 @@
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Page>
     <Page Include="Page\EditDocumentPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -238,12 +233,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <PRIResource Include="Strings\de-DE\Resources.resw">
-      <SubType>Designer</SubType>
-    </PRIResource>
-    <PRIResource Include="Strings\en-US\Resources.resw" />
-  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
