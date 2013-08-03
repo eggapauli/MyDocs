@@ -8,7 +8,7 @@ namespace MyDocs.Common.Contract.Storage
 		string Path { get; }
 		string GetRelativePath();
 		bool IsInFolder(IFolder folder);
-		Task<IBitmapImage> GetResizedBitmapImageAsync(FileSize fileSize = FileSize.SMALL);
+		Task<IBitmapImage> GetResizedBitmapImageAsync(FileSize fileSize = FileSize.Small);
 		Task MoveAsync(IFolder folder);
 		Task MoveAsync(IFolder folder, string name);
 		Task<IFile> CopyAsync(IFolder folder);

@@ -2,7 +2,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace MyDocs.WindowsStore.Common.Converter
+namespace MyDocs.WindowsStore.Converter
 {
 	public class DateTimeToDateTimeOffsetConverter : IValueConverter
 	{

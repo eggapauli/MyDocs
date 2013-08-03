@@ -6,11 +6,20 @@ namespace MyDocs.Common.Model
 {
 	public class Photo : ObservableObject
 	{
+		private string title;
 		private IFile file;
+		private IFile preview;
 
-		public Photo(IFile file)
+		public string Title
 		{
-			this.file = file;
+			get { return title; }
+			set
+			{
+				if (title != value) {
+					title = value;
+					RaisePropertyChanged(() => Title);
+				}
+			}
 		}
 
 		public IFile File
@@ -23,6 +32,25 @@ namespace MyDocs.Common.Model
 					RaisePropertyChanged(() => File);
 				}
 			}
+		}
+
+		public IFile Preview
+		{
+			get { return preview ?? file; }
+			set
+			{
+				if (preview != value) {
+					preview = value;
+					RaisePropertyChanged(() => Preview);
+				}
+			}
+		}
+
+		public Photo(string title, IFile file, IFile preview = null)
+		{
+			Title = title;
+			File = file;
+			Preview = preview;
 		}
 	}
 }

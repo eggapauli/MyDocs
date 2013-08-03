@@ -198,4 +198,7 @@
   <data name="deleteCatError" xml:space="preserve">
     <value>The category couldn't be deleted.</value>
   </data>
+  <data name="protectedDocumentError" xml:space="preserve">
+    <value>Couldn't open file because it is protected by a password.</value>
+  </data>
 </root>

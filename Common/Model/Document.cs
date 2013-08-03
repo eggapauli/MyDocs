@@ -201,10 +201,10 @@ namespace MyDocs.Common.Model
 			DateAdded = dateAdded;
 			Lifespan = lifespan;
 			HasLimitedLifespan = hasLimitedLifespan;
-			Tags = new ObservableCollection<string>(tags);
+			Tags = tags as ObservableCollection<string> ?? new ObservableCollection<string>(tags);
 
 			if (photos != null) {
-				Photos = new ObservableCollection<Photo>(photos);
+				Photos = photos as ObservableCollection<Photo> ?? new ObservableCollection<Photo>(photos);
 			}
 			else {
 				Photos = new ObservableCollection<Photo>();
