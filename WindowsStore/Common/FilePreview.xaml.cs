@@ -25,7 +25,7 @@ namespace MyDocs.WindowsStore.Common
 			DependencyProperty.Register("File", typeof(Photo), typeof(FilePreview), new PropertyMetadata(null, FilePropertyChanged));
 
 		public static readonly DependencyProperty FileSizeProperty =
-			DependencyProperty.Register("FileSize", typeof(StorageContract.FileSize), typeof(FilePreview), new PropertyMetadata(StorageContract.FileSize.SMALL, FileSizePropertyChanged));
+			DependencyProperty.Register("FileSize", typeof(StorageContract.FileSize), typeof(FilePreview), new PropertyMetadata(StorageContract.FileSize.Small, FileSizePropertyChanged));
 
 		public Photo File
 		{
@@ -50,7 +50,8 @@ namespace MyDocs.WindowsStore.Common
 			var photo = (Photo)e.NewValue;
 
 			self.Loading.IsActive = true;
-			self.Preview.Source = (BitmapImage)(await photo.File.GetResizedBitmapImageAsync(self.FileSize)).Image;
+			// TODO handle errors?
+			self.Preview.Source = (BitmapImage)(await photo.Preview.GetResizedBitmapImageAsync(self.FileSize)).Image;
 			self.Loading.IsActive = false;
 		}
 
@@ -58,13 +59,13 @@ namespace MyDocs.WindowsStore.Common
 		{
 			var self = (FilePreview)d;
 			var size = (StorageContract.FileSize)e.NewValue;
-			if (size == StorageContract.FileSize.BIG) {
+			if (size == StorageContract.FileSize.Big) {
 				self.Loading.Width = 100;
 				self.Loading.Height = 100;
 			}
 			else {
-				self.Loading.Width = Double.NaN;
-				self.Loading.Height = Double.NaN;
+				self.Loading.Width = Double.NaN; // Auto
+				self.Loading.Height = Double.NaN; // Auto
 			}
 		}
 	}

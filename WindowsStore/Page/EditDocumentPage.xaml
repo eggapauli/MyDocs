@@ -37,7 +37,7 @@
 			<Setter x:Uid="BtnAddFromFile" Property="AutomationProperties.Name" Value="Add from file"/>
 		</Style>-->
 		<DataTemplate x:Key="PhotoTemplate">
-			<common:FilePreview File="{Binding}" FileSize="SMALL" Width="250" Height="250" />
+			<common:FilePreview File="{Binding}" FileSize="Small" Width="250" Height="250" />
 			<!--<Grid>
 				<Image Source="{Binding Thumbnail.Image}" Width="250" Height="250"/>
 				<ProgressRing IsActive="{Binding ThumbnailLoaded, Converter={StaticResource BooleanNegationConverter}}" />
@@ -96,7 +96,7 @@
 				<TextBox x:Uid="TxtNewCategoryName" Header="Category" PlaceholderText="Enter a category" Text="{Binding NewCategoryName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding ShowNewCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Style="{StaticResource TextBoxStyle}" />
                 <ComboBox x:Uid="TxtUseCategoryName" Header="Category" PlaceholderText="Choose a category" ItemsSource="{Binding CategoryNames}" SelectedItem="{Binding UseCategoryName, Mode=TwoWay}" Visibility="{Binding ShowUseCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="30,12,30,10" />
 
-				<Grid Grid.Column="1" x:Name="categoryButtons" VerticalAlignment="Bottom" Margin="0,0,0,7">
+				<Grid Grid.Column="1" x:Name="categoryButtons" Visibility="{Binding HasCategories, Converter={StaticResource BooleanToVisibilityConverter}}" VerticalAlignment="Bottom" Margin="0,0,0,7">
 					<Button x:Uid="BtnNewCategory" x:Name="newCategoryButton" Visibility="{Binding ShowUseCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Content="Add a new category" Command="{Binding ShowNewCategoryCommand}" Margin="0,0,30,0" />
 					<Button x:Uid="BtnUseCategory" x:Name="useCategoryButton" Visibility="{Binding ShowNewCategoryInput, Converter={StaticResource BooleanToVisibilityConverter}}" Content="Use an existing category" Command="{Binding ShowUseCategoryCommand}" Margin="0,0,30,0" />
 				</Grid>

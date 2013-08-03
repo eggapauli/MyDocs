@@ -64,7 +64,7 @@ namespace MyDocs.WindowsStore.Service.Design
 			int count = rand.Next(1, 4);
 			while (count > 0 && photos.Count > 0) {
 				int idx = rand.Next(photos.Count);
-				yield return new Photo(photos[idx]);
+				yield return new Photo(photos[idx].Name, photos[idx]);
 				photos.RemoveAt(idx);
 				count--;
 			}

@@ -8,4 +8,10 @@
 	<Style x:Name="TightSubheaderTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource SubheaderTextBlockStyle}">
 		<Setter Property="FontSize" Value="20" />
 	</Style>
+	<!--<Color x:Key="ThemeDominant">#E3C4BC</Color>
+	<Color x:Key="ThemeSubDominant">#FF467302</Color>
+	<Color x:Key="ThemeAccent">#FFF2F2F2</Color>
+	<SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="{StaticResource ThemeDominant}"></SolidColorBrush>
+	<SolidColorBrush x:Key="ApplicationForegroundThemeBrush" Color="{StaticResource ThemeSubDominant}"></SolidColorBrush>
+	<SolidColorBrush x:Key="ButtonPointerOverBackgroundThemeBrush" Color="{StaticResource ThemeSubDominant}"></SolidColorBrush>-->
 </ResourceDictionary>
