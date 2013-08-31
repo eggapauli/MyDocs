@@ -1,5 +1,5 @@
 ﻿<UserControl
-	x:Class="MyDocs.WindowsStore.Page.SettingsPage"
+	x:Class="MyDocs.WindowsStore.Pages.SettingsPage"
 	DataContext="{Binding SettingsVM, Source={StaticResource Locator}}"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

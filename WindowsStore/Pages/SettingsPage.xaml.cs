@@ -5,7 +5,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace MyDocs.WindowsStore.Page
+namespace MyDocs.WindowsStore.Pages
 {
 	public sealed partial class SettingsPage : UserControl
 	{

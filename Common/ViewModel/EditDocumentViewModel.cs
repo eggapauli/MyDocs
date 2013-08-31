@@ -28,6 +28,7 @@ namespace MyDocs.Common.ViewModel
 		private Document originalDocument;
 		private Document editingDocument;
 		private Photo selectedPhoto;
+		private bool isBusy;
 
 		public IEnumerable<string> CategoryNames
 		{
@@ -152,6 +153,12 @@ namespace MyDocs.Common.ViewModel
 					RemovePhotoCommand.RaiseCanExecuteChanged();
 				}
 			}
+		}
+
+		public bool IsBusy
+		{
+			get { return isBusy; }
+			set { Set(ref isBusy, value); }
 		}
 
 		#endregion
@@ -280,8 +287,10 @@ namespace MyDocs.Common.ViewModel
 
 		private void AddPhotoFromFileHandler()
 		{
+			IsBusy = true;
 			filePicker.PickMultiplePhotosAsync().ContinueWith(t =>
 			{
+				IsBusy = false;
 				if (t.IsFaulted) {
 					// TODO show error
 				}

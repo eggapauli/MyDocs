@@ -6,9 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
-namespace MyDocs.WindowsStore.Page
+namespace MyDocs.WindowsStore.Pages
 {
 	public sealed partial class ShowDocumentPage : LayoutAwarePage, IShowDocumentPage
 	{
@@ -61,6 +62,11 @@ namespace MyDocs.WindowsStore.Page
 		{
 			base.OnNavigatedFrom(e);
 			dtm.DataRequested -= dtm_DataRequested;
+		}
+
+		private void backButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		{
+			NavigationHelper.GoBack();
 		}
 	}
 }

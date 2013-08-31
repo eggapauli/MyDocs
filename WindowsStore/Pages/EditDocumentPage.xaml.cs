@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace MyDocs.WindowsStore.Page
+namespace MyDocs.WindowsStore.Pages
 {
 	public sealed partial class EditDocumentPage : LayoutAwarePage, IEditDocumentPage
 	{

@@ -3,8 +3,10 @@ using GalaSoft.MvvmLight.Command;
 using MyDocs.Common.Collection;
 using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Contract.Service;
+using MyDocs.Common.Messages;
 using MyDocs.Common.Model;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -187,6 +189,7 @@ namespace MyDocs.Common.ViewModel
 		public RelayCommand<Document> ShowDocumentCommand { get; set; }
 		public RelayCommand<Category> RenameCategoryCommand { get; set; }
 		public RelayCommand<Category> DeleteCategoryCommand { get; set; }
+		public RelayCommand NavigateToSearchPageCommand { get; set; }
 
 		private void CreateCommands()
 		{
@@ -203,6 +206,8 @@ namespace MyDocs.Common.ViewModel
 
 			RenameCategoryCommand = new RelayCommand<Category>(RenameCategoryCommandHandler);
 			DeleteCategoryCommand = new RelayCommand<Category>(DeleteCategoryCommandHandler);
+
+			NavigateToSearchPageCommand = new RelayCommand(() => navigationService.Navigate(typeof(ISearchPage)));
 		}
 
 		private void AddDocumentCommandHandler()
@@ -217,6 +222,8 @@ namespace MyDocs.Common.ViewModel
 
 		private void DeleteDocumentHandler()
 		{
+			MessengerInstance.Send(new CloseFlyoutsMessage());
+
 			documentService.DeleteDocumentAsync(SelectedDocument).ContinueWith(t =>
 			{
 				if (t.IsFaulted) {
@@ -229,6 +236,12 @@ namespace MyDocs.Common.ViewModel
 
 		private void RenameCategoryCommandHandler(Category cat)
 		{
+			MessengerInstance.Send(new CloseFlyoutsMessage());
+
+			if (cat.Name == NewCategoryName) {
+				return;
+			}
+
 			foreach (var doc in cat.Documents) {
 				doc.Category = NewCategoryName;
 			}
@@ -242,6 +255,9 @@ namespace MyDocs.Common.ViewModel
 			}
 			else {
 				cat.Name = NewCategoryName;
+				// Re-sort
+				Categories.Remove(cat);
+				Categories.Add(cat);
 			}
 
 			var tasks = cat.Documents.Select(d => documentService.SaveDocumentAsync(d));
@@ -257,7 +273,9 @@ namespace MyDocs.Common.ViewModel
 
 		private void DeleteCategoryCommandHandler(Category cat)
 		{
-			var tasks = cat.Documents.Select(d => documentService.DeleteDocumentAsync(d));
+			MessengerInstance.Send(new CloseFlyoutsMessage());
+
+			var tasks = cat.Documents.Where(d => !(d is AdDocument)).ToList().Select(d => documentService.DeleteDocumentAsync(d));
 			Task.WhenAll(tasks).ContinueWith(t =>
 			{
 				if (t.IsFaulted) {

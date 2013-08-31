@@ -19,6 +19,7 @@ namespace MyDocs.Common.ViewModel
 		private string queryText;
 		private IList<Filter> filters;
 		private IEnumerable<Document> results;
+        private bool isInDefaultLayout;
 
 		public IEnumerable<string> CategoryNames
 		{
@@ -33,6 +34,8 @@ namespace MyDocs.Common.ViewModel
 				if (queryText != value) {
 					queryText = value;
 					RaisePropertyChanged(() => QueryText);
+
+                    var t = RefreshResults();
 				}
 			}
 		}
@@ -57,7 +60,10 @@ namespace MyDocs.Common.ViewModel
 				if (results != value) {
 					results = value;
 					RaisePropertyChanged(() => Results);
-					RaisePropertyChanged(() => HasResults);
+                    RaisePropertyChanged(() => HasResults);
+                    RaisePropertyChanged(() => ShowDefaultResults);
+                    RaisePropertyChanged(() => ShowTightResults);
+                    RaisePropertyChanged(() => ShowNoResultsText);
 				}
 			}
 		}
@@ -69,13 +75,34 @@ namespace MyDocs.Common.ViewModel
 
 		public bool HasResults
 		{
-			get { return Filters[0].Count > 0; }
+			get { return Filters.Single(f => f.Active).Count > 0; }
 		}
+
+        public bool IsInDefaultLayout
+        {
+            get { return isInDefaultLayout; }
+            set
+            {
+                if (Set(ref isInDefaultLayout, value)) {
+                    RaisePropertyChanged(() => ShowDefaultResults);
+                    RaisePropertyChanged(() => ShowTightResults);
+                }
+            }
+        }
+
+        public bool ShowDefaultResults { get { return HasResults && IsInDefaultLayout; } }
+
+        public bool ShowTightResults { get { return HasResults && !IsInDefaultLayout; } }
+
+        public bool ShowNoResultsText { get { return !HasResults; } }
 
 		public SearchViewModel(IDocumentService documentService, INavigationService navigationService)
 		{
 			this.documentService = documentService;
 			this.navigationService = navigationService;
+
+			queryText = "";
+
 			CreateCommands();
 			CreateDesignTimeData();
 		}
@@ -100,11 +127,11 @@ namespace MyDocs.Common.ViewModel
 		private void CreateDesignTimeData()
 		{
 			if (IsInDesignMode) {
-				QueryText = "Category 2";
+				QueryText = "Tag 1";
 				Filters = new List<SearchViewModel.Filter> {
 					new SearchViewModel.Filter("All", active: true)
 				};
-				Task t = RefreshResults();
+				var t = RefreshResults();
 			}
 		}
 

@@ -10,6 +10,7 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Controls = Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Controls;
 
 namespace MyDocs.WindowsStore.Common
 {
@@ -34,7 +35,7 @@ namespace MyDocs.WindowsStore.Common
     /// </list> 
     /// </summary> 
     [Windows.Foundation.Metadata.WebHostHidden]
-    public class LayoutAwarePage : Controls.Page
+    public class LayoutAwarePage : Page
     {
         private NavigationHelper navigationHelper;
 
@@ -47,7 +48,7 @@ namespace MyDocs.WindowsStore.Common
             get { return this.navigationHelper; }
         }
 
-        private List<Controls.Control> _layoutAwareControls;
+        private List<Control> _layoutAwareControls;
 
         /// <summary> 
         /// Initializes a new instance of the <see cref="LayoutAwarePage"/> class. 
@@ -105,13 +106,13 @@ namespace MyDocs.WindowsStore.Common
         /// <seealso cref="InvalidateVisualState"/> 
         public void StartLayoutUpdates(object sender, RoutedEventArgs e)
         {
-            var control = sender as Controls.Control;
+            var control = sender as Control;
             if (control == null) return;
             if (this._layoutAwareControls == null)
             {
                 // Start listening to view state changes when there are controls interested in updates 
                 Window.Current.SizeChanged += this.WindowSizeChanged;
-                this._layoutAwareControls = new List<Controls.Control>();
+                this._layoutAwareControls = new List<Control>();
             }
             this._layoutAwareControls.Add(control);
 
@@ -137,7 +138,7 @@ namespace MyDocs.WindowsStore.Common
         /// <seealso cref="StartLayoutUpdates"/> 
         public void StopLayoutUpdates(object sender, RoutedEventArgs e)
         {
-            var control = sender as Controls.Control;
+            var control = sender as Control;
             if (control == null || this._layoutAwareControls == null) return;
             this._layoutAwareControls.Remove(control);
             if (this._layoutAwareControls.Count == 0)

@@ -1,10 +1,11 @@
 ﻿<common:LayoutAwarePage
 	x:Name="pageRoot"
-	x:Class="MyDocs.WindowsStore.Page.MainPage"
+	x:Class="MyDocs.WindowsStore.Pages.MainPage"
 	DataContext="{Binding DocumentVM, Source={StaticResource Locator}}"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:common="using:MyDocs.WindowsStore.Common"
+	xmlns:controls="using:MyDocs.WindowsStore.Controls"
 	xmlns:model="using:MyDocs.Common.Model"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -22,7 +23,7 @@
 		<DataTemplate x:Key="DocumentTemplate">
 			<Grid HorizontalAlignment="Left" Width="250" Height="250">
 				<Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
-					<common:FilePreview File="{Binding TitlePhoto}" FileSize="Small" />
+					<controls:FilePreview File="{Binding TitlePhoto}" FileSize="Small" />
 				</Border>
 				<StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
 					<TextBlock
@@ -80,7 +81,7 @@
 		<DataTemplate x:Key="CategoryTemplate">
 			<Grid HorizontalAlignment="Left" Width="250" Height="250">
 				<Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
-					<common:FilePreview File="{Binding Group.TitlePhoto}" FileSize="Small" />
+					<controls:FilePreview File="{Binding Group.TitlePhoto}" FileSize="Small" />
 				</Border>
 				<StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
 					<TextBlock Text="{Binding Group.Name}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextBlockStyle}" Margin="15,0,15,20"/>
@@ -89,8 +90,7 @@
 			</Grid>
 		</DataTemplate>
 
-		<!-- TODO add MSAdvSDK8.1 -->
-		<!--<DataTemplate x:Key="AdTemplateFinance250x250">
+		<DataTemplate x:Key="AdTemplateFinance250x250">
 			<UI:AdControl
 				Visibility="{Binding DataContext.InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=pageRoot}"
 				ApplicationId="13b9c6b5-4d40-4077-bf6c-118dcb076e40"
@@ -99,9 +99,8 @@
 				Height="250"
 				Margin="0,0,0,0"
 				VerticalAlignment="Top"
-				Width="250"
-				IsPerformanceScrollingEnabled="True"/>
-		</DataTemplate>-->
+				Width="250"/>
+		</DataTemplate>
 
 		<!--<DataTemplate x:Key="AdTemplateShopping250x250">
 			<UI:AdControl
@@ -129,10 +128,8 @@
 				IsPerformanceScrollingEnabled="True"/>
 		</DataTemplate>-->
 
-		<!--<common:DocumentTemplateSelector x:Key="DefaultDocumentTemplateSelector"
-										 AdTemplate="{StaticResource AdTemplateFinance250x250}"
-										 DocumentTemplate="{StaticResource DocumentTemplate}" />-->
 		<common:DocumentTemplateSelector x:Key="DefaultDocumentTemplateSelector"
+										 AdTemplate="{StaticResource AdTemplateFinance250x250}"
 										 DocumentTemplate="{StaticResource DocumentTemplate}" />
 
 		<DataTemplate x:Key="DefaultGroupStyleHeaderTemplate">
@@ -147,7 +144,11 @@
 				</Grid.ColumnDefinitions>
 
 				<TextBlock Text="{Binding Name}" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Top" Margin="10 15 0 0" />
-				<AppBarButton Grid.Column="1" x:Uid="BtnRenameCat" Icon="Rename" IsCompact="True" IsEnabled="{Binding HasSelectedCategory}" Visibility="{Binding DataContext.InEditCategoryMode, ElementName=pageRoot, Converter={StaticResource BooleanToVisibilityConverter}}">
+				<AppBarButton Grid.Column="1"
+							  x:Uid="BtnRenameCat"
+							  Icon="Rename"
+							  IsCompact="True"
+							  Visibility="{Binding DataContext.InEditCategoryMode, ElementName=pageRoot, Converter={StaticResource BooleanToVisibilityConverter}}">
 					<AppBarButton.Flyout>
 						<Flyout>
 							<StackPanel>
@@ -157,7 +158,11 @@
 						</Flyout>
 					</AppBarButton.Flyout>
 				</AppBarButton>
-				<AppBarButton Grid.Column="2" x:Uid="BtnDeleteCat" Icon="Remove" IsCompact="True" IsEnabled="{Binding HasSelectedCategory}" Visibility="{Binding DataContext.InEditCategoryMode, ElementName=pageRoot, Converter={StaticResource BooleanToVisibilityConverter}}">
+				<AppBarButton Grid.Column="2"
+							  x:Uid="BtnDeleteCat"
+							  Icon="Remove"
+							  IsCompact="True"
+							  Visibility="{Binding DataContext.InEditCategoryMode, ElementName=pageRoot, Converter={StaticResource BooleanToVisibilityConverter}}">
 					<AppBarButton.Flyout>
 						<Flyout>
 							<StackPanel>
@@ -179,11 +184,11 @@
 		<CommandBar IsOpen="{Binding CategoriesEmpty}" x:Name="cmdBar">
 			<AppBarButton x:Uid="BtnAddDoc" Icon="Add" Label="Add" Command="{Binding AddDocumentCommand}" />
 			<AppBarButton x:Uid="BtnEditDoc" Icon="Edit" Label="Edit" Command="{Binding EditDocumentCommand}" Visibility="{Binding InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-			<AppBarButton x:Uid="BtnDeleteDoc" Icon="Delete" Label="Delete" IsEnabled="{Binding HasSelectedDocument}" Visibility="{Binding InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}}">
+			<AppBarButton x:Uid="BtnDeleteDoc" Name="btnDeleteDoc" Icon="Delete" Label="Delete" IsEnabled="{Binding HasSelectedDocument}" Visibility="{Binding InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}}">
 				<AppBarButton.Flyout>
 					<Flyout>
 						<StackPanel>
-							<TextBlock Text="Delete document?" />
+							<TextBlock Text="Delete document?" Style="{StaticResource BodyTextBlockStyle}" Margin="0 0 0 10" />
 							<Button Content="Delete" Command="{Binding DeleteDocumentCommand}" />
 						</StackPanel>
 					</Flyout>
@@ -192,11 +197,12 @@
 			
 			<CommandBar.SecondaryCommands>
 				<AppBarToggleButton Icon="Edit" Label="Toggle edit category mode" IsChecked="{Binding InEditCategoryMode, Mode=TwoWay}" Visibility="{Binding InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}}" />
+				<AppBarButton Icon="Find" Label="Search documents" Command="{Binding NavigateToSearchPageCommand}" />
 			</CommandBar.SecondaryCommands>
 		</CommandBar>
 	</Page.BottomAppBar>
 
-	<Grid>
+	<Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="140"/>
 			<RowDefinition Height="*"/>

@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace MyDocs.WindowsStore.Common
+namespace MyDocs.WindowsStore.Controls
 {
 	public sealed partial class FilePreview : UserControl
 	{
@@ -49,10 +49,12 @@ namespace MyDocs.WindowsStore.Common
 			var self = (FilePreview)d;
 			var photo = (Photo)e.NewValue;
 
-			self.Loading.IsActive = true;
-			// TODO handle errors?
-			self.Preview.Source = (BitmapImage)(await photo.Preview.GetResizedBitmapImageAsync(self.FileSize)).Image;
-			self.Loading.IsActive = false;
+			if (photo != null) {
+				self.Loading.IsActive = true;
+				// TODO handle errors?
+				self.Preview.Source = (BitmapImage)(await photo.Preview.GetResizedBitmapImageAsync(self.FileSize)).Image;
+				self.Loading.IsActive = false;
+			}
 		}
 
 		private static void FileSizePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

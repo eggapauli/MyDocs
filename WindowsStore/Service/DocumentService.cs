@@ -66,8 +66,8 @@ namespace MyDocs.WindowsStore.Service
 				return;
 			}
 #if DEBUG
-			//await ClearAllData();
-			//await InsertTestData();
+			await ClearAllData();
+			await InsertTestData();
 #endif
 			//await Task.Delay(2000);
 			//categories.Clear();
@@ -148,12 +148,14 @@ namespace MyDocs.WindowsStore.Service
 
 		public async Task DeleteDocumentAsync(Document doc)
 		{
-			var tasks = doc.Photos.Select(p => p.File.MoveAsync(tempFolder));
-			await Task.WhenAll(tasks);
+			if (!(doc is AdDocument)) {
+				var tasks = doc.Photos.Select(p => p.File.MoveAsync(tempFolder));
+				await Task.WhenAll(tasks);
 
-			docsDataContainer.Values.Remove(doc.Id.ToString());
+				docsDataContainer.Values.Remove(doc.Id.ToString());
 
-			DetachDocument(doc);
+				DetachDocument(doc);
+			}
 		}
 
 		public async Task RemovePhotosAsync(IEnumerable<IFile> photos)
