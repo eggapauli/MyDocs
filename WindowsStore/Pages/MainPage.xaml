@@ -1,0 +1,385 @@
+﻿<common:LayoutAwarePage
+	x:Name="pageRoot"
+	x:Class="MyDocs.WindowsStore.Pages.MainPage"
+	DataContext="{Binding DocumentVM, Source={StaticResource Locator}}"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:common="using:MyDocs.WindowsStore.Common"
+	xmlns:controls="using:MyDocs.WindowsStore.Controls"
+	xmlns:model="using:MyDocs.Common.Model"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:UI="using:Microsoft.Advertising.WinRT.UI"
+	mc:Ignorable="d">
+
+	<Page.Resources>
+		<CollectionViewSource
+			x:Name="groupedDocumentsViewSource"
+			Source="{Binding Categories}"
+			IsSourceGrouped="true"
+			ItemsPath="Documents"
+			d:Source="{Binding Categories}" />
+
+		<DataTemplate x:Key="DocumentTemplate">
+			<Grid HorizontalAlignment="Left" Width="250" Height="250">
+				<Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
+					<controls:FilePreview File="{Binding TitlePhoto}" FileSize="Small" />
+				</Border>
+				<StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
+					<TextBlock
+						Text="{Binding TagsString}"
+						Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}"
+						Style="{StaticResource TitleTextBlockStyle}"
+						Margin="15,0,15,0"/>
+					<TextBlock
+						Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}"
+						Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
+						Style="{StaticResource CaptionTextBlockStyle}"
+						TextWrapping="NoWrap"
+						Margin="15,0,15,0">
+							<Run Text="{Binding DateAdded, Converter={StaticResource DateToStringConverter}}" /> -
+							<Run Text="{Binding DateRemoved, Converter={StaticResource DateToStringConverter}}" />
+					</TextBlock>
+					<TextBlock
+						Visibility="{Binding HasInfiniteLifespan, Converter={StaticResource BooleanToVisibilityConverter}}"
+						Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
+						Style="{StaticResource CaptionTextBlockStyle}"
+						TextWrapping="NoWrap"
+						Margin="15,0,15,10">
+							<Run Text="{Binding DateAdded, Converter={StaticResource DateToStringConverter}}" />
+					</TextBlock>
+					<TextBlock
+						Text="{Binding DaysToRemoval, Converter={StaticResource TranslationConverter}, ConverterParameter='countDaysFormat'}"
+						Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}"
+						Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
+						Style="{StaticResource CaptionTextBlockStyle}"
+						TextWrapping="NoWrap"
+						Margin="15,0,15,10" />
+				</StackPanel>
+			</Grid>
+		</DataTemplate>
+
+		<!--<DataTemplate x:Key="SmallDocumentTemplate">
+			<Grid Width="292" Height="60" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
+					<Image Source="{Binding TitlePhoto.Thumbnail}" Stretch="UniformToFill" AutomationProperties.Name="{Binding Title}"/>
+				</Border>
+				<StackPanel Grid.Column="1" VerticalAlignment="Bottom">
+					<TextBlock Text="{Binding TagsString}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextStyle}" TextWrapping="NoWrap" Margin="15,0,15,0"/>
+					<TextBlock Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource CaptionTextStyle}" TextWrapping="NoWrap" Margin="15,0,15,10">
+						<Run Text="{Binding DateAdded, Converter={StaticResource DateToStringConverter}}" /> -
+						<Run Text="{Binding DateRemoved, Converter={StaticResource DateToStringConverter}}" />
+					</TextBlock>
+				</StackPanel>
+			</Grid>
+		</DataTemplate>-->
+
+		<DataTemplate x:Key="CategoryTemplate">
+			<Grid HorizontalAlignment="Left" Width="250" Height="250">
+				<Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
+					<controls:FilePreview File="{Binding Group.TitlePhoto}" FileSize="Small" />
+				</Border>
+				<StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
+					<TextBlock Text="{Binding Group.Name}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextBlockStyle}" Margin="15,0,15,20"/>
+					<TextBlock Text="{Binding Group.CountDocuments, Converter={StaticResource TranslationConverter}, ConverterParameter='countDocumentsFormat'}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="NoWrap" Margin="15,0,15,10" />
+				</StackPanel>
+			</Grid>
+		</DataTemplate>
+
+		<DataTemplate x:Key="AdTemplateFinance250x250">
+			<UI:AdControl
+				Visibility="{Binding DataContext.InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=pageRoot}"
+				ApplicationId="13b9c6b5-4d40-4077-bf6c-118dcb076e40"
+				AdUnitId="126826"
+				HorizontalAlignment="Left"
+				Height="250"
+				Margin="0,0,0,0"
+				VerticalAlignment="Top"
+				Width="250"/>
+		</DataTemplate>
+
+		<!--<DataTemplate x:Key="AdTemplateShopping250x250">
+			<UI:AdControl
+				Visibility="{Binding DataContext.InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=pageRoot}"
+				ApplicationId="13b9c6b5-4d40-4077-bf6c-118dcb076e40"
+				AdUnitId="126933"
+				HorizontalAlignment="Left"
+				Height="250"
+				Margin="0,0,0,0"
+				VerticalAlignment="Top"
+				Width="250"
+				IsPerformanceScrollingEnabled="True"/>
+		</DataTemplate>-->
+
+		<!--<DataTemplate x:Key="AdTemplate292x60">
+			<UI:AdControl
+				Visibility="{Binding DataContext.InZoomedOutView, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=pageRoot}"
+				ApplicationId="13b9c6b5-4d40-4077-bf6c-118dcb076e40"
+				AdUnitId="126881"
+				HorizontalAlignment="Left"
+				Height="60"
+				Margin="0,0,0,0"
+				VerticalAlignment="Top"
+				Width="292"
+				IsPerformanceScrollingEnabled="True"/>
+		</DataTemplate>-->
+
+		<common:DocumentTemplateSelector x:Key="DefaultDocumentTemplateSelector"
+										 AdTemplate="{StaticResource AdTemplateFinance250x250}"
+										 DocumentTemplate="{StaticResource DocumentTemplate}" />
+
+		<DataTemplate x:Key="DefaultGroupStyleHeaderTemplate">
+			<Grid x:Name="groupHeader" Width="250">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="70" />
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+
+				<TextBlock Text="{Binding Name}" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Top" Margin="10 15 0 0" />
+				<AppBarButton Grid.Column="1"
+							  x:Uid="BtnRenameCat"
+							  Icon="Rename"
+							  IsCompact="True"
+							  Visibility="{Binding DataContext.InEditCategoryMode, ElementName=pageRoot, Converter={StaticResource BooleanToVisibilityConverter}}">
+					<AppBarButton.Flyout>
+						<Flyout>
+							<StackPanel>
+								<TextBox Text="{Binding DataContext.NewCategoryName, ElementName=pageRoot, Mode=TwoWay}" PlaceholderText="New category name" Width="200" />
+								<Button Content="Rename" Command="{Binding DataContext.RenameCategoryCommand, ElementName=pageRoot}" CommandParameter="{Binding}" />
+							</StackPanel>
+						</Flyout>
+					</AppBarButton.Flyout>
+				</AppBarButton>
+				<AppBarButton Grid.Column="2"
+							  x:Uid="BtnDeleteCat"
+							  Icon="Remove"
+							  IsCompact="True"
+							  Visibility="{Binding DataContext.InEditCategoryMode, ElementName=pageRoot, Converter={StaticResource BooleanToVisibilityConverter}}">
+					<AppBarButton.Flyout>
+						<Flyout>
+							<StackPanel>
+								<TextBlock x:Uid="TxtDeleteCat" Text="Delete category and all of its documents?" Style="{StaticResource BodyTextBlockStyle}" Margin="0 0 0 10" />
+								<Button Content="Delete" Command="{Binding DataContext.DeleteCategoryCommand, ElementName=pageRoot}" CommandParameter="{Binding}" />
+							</StackPanel>
+						</Flyout>
+					</AppBarButton.Flyout>
+				</AppBarButton>
+			</Grid>
+		</DataTemplate>
+
+		<ItemsPanelTemplate x:Key="DefaultGroupStylePanel">
+			<VariableSizedWrapGrid Orientation="Vertical"/>
+		</ItemsPanelTemplate>
+	</Page.Resources>
+
+	<Page.BottomAppBar>
+		<CommandBar IsOpen="{Binding CategoriesEmpty}" x:Name="cmdBar">
+			<AppBarButton x:Uid="BtnAddDoc" Icon="Add" Label="Add" Command="{Binding AddDocumentCommand}" />
+			<AppBarButton x:Uid="BtnEditDoc" Icon="Edit" Label="Edit" Command="{Binding EditDocumentCommand}" Visibility="{Binding InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+			<AppBarButton x:Uid="BtnDeleteDoc" Name="btnDeleteDoc" Icon="Delete" Label="Delete" IsEnabled="{Binding HasSelectedDocument}" Visibility="{Binding InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}}">
+				<AppBarButton.Flyout>
+					<Flyout>
+						<StackPanel>
+							<TextBlock Text="Delete document?" Style="{StaticResource BodyTextBlockStyle}" Margin="0 0 0 10" />
+							<Button Content="Delete" Command="{Binding DeleteDocumentCommand}" />
+						</StackPanel>
+					</Flyout>
+				</AppBarButton.Flyout>
+			</AppBarButton>
+			
+			<CommandBar.SecondaryCommands>
+				<AppBarToggleButton Icon="Edit" Label="Toggle edit category mode" IsChecked="{Binding InEditCategoryMode, Mode=TwoWay}" Visibility="{Binding InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}}" />
+				<AppBarButton Icon="Find" Label="Search documents" Command="{Binding NavigateToSearchPageCommand}" />
+			</CommandBar.SecondaryCommands>
+		</CommandBar>
+	</Page.BottomAppBar>
+
+	<Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="140"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+
+		<ProgressRing Grid.RowSpan="2" IsActive="{Binding IsLoaded, Converter={StaticResource BooleanNegationConverter}}" Width="100" Height="100" />
+
+		<SemanticZoom Grid.Row="1" x:Name="semanticZoom" IsZoomOutButtonEnabled="{Binding CategoriesNotEmpty}">
+			<SemanticZoom.ZoomedOutView>
+				<GridView
+					x:Name="categoryGridView"
+					AutomationProperties.AutomationId="ItemsGridView"
+					AutomationProperties.Name="Items"
+					TabIndex="1"
+					Padding="116,0,116,46"
+					ItemTemplate="{StaticResource CategoryTemplate}"
+					SelectionMode="None"
+					Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" />
+			</SemanticZoom.ZoomedOutView>
+
+			<SemanticZoom.ZoomedInView>
+				<GridView
+						x:Name="documentGridView"
+						AutomationProperties.AutomationId="ItemsGridView"
+						AutomationProperties.Name="Items"
+						TabIndex="1"
+						Padding="116,0,116,46"
+						ItemsSource="{Binding Source={StaticResource groupedDocumentsViewSource}}"
+						ItemTemplateSelector="{StaticResource DefaultDocumentTemplateSelector}"
+						IsItemClickEnabled="True"
+						ItemClick="OnDocumentClick"
+						SelectionMode="Single"
+						SelectedItem="{Binding SelectedDocument, Mode=TwoWay}"
+						Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
+					<GridView.ItemsPanel>
+						<ItemsPanelTemplate>
+							<VirtualizingStackPanel Orientation="Horizontal"/>
+						</ItemsPanelTemplate>
+					</GridView.ItemsPanel>
+					<GridView.GroupStyle>
+						<GroupStyle HeaderTemplate="{Binding Source={StaticResource DefaultGroupStyleHeaderTemplate}}"
+									Panel="{Binding Source={StaticResource DefaultGroupStylePanel}}" />
+					</GridView.GroupStyle>
+				</GridView>
+			</SemanticZoom.ZoomedInView>
+		</SemanticZoom>
+
+		<SemanticZoom Grid.Row="1" x:Name="semanticZoomTight" Visibility="Collapsed" IsZoomOutButtonEnabled="{Binding CategoriesNotEmpty}">
+			<SemanticZoom.ZoomedOutView>
+				<ListView
+					x:Name="categoryListView"
+					AutomationProperties.AutomationId="ItemsListView"
+					AutomationProperties.Name="Items"
+					TabIndex="1"
+					Margin="10,0,0,0"
+					Padding="10,0,0,60"
+					ItemTemplate="{StaticResource CategoryTemplate}"
+					SelectionMode="None"
+					Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"
+					Width="287"/>
+			</SemanticZoom.ZoomedOutView>
+
+			<SemanticZoom.ZoomedInView>
+				<ListView
+						x:Name="documentListView"
+						AutomationProperties.AutomationId="ItemsListView"
+						AutomationProperties.Name="Items"
+						TabIndex="1"
+						Margin="10,0,0,0"
+						Padding="10,0,0,60"
+						ItemsSource="{Binding Source={StaticResource groupedDocumentsViewSource}}"
+						ItemTemplateSelector="{StaticResource DefaultDocumentTemplateSelector}"
+						IsItemClickEnabled="True"
+						ItemClick="OnDocumentClick"
+						SelectionMode="Single"
+						SelectedItem="{Binding SelectedDocument, Mode=TwoWay}"
+						Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"
+						Width="287">
+					<ListView.GroupStyle>
+						<GroupStyle HeaderTemplate="{Binding Source={StaticResource DefaultGroupStyleHeaderTemplate}}" Panel="{Binding Source={StaticResource DefaultGroupStylePanel}}" />
+					</ListView.GroupStyle>
+				</ListView>
+			</SemanticZoom.ZoomedInView>
+		</SemanticZoom>
+
+		<TextBlock Grid.Row="1" x:Uid="NoDocuments" x:Name="noDocumentsText" Text="No documents stored." Style="{StaticResource SubheaderTextBlockStyle}" Margin="120 0 0 0" Visibility="{Binding CategoriesEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+		<!-- Back button and page title -->
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="120"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<AppBarButton x:Name="backButton" Icon="Back" Height="95" Margin="10,46,10,0"
+                          Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}" 
+                          Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource Mode=Self}}"
+                          AutomationProperties.Name="Back"
+                          AutomationProperties.AutomationId="BackButton"
+                          AutomationProperties.ItemType="Navigation Button"/>
+			<TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
+                       IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
+		</Grid>
+
+		<VisualStateManager.VisualStateGroups>
+
+			<!-- Visual states reflect the application's view state -->
+			<VisualStateGroup x:Name="ApplicationViewStates">
+				<VisualState x:Name="DefaultLayout"/>
+				<!--<VisualState x:Name="Filled"/>
+
+				-->
+				<!-- The entire page respects the narrower 100-pixel margin convention for portrait -->
+				<!--
+				<VisualState x:Name="FullScreenPortrait">
+					<Storyboard>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PortraitBackButtonStyle}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="categoryGridView" Storyboard.TargetProperty="Padding">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="96,136,86,56"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="documentGridView" Storyboard.TargetProperty="Padding">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="96,136,86,56"/>
+						</ObjectAnimationUsingKeyFrames>
+					</Storyboard>
+				</VisualState>-->
+
+				<!--
+					The back button and title have different styles when snapped, and the list representation is substituted
+					for the grid displayed in all other view states
+				-->
+				<VisualState x:Name="TightLayout">
+					<Storyboard>
+						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="IsCompact">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="True"/>
+						</ObjectAnimationUsingKeyFrames>-->
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightHeaderTextBlockStyle}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="noDocumentsText" Storyboard.TargetProperty="Style">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightSubheaderTextBlockStyle}"/>
+						</ObjectAnimationUsingKeyFrames>
+
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="semanticZoomTight" Storyboard.TargetProperty="Visibility">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="semanticZoom" Storyboard.TargetProperty="Visibility">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+						</ObjectAnimationUsingKeyFrames>
+
+						<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="addDocButton" Storyboard.TargetProperty="IsCompact">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="True"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="editDocButton" Storyboard.TargetProperty="IsCompact">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="True"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="deleteDocButton" Storyboard.TargetProperty="IsCompact">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="True"/>
+                        </ObjectAnimationUsingKeyFrames>-->
+					</Storyboard>
+				</VisualState>
+			</VisualStateGroup>
+
+			<!--<VisualStateGroup x:Name="SemanticZoomStates">
+				<VisualState x:Name="ZoomInView" />
+
+				<VisualState x:Name="ZoomOutView">
+					<Storyboard>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="editDocButton" Storyboard.TargetProperty="(UIElement.IsEnabled)">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="False"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetName="deleteDocButton" Storyboard.TargetProperty="(UIElement.IsEnabled)">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="False"/>
+						</ObjectAnimationUsingKeyFrames>
+					</Storyboard>
+				</VisualState>
+			</VisualStateGroup>-->
+		</VisualStateManager.VisualStateGroups>
+	</Grid>
+</common:LayoutAwarePage>

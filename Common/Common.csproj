@@ -39,6 +39,7 @@
     <Compile Include="Comparer\DocumentComparer.cs" />
     <Compile Include="Contract\Page\IEditDocumentPage.cs" />
     <Compile Include="Contract\Page\IMainPage.cs" />
+    <Compile Include="Contract\Page\ISearchPage.cs" />
     <Compile Include="Contract\Page\IShowDocumentPage.cs" />
     <Compile Include="Contract\Service\ICameraService.cs" />
     <Compile Include="Contract\Service\IFilePickerService.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="Contract\Storage\IBitmapImage.cs" />
     <Compile Include="Contract\Storage\IFile.cs" />
     <Compile Include="Contract\Storage\IFolder.cs" />
+    <Compile Include="Messages\CloseFlyoutsMessage.cs" />
     <Compile Include="Model\AdDocument.cs" />
     <Compile Include="Model\Category.cs" />
     <Compile Include="Model\Document.cs" />

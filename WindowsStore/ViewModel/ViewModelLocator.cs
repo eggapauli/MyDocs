@@ -1,38 +1,17 @@
-/*
-  In App.xaml:
-  <Application.Resources>
-	  <vm:ViewModelLocator xmlns:vm="clr-namespace:MyDocs"
-						   x:Key="Locator" />
-  </Application.Resources>
-  
-  In the View:
-  DataContext="{Binding Source={StaticResource Locator}, Path=ViewModelName}"
-
-  You can also use Blend to do all this with the tool's support.
-  See http://www.galasoft.ch/mvvm
-*/
-
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
 using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Contract.Service;
 using MyDocs.Common.ViewModel;
-using MyDocs.WindowsStore.Page;
+using MyDocs.WindowsStore.Pages;
 using MyDocs.WindowsStore.Service;
 using MyDocs.WindowsStore.Service.Design;
 
 namespace MyDocs.WindowsStore.ViewModel
 {
-	/// <summary>
-	/// This class contains static references to all the view models in the
-	/// application and provides an entry point for the bindings.
-	/// </summary>
 	public class ViewModelLocator
 	{
-		/// <summary>
-		/// Initializes a new instance of the ViewModelLocator class.
-		/// </summary>
 		public ViewModelLocator()
 		{
 			ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
@@ -82,6 +61,10 @@ namespace MyDocs.WindowsStore.ViewModel
 				SimpleIoc.Default.Register<IShowDocumentPage, ShowDocumentPage>();
 			}
 
+			if (!SimpleIoc.Default.IsRegistered<ISearchPage>()) {
+				SimpleIoc.Default.Register<ISearchPage, SearchResultsPage>();
+			}
+
 			SimpleIoc.Default.Register<DocumentViewModel>();
 			SimpleIoc.Default.Register<EditDocumentViewModel>();
 			SimpleIoc.Default.Register<SearchViewModel>();
@@ -90,34 +73,22 @@ namespace MyDocs.WindowsStore.ViewModel
 
 		public DocumentViewModel DocumentVM
 		{
-			get
-			{
-				return ServiceLocator.Current.GetInstance<DocumentViewModel>();
-			}
+			get { return ServiceLocator.Current.GetInstance<DocumentViewModel>(); }
 		}
 
 		public EditDocumentViewModel EditDocumentVM
 		{
-			get
-			{
-				return ServiceLocator.Current.GetInstance<EditDocumentViewModel>();
-			}
+			get { return ServiceLocator.Current.GetInstance<EditDocumentViewModel>(); }
 		}
 
 		public SearchViewModel SearchVM
 		{
-			get
-			{
-				return ServiceLocator.Current.GetInstance<SearchViewModel>();
-			}
+			get { return ServiceLocator.Current.GetInstance<SearchViewModel>(); }
 		}
 
 		public SettingsViewModel SettingsVM
 		{
-			get
-			{
-				return ServiceLocator.Current.GetInstance<SettingsViewModel>();
-			}
+			get { return ServiceLocator.Current.GetInstance<SettingsViewModel>(); }
 		}
 
 		public static void Cleanup()

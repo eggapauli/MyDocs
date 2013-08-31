@@ -109,11 +109,12 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\VisualTreeHelperEx.cs" />
     <Compile Include="Converter\DateTimeToDateTimeOffsetConverter.cs" />
     <Compile Include="Converter\DateToStringConverter.cs" />
     <Compile Include="Converter\TranslationConverter.cs" />
     <Compile Include="Common\DocumentTemplateSelector.cs" />
-    <Compile Include="Common\FilePreview.xaml.cs">
+    <Compile Include="Controls\FilePreview.xaml.cs">
       <DependentUpon>FilePreview.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\NavigationHelper.cs" />
@@ -122,10 +123,10 @@
     <Compile Include="Service\ModernUIService.cs" />
     <Compile Include="Service\SettingsService.cs" />
     <Compile Include="Common\StorageExtension.cs" />
-    <Compile Include="Page\EditDocumentPage.xaml.cs">
+    <Compile Include="Pages\EditDocumentPage.xaml.cs">
       <DependentUpon>EditDocumentPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Page\MainPage.xaml.cs">
+    <Compile Include="Pages\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -133,7 +134,7 @@
     <Compile Include="Converter\BooleanNegationConverter.cs" />
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
-    <Compile Include="Page\SearchResultsPage.xaml.cs">
+    <Compile Include="Pages\SearchResultsPage.xaml.cs">
       <DependentUpon>SearchResultsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Service\Design\DesignDocumentService.cs" />
@@ -141,10 +142,10 @@
     <Compile Include="Service\NavigationService.cs" />
     <Compile Include="Service\TranslatorService.cs" />
     <Compile Include="Service\FilePickerService.cs" />
-    <Compile Include="Page\SettingsPage.xaml.cs">
+    <Compile Include="Pages\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Page\ShowDocumentPage.xaml.cs">
+    <Compile Include="Pages\ShowDocumentPage.xaml.cs">
       <DependentUpon>ShowDocumentPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Storage\WindowsStoreApplicationDataContainer.cs" />
@@ -178,7 +179,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Common\FilePreview.xaml">
+    <Page Include="Controls\FilePreview.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -187,23 +188,23 @@
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
-    <Page Include="Page\EditDocumentPage.xaml">
+    <Page Include="Pages\EditDocumentPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Page\MainPage.xaml">
+    <Page Include="Pages\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Page\SearchResultsPage.xaml">
+    <Page Include="Pages\SearchResultsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Page\SettingsPage.xaml">
+    <Page Include="Pages\SettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Page\ShowDocumentPage.xaml">
+    <Page Include="Pages\ShowDocumentPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -232,7 +233,11 @@
       <Name>Common</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <SDKReference Include="MSAdvertisingXaml, Version=8.1">
+      <Name>Microsoft Advertising SDK for Windows 8.1 %28Xaml%29</Name>
+    </SDKReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>

@@ -10,6 +10,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Controls = Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Controls;
 
 namespace MyDocs.WindowsStore.Common
 {
@@ -60,8 +61,8 @@ namespace MyDocs.WindowsStore.Common
     [Windows.Foundation.Metadata.WebHostHidden]
     public class NavigationHelper : DependencyObject
     {
-        private Controls.Page Page { get; set; }
-        private Controls.Frame Frame { get { return this.Page.Frame; } }
+        private Page Page { get; set; }
+        private Frame Frame { get { return this.Page.Frame; } }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NavigationHelper"/> class.
@@ -69,7 +70,7 @@ namespace MyDocs.WindowsStore.Common
         /// <param name="page">A reference to the current page used for navigation.  
         /// This reference allows for frame manipulation and to ensure that keyboard 
         /// navigation requests only occur when the page is occupying the entire window.</param>
-        public NavigationHelper(Controls.Page page)
+        public NavigationHelper(Page page)
         {
             this.Page = page;
 

@@ -1,7 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Ioc;
 using MyDocs.Common.Contract.Service;
 using MyDocs.WindowsStore.Common;
-using MyDocs.WindowsStore.Page;
+using MyDocs.WindowsStore.Pages;
 using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
