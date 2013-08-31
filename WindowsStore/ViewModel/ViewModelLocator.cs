@@ -41,13 +41,21 @@ namespace MyDocs.WindowsStore.ViewModel
 				SimpleIoc.Default.Register<ICameraService, CameraService>();
 			}
 
-			if (!SimpleIoc.Default.IsRegistered<IFilePickerService>()) {
-				SimpleIoc.Default.Register<IFilePickerService, FilePickerService>();
+			if (!SimpleIoc.Default.IsRegistered<IFileOpenPickerService>()) {
+				SimpleIoc.Default.Register<IFileOpenPickerService, FileOpenPickerService>();
 			}
+
+            if (!SimpleIoc.Default.IsRegistered<IFileSavePickerService>()) {
+                SimpleIoc.Default.Register<IFileSavePickerService, FileSavePickerService>();
+            }
 
 			if (!SimpleIoc.Default.IsRegistered<ITranslatorService>()) {
 				SimpleIoc.Default.Register<ITranslatorService, TranslatorService>();
 			}
+
+            if (!SimpleIoc.Default.IsRegistered<ILicenseService>()) {
+                SimpleIoc.Default.Register<ILicenseService, LicenseService>();
+            }
 
 			if (!SimpleIoc.Default.IsRegistered<IMainPage>()) {
 				SimpleIoc.Default.Register<IMainPage, MainPage>();

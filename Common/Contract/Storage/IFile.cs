@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 
 namespace MyDocs.Common.Contract.Storage
 {
@@ -14,5 +15,7 @@ namespace MyDocs.Common.Contract.Storage
 		Task<IFile> CopyAsync(IFolder folder);
 		Task<IFile> CopyAsync(IFolder folder, string name);
 		Task DeleteAsync();
+        Task<Stream> OpenReadAsync();
+        Task<Stream> OpenWriteAsync();
 	}
 }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MyDocs.Common.Contract.Service
 {
-	public interface IFilePickerService
+	public interface IFileOpenPickerService
 	{
 		Task<IEnumerable<Photo>> PickMultiplePhotosAsync();
 	}

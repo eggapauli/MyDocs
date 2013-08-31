@@ -5,6 +5,7 @@ using MyDocs.WindowsStore.Pages;
 using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Store;
 using Windows.System;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml;

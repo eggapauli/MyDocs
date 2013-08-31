@@ -109,6 +109,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\Global.cs" />
     <Compile Include="Common\VisualTreeHelperEx.cs" />
     <Compile Include="Converter\DateTimeToDateTimeOffsetConverter.cs" />
     <Compile Include="Converter\DateToStringConverter.cs" />
@@ -120,6 +121,8 @@
     <Compile Include="Common\NavigationHelper.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="Service\CameraService.cs" />
+    <Compile Include="Service\FileSavePickerService.cs" />
+    <Compile Include="Service\LicenseService.cs" />
     <Compile Include="Service\ModernUIService.cs" />
     <Compile Include="Service\SettingsService.cs" />
     <Compile Include="Common\StorageExtension.cs" />
@@ -141,7 +144,7 @@
     <Compile Include="Service\DocumentService.cs" />
     <Compile Include="Service\NavigationService.cs" />
     <Compile Include="Service\TranslatorService.cs" />
-    <Compile Include="Service\FilePickerService.cs" />
+    <Compile Include="Service\FileOpenPickerService.cs" />
     <Compile Include="Pages\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>

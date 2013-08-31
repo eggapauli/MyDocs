@@ -197,7 +197,8 @@
 			
 			<CommandBar.SecondaryCommands>
 				<AppBarToggleButton Icon="Edit" Label="Toggle edit category mode" IsChecked="{Binding InEditCategoryMode, Mode=TwoWay}" Visibility="{Binding InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}}" />
-				<AppBarButton Icon="Find" Label="Search documents" Command="{Binding NavigateToSearchPageCommand}" />
+                <AppBarButton Icon="Find" Label="Search documents" Command="{Binding NavigateToSearchPageCommand}" />
+                <AppBarButton Icon="Download" Label="Export documents" Command="{Binding ExportDocumentsCommand}" />
 			</CommandBar.SecondaryCommands>
 		</CommandBar>
 	</Page.BottomAppBar>

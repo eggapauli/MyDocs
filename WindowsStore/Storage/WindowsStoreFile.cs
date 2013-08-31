@@ -1,6 +1,7 @@
 ﻿using MyDocs.WindowsStore.Common;
 using MyDocs.Common.Contract.Storage;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
@@ -93,5 +94,15 @@ namespace MyDocs.WindowsStore.Storage
 		{
 			await File.DeleteAsync();
 		}
-	}
+
+        public async Task<Stream> OpenReadAsync()
+        {
+            return (await File.OpenReadAsync()).AsStream();
+        }
+
+        public async Task<Stream> OpenWriteAsync()
+        {
+            return (await File.OpenAsync(FileAccessMode.ReadWrite)).AsStream();
+        }
+    }
 }

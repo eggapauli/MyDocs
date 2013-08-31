@@ -13,11 +13,11 @@ using Windows.Storage.Streams;
 
 namespace MyDocs.WindowsStore.Service
 {
-	public class FilePickerService : IFilePickerService
+	public class FileOpenPickerService : IFileOpenPickerService
 	{
 		private IUserInterfaceService uiService;
 
-		public FilePickerService(IUserInterfaceService uiService)
+		public FileOpenPickerService(IUserInterfaceService uiService)
 		{
 			this.uiService = uiService;
 		}

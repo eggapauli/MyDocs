@@ -18,7 +18,7 @@ namespace MyDocs.Common.ViewModel
 		private readonly INavigationService navigator;
 		private readonly IUserInterfaceService uiService;
 		private readonly ICameraService cameraService;
-		private readonly IFilePickerService filePicker;
+		private readonly IFileOpenPickerService filePicker;
 
 		#region Properties
 
@@ -168,7 +168,7 @@ namespace MyDocs.Common.ViewModel
 			INavigationService navigator,
 			IUserInterfaceService uiService,
 			ICameraService cameraService,
-			IFilePickerService filePicker)
+			IFileOpenPickerService filePicker)
 		{
 			this.documentService = documentService;
 			this.navigator = navigator;
