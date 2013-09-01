@@ -16,6 +16,7 @@ namespace MyDocs.Common.ViewModel
     {
         private IDocumentService documentService;
         private INavigationService navigationService;
+        private ITranslatorService translatorService;
 
         private string queryText;
         private IList<Filter> filters;
@@ -95,19 +96,17 @@ namespace MyDocs.Common.ViewModel
 
         public bool ShowNoResultsText { get { return !HasResults; } }
 
-        public SearchViewModel(IDocumentService documentService, INavigationService navigationService)
+        public SearchViewModel(
+            IDocumentService documentService,
+            INavigationService navigationService,
+            ITranslatorService translatorService)
         {
             this.documentService = documentService;
             this.navigationService = navigationService;
+            this.translatorService = translatorService;
 
             QueryText = "";
-            Filters = new ObservableCollection<Filter> {
-                new Filter("All", active: true)
-            };
-            foreach (string categoryName in CategoryNames) {
-                Filters.Add(new SearchViewModel.Filter(categoryName));
-            }
-
+            
             CreateCommands();
             CreateDesignTimeData();
         }
@@ -134,26 +133,36 @@ namespace MyDocs.Common.ViewModel
             if (IsInDesignMode) {
                 QueryText = "Tag 1";
                 Filters = new List<Filter> {
-                    new Filter("All", active: true)
+                    new Filter(translatorService.Translate("all"), active: true, isAll: true)
                 };
                 var t = RefreshResults();
             }
         }
 
+        public void LoadFilters()
+        {
+            Filters = new ObservableCollection<Filter> {
+                new Filter(translatorService.Translate("all"), active: true, isAll: true)
+            };
+            foreach (string categoryName in CategoryNames) {
+                Filters.Add(new SearchViewModel.Filter(categoryName));
+            }
+        }
+
         public async Task RefreshResults()
         {
-            var searchWords = QueryText.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var searchWords = QueryText.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(w => w.Trim());
 
             await documentService.LoadCategoriesAsync();
 
             var docs = (from category in documentService.Categories
                         from doc in category.Documents
                         from word in searchWords
-                        where doc.Tags.Any(t => t.ToLower().Contains(word))
+                        where doc.Tags.Any(t => t.IndexOf(word, StringComparison.CurrentCultureIgnoreCase) >= 0)
                         select doc).ToList();
             foreach (var filter in Filters) {
                 IEnumerable<Document> results;
-                if (filter.Name == "All") {
+                if (filter.IsAll) {
                     filter.Count = docs.Count;
                     results = docs;
                 }
@@ -172,12 +181,14 @@ namespace MyDocs.Common.ViewModel
             private string name;
             private int count;
             private bool active;
+            private bool isAll;
 
-            public Filter(string name, int count = 0, bool active = false)
+            public Filter(string name, int count = 0, bool active = false, bool isAll = false)
             {
                 Name = name;
                 Count = count;
                 Active = active;
+                IsAll = isAll;
             }
 
             public override String ToString()
@@ -219,6 +230,18 @@ namespace MyDocs.Common.ViewModel
                     if (active != value) {
                         active = value;
                         RaisePropertyChanged(() => Active);
+                    }
+                }
+            }
+
+            public bool IsAll
+            {
+                get { return isAll; }
+                set
+                {
+                    if (isAll != value) {
+                        isAll = value;
+                        RaisePropertyChanged(() => IsAll);
                     }
                 }
             }

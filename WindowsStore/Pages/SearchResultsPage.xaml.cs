@@ -32,6 +32,11 @@ namespace MyDocs.WindowsStore.Pages
             Window.Current.SizeChanged += WindowSizeChanged;
         }
 
+        protected override void LoadState(object sender, LoadStateEventArgs e)
+        {
+            ViewModel.LoadFilters();
+        }
+
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);

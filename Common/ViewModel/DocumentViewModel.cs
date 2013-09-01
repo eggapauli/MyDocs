@@ -193,7 +193,7 @@ namespace MyDocs.Common.ViewModel
                 await documentService.LoadCategoriesAsync();
                 error = false;
             }
-            catch (Exception) {
+            catch (Exception ex) {
                 error = true;
             }
             IsLoaded = true;

@@ -259,9 +259,12 @@
     <value>Keine Ergebnisse für Ihre Suchanfrage gefunden.</value>
   </data>
   <data name="Search_QueryText.PlaceholderText" xml:space="preserve">
-    <value>Beistrichgetrennte Liste mit Schlagwörter</value>
+    <value>Leerzeichengetrennte Liste mit Schlagwörter</value>
   </data>
   <data name="Search_ResultText.Text" xml:space="preserve">
     <value>Ergebnisse für</value>
+  </data>
+  <data name="all" xml:space="preserve">
+    <value>Alle</value>
   </data>
 </root>

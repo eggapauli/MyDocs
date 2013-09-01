@@ -259,9 +259,12 @@
     <value>No results match your search.</value>
   </data>
   <data name="Search_QueryText.PlaceholderText" xml:space="preserve">
-    <value>Comma-separated list of document tags</value>
+    <value>Space-separated list of document tags</value>
   </data>
   <data name="Search_ResultText.Text" xml:space="preserve">
     <value>Results for</value>
+  </data>
+  <data name="all" xml:space="preserve">
+    <value>All</value>
   </data>
 </root>
