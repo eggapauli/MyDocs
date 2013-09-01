@@ -115,6 +115,34 @@ namespace MyDocs.WindowsStore.Service
 			return cat;
 		}
 
+        public async Task RenameCategoryAsync(Category category, string newName)
+        {
+            if (category.Name == newName) {
+                return;
+            }
+
+            foreach (var doc in category.Documents) {
+                doc.Category = newName;
+            }
+
+            var existingCat = Categories.FirstOrDefault(c => c.Name == newName);
+            if (existingCat != null) {
+                foreach (var doc in category.Documents) {
+                    existingCat.Documents.Add(doc);
+                }
+                Categories.Remove(category);
+            }
+            else {
+                category.Name = newName;
+                // Re-sort
+                Categories.Remove(category);
+                Categories.Add(category);
+            }
+
+            var tasks = category.Documents.Select(SaveDocumentAsync);
+            await Task.WhenAll(tasks);
+        }
+
 		public async Task<Document> GetDocumentById(Guid id)
 		{
 			await LoadCategoriesAsync();
@@ -184,5 +212,5 @@ namespace MyDocs.WindowsStore.Service
 			}
 			await Task.WhenAll(tasks);
 		}
-	}
+    }
 }

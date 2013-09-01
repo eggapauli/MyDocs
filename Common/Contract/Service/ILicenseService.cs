@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyDocs.Common.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace MyDocs.Common.Contract.Service
 {
     public interface ILicenseService
     {
-        Task<bool> TryGetLicenseAsync(string featureName);
+        Task<LicenseStatus> TryGetLicenseAsync(string featureName);
     }
 }

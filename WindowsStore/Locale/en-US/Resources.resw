@@ -201,4 +201,25 @@
   <data name="protectedDocumentError" xml:space="preserve">
     <value>Couldn't open file because it is protected by a password.</value>
   </data>
+  <data name="exportLocked" xml:space="preserve">
+    <value>Exporting documents is still locked.</value>
+  </data>
+  <data name="exportUnlockError" xml:space="preserve">
+    <value>An error occured while unlocking the feature.</value>
+  </data>
+  <data name="archive" xml:space="preserve">
+    <value>Archive</value>
+  </data>
+  <data name="exportFinished" xml:space="preserve">
+    <value>All documents have been exported successfully.</value>
+  </data>
+  <data name="loadDocumentsError" xml:space="preserve">
+    <value>An error occured while loading your documents.</value>
+  </data>
+  <data name="documentNotFound" xml:space="preserve">
+    <value>The document couldn't be found.</value>
+  </data>
+  <data name="fileLoadError" xml:space="preserve">
+    <value>An error occured while loading the file.</value>
+  </data>
 </root>

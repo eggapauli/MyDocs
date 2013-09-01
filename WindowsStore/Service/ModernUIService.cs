@@ -22,5 +22,15 @@ namespace MyDocs.WindowsStore.Service
 			}
 			await new MessageDialog(msg).ShowAsync();
 		}
-	}
+
+
+        public async Task ShowNotificationAsync(string msgKey)
+        {
+            string msg = translator.Translate(msgKey);
+			if (String.IsNullOrEmpty(msg)) {
+                throw new ArgumentException("Failed to translate message", "msgKey");
+			}
+			await new MessageDialog(msg).ShowAsync();
+        }
+    }
 }

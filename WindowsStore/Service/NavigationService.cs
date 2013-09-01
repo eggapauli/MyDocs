@@ -8,17 +8,17 @@ namespace MyDocs.WindowsStore.Service
 {
 	public class NavigationService : INavigationService
 	{
-		public void Navigate(Type interfaceType)
+		public void Navigate<T>()
 		{
 			// TODO get type without creating an instance
-			var type = SimpleIoc.Default.GetInstance(interfaceType).GetType();
+			var type = SimpleIoc.Default.GetInstance<T>().GetType();
 			((Frame)Window.Current.Content).Navigate(type);
 		}
 
-		public void Navigate(Type interfaceType, object parameter)
+		public void Navigate<T>(object parameter)
 		{
 			// TODO get type without creating an instance
-			var type = SimpleIoc.Default.GetInstance(interfaceType).GetType();
+			var type = SimpleIoc.Default.GetInstance<T>().GetType();
 			((Frame)Window.Current.Content).Navigate(type, parameter);
 		}
 

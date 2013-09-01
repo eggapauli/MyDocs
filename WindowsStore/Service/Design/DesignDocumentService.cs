@@ -70,6 +70,11 @@ namespace MyDocs.WindowsStore.Service.Design
 			}
 		}
 
+        public Task RenameCategoryAsync(Category cat, string NewCategoryName)
+        {
+            throw new NotImplementedException();
+        }
+
 		public Task SaveDocumentAsync(Document document)
 		{
 			throw new NotImplementedException();
@@ -99,5 +104,5 @@ namespace MyDocs.WindowsStore.Service.Design
 		{
 			throw new NotImplementedException();
 		}
-	}
+    }
 }

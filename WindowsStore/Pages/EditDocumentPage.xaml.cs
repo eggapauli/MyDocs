@@ -1,4 +1,6 @@
-﻿using MyDocs.Common.Contract.Page;
+﻿using GalaSoft.MvvmLight.Ioc;
+using MyDocs.Common.Contract.Page;
+using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Model;
 using MyDocs.Common.ViewModel;
 using MyDocs.WindowsStore.Common;
@@ -22,26 +24,14 @@ namespace MyDocs.WindowsStore.Pages
 
 		protected override void LoadState(object sender, LoadStateEventArgs args)
 		{
-			ViewModel.LoadAsync().ContinueWith(t =>
-			{
-				if (t.IsFaulted) {
-					// TODO show error
-				}
-			});
 			if (args.PageState != null && args.PageState.ContainsKey("Id")) {
 				args.PageState.ConvertToDocumentAsync().ContinueWith(t =>
 				{
-					if (t.IsFaulted) {
-						// TODO show error
-					}
-					else {
-						ViewModel.EditingDocument = t.Result;
-						ViewModel.ShowNewCategoryInput = (bool)args.PageState["ShowNewCategoryInput"];
-                        ViewModel.UseCategoryName = (string)args.PageState["UseCategoryName"];
-                        ViewModel.NewCategoryName = (string)args.PageState["NewCategoryName"];
-					}
-				}, TaskScheduler.FromCurrentSynchronizationContext());
-
+                    ViewModel.EditingDocument = t.Result;
+                    ViewModel.ShowNewCategoryInput = (bool)args.PageState["ShowNewCategoryInput"];
+                    ViewModel.UseCategoryName = (string)args.PageState["UseCategoryName"];
+                    ViewModel.NewCategoryName = (string)args.PageState["NewCategoryName"];
+				}, TaskContinuationOptions.ExecuteSynchronously);
 			}
 			else if (args.NavigationParameter != null) {
                 ViewModel.EditingDocumentId = (Guid)args.NavigationParameter;

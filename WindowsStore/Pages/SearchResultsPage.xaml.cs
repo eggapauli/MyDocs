@@ -43,29 +43,6 @@ namespace MyDocs.WindowsStore.Pages
             ViewModel.IsInDefaultLayout = DetermineVisualState(Window.Current.Bounds.Width) == "DefaultLayout";
         }
 
-        protected override void LoadState(object sender, LoadStateEventArgs args)
-        {
-            //var queryText = args.NavigationParameter as string;
-
-            // TODO: Application-specific searching logic.  The search process is responsible for
-            //       creating a list of user-selectable result categories:
-            //
-            //       filterList.Add(new Filter("<filter name>", <result count>));
-            //
-            //       Only the first filter, typically "All", should pass true as a third argument in
-            //       order to start in an active state.  Results for the active filter are provided
-            //       in Filter_SelectionChanged below.
-
-            //ViewModel.QueryText = queryText;
-            IList<SearchViewModel.Filter> filters = new ObservableCollection<SearchViewModel.Filter> {
-				new SearchViewModel.Filter("All", active: true)
-			};
-            foreach (string categoryName in ViewModel.CategoryNames) {
-                filters.Add(new SearchViewModel.Filter(categoryName));
-            }
-            ViewModel.Filters = filters;
-        }
-
         protected override string DetermineVisualState(double width)
         {
             return (width < 1366 / 2) ? "TightLayout" : "DefaultLayout";

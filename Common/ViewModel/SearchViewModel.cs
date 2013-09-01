@@ -5,6 +5,7 @@ using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Model;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -102,6 +103,12 @@ namespace MyDocs.Common.ViewModel
 			this.navigationService = navigationService;
 
 			queryText = "";
+            Filters = new ObservableCollection<Filter> {
+				new SearchViewModel.Filter("All", active: true)
+			};
+            foreach (string categoryName in CategoryNames) {
+                Filters.Add(new SearchViewModel.Filter(categoryName));
+            }
 
 			CreateCommands();
 			CreateDesignTimeData();
@@ -113,12 +120,12 @@ namespace MyDocs.Common.ViewModel
 
 		private void CreateCommands()
 		{
-			ShowDocumentCommand = new RelayCommand<Document>(ShowDocumentCommandHandler);
+            ShowDocumentCommand = new RelayCommand<Document>(ShowDocument);
 		}
 
-		private void ShowDocumentCommandHandler(Document doc)
+        private void ShowDocument(Document doc)
 		{
-			navigationService.Navigate(typeof(IShowDocumentPage), doc.Id);
+            navigationService.Navigate<IShowDocumentPage>(doc.Id);
 		}
 
 		#endregion

@@ -22,6 +22,7 @@ namespace MyDocs.Common.ViewModel
         private readonly IUserInterfaceService uiService;
         private readonly ILicenseService licenseService;
         private readonly IFileSavePickerService fileSavePickerService;
+        private readonly ITranslatorService translatorService;
 
         #region Properties
 
@@ -100,7 +101,7 @@ namespace MyDocs.Common.ViewModel
                 documentService.GetDocumentById(value).ContinueWith(t =>
                 {
                     if (t.IsFaulted) {
-                        // TODO show error
+                        uiService.ShowErrorAsync("documentNotFound");
                         SelectedDocument = new Document();
                     }
                     else {
@@ -158,13 +159,15 @@ namespace MyDocs.Common.ViewModel
             IUserInterfaceService uiService,
             INavigationService navigationService,
             ILicenseService licenseService,
-            IFileSavePickerService fileSavePickerService)
+            IFileSavePickerService fileSavePickerService,
+            ITranslatorService translatorService)
         {
             this.documentService = documentService;
             this.navigationService = navigationService;
             this.uiService = uiService;
             this.licenseService = licenseService;
             this.fileSavePickerService = fileSavePickerService;
+            this.translatorService = translatorService;
 
             CreateCommands();
             CreateDesignTimeData();
@@ -185,8 +188,18 @@ namespace MyDocs.Common.ViewModel
 
         public async Task LoadAsync()
         {
-            await documentService.LoadCategoriesAsync();
+            bool error;
+            try {
+                await documentService.LoadCategoriesAsync();
+                error = false;
+            }
+            catch (Exception) {
+                error = true;
+            }
             IsLoaded = true;
+            if (error) {
+                await uiService.ShowErrorAsync("loadDocumentsError");
+            }
         }
 
         #region Commands
@@ -202,123 +215,101 @@ namespace MyDocs.Common.ViewModel
 
         private void CreateCommands()
         {
-            AddDocumentCommand = new RelayCommand(AddDocumentCommandHandler);
-            EditDocumentCommand = new RelayCommand(EditDocumentCommandHandler,
+            AddDocumentCommand = new RelayCommand(AddDocument);
+            EditDocumentCommand = new RelayCommand(EditDocument,
                 () => SelectedDocument != null && !(SelectedDocument is AdDocument));
-            DeleteDocumentCommand = new RelayCommand(DeleteDocumentHandler,
+            DeleteDocumentCommand = new RelayCommand(DeleteDocumentAsync,
                 () => SelectedDocument != null && !(SelectedDocument is AdDocument));
             ShowDocumentCommand = new RelayCommand<Document>(
-                doc => navigationService.Navigate(typeof(IShowDocumentPage), doc.Id),
+                doc => navigationService.Navigate<IShowDocumentPage>(doc.Id),
                 doc => doc != null && !(doc is AdDocument));
 
-            RenameCategoryCommand = new RelayCommand<Category>(RenameCategoryCommandHandler);
-            DeleteCategoryCommand = new RelayCommand<Category>(DeleteCategoryCommandHandler);
+            RenameCategoryCommand = new RelayCommand<Category>(RenameCategoryAsync);
+            DeleteCategoryCommand = new RelayCommand<Category>(DeleteCategoryAsync);
 
-            NavigateToSearchPageCommand = new RelayCommand(() => navigationService.Navigate(typeof(ISearchPage)));
+            NavigateToSearchPageCommand = new RelayCommand(() => navigationService.Navigate<ISearchPage>());
 
-            ExportDocumentsCommand = new RelayCommand(ExportDocuments);
+            ExportDocumentsCommand = new RelayCommand(ExportDocumentsAsync);
         }
 
-        private void AddDocumentCommandHandler()
+        private void AddDocument()
         {
-            navigationService.Navigate(typeof(IEditDocumentPage));
+            navigationService.Navigate<IEditDocumentPage>();
         }
 
-        private void EditDocumentCommandHandler()
+        private void EditDocument()
         {
-            navigationService.Navigate(typeof(IEditDocumentPage), SelectedDocument.Id);
+            navigationService.Navigate<IEditDocumentPage>(SelectedDocument.Id);
         }
 
-        private void DeleteDocumentHandler()
-        {
-            MessengerInstance.Send(new CloseFlyoutsMessage());
-
-            documentService.DeleteDocumentAsync(SelectedDocument).ContinueWith(t =>
-            {
-                if (t.IsFaulted) {
-                    var tmp = uiService.ShowErrorAsync("deleteDocError");
-                }
-                RaisePropertyChanged(() => CategoriesEmpty);
-                RaisePropertyChanged(() => CategoriesNotEmpty);
-            }, TaskScheduler.FromCurrentSynchronizationContext());
-        }
-
-        private void RenameCategoryCommandHandler(Category cat)
+        private async void DeleteDocumentAsync()
         {
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
-            if (cat.Name == NewCategoryName) {
-                return;
-            }
+            await documentService.DeleteDocumentAsync(SelectedDocument);
 
-            foreach (var doc in cat.Documents) {
-                doc.Category = NewCategoryName;
-            }
-
-            var existingCat = Categories.FirstOrDefault(c => c.Name == NewCategoryName);
-            if (existingCat != null) {
-                foreach (var doc in cat.Documents) {
-                    existingCat.Documents.Add(doc);
-                }
-                Categories.Remove(cat);
-            }
-            else {
-                cat.Name = NewCategoryName;
-                // Re-sort
-                Categories.Remove(cat);
-                Categories.Add(cat);
-            }
-
-            var tasks = cat.Documents.Select(d => documentService.SaveDocumentAsync(d));
-            Task.WhenAll(tasks).ContinueWith(t =>
-            {
-                if (t.IsFaulted) {
-                    var tmp = uiService.ShowErrorAsync("renameCatError");
-                }
-                RaisePropertyChanged(() => CategoriesEmpty);
-                RaisePropertyChanged(() => CategoriesNotEmpty);
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+            RaisePropertyChanged(() => CategoriesEmpty);
+            RaisePropertyChanged(() => CategoriesNotEmpty);
         }
 
-        private void DeleteCategoryCommandHandler(Category cat)
+        private async void RenameCategoryAsync(Category cat)
+        {
+            MessengerInstance.Send(new CloseFlyoutsMessage());
+
+            await documentService.RenameCategoryAsync(cat, NewCategoryName);
+
+            RaisePropertyChanged(() => CategoriesEmpty);
+            RaisePropertyChanged(() => CategoriesNotEmpty);
+        }
+
+        private async void DeleteCategoryAsync(Category cat)
         {
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
             var tasks = cat.Documents.Where(d => !(d is AdDocument)).ToList().Select(d => documentService.DeleteDocumentAsync(d));
-            Task.WhenAll(tasks).ContinueWith(t =>
-            {
-                if (t.IsFaulted) {
-                    var tmp = uiService.ShowErrorAsync("deleteCatError");
-                }
-                RaisePropertyChanged(() => CategoriesEmpty);
-                RaisePropertyChanged(() => CategoriesNotEmpty);
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+            await Task.WhenAll(tasks);
+
+            RaisePropertyChanged(() => CategoriesEmpty);
+            RaisePropertyChanged(() => CategoriesNotEmpty);
         }
 
-        private async void ExportDocuments()
+        private async void ExportDocumentsAsync()
         {
-            if (!await licenseService.TryGetLicenseAsync("ExportImportDocuments")) {
-                // TODO show error
-            }
-            else {
+            var status = await licenseService.TryGetLicenseAsync("ExportImportDocuments");
+            if (status == LicenseStatus.Unlocked) {
                 var fileTypes = new Dictionary<string, IList<string>> {
-                    { "Archive", new List<string> { ".zip" } } // TODO translate
+                    { translatorService.Translate("archive"), new List<string> { ".zip" } }
                 };
+                var savedFiles = new HashSet<string>();
                 var zipFile = await fileSavePickerService.PickSaveFileAsync("MyDocs.zip", fileTypes);
-                using (var zipFileStream = await zipFile.OpenWriteAsync()) {
-                    using (ZipArchive archive = new ZipArchive(zipFileStream, ZipArchiveMode.Create)) {
-                        foreach (var document in documentService.Categories.SelectMany(c => c.Documents)) {
-                            foreach (var file in document.Photos.Select(p => p.File).Distinct()) {
-                                var tags = document.Tags.Select(t => RemoveInvalidFileNameChars(t));
-                                var entry = archive.CreateEntry(Path.Combine(String.Join("-", tags), file.Name));
-                                using (var reader = await file.OpenReadAsync())
-                                using (var writer = entry.Open()) {
-                                    await reader.CopyToAsync(writer);
+                if (zipFile != null) {
+                    using (var zipFileStream = await zipFile.OpenWriteAsync()) {
+                        using (ZipArchive archive = new ZipArchive(zipFileStream, ZipArchiveMode.Create)) {
+                            foreach (var document in documentService.Categories.SelectMany(c => c.Documents)) {
+                                foreach (var photo in document.Photos) {
+                                    var tags = document.Tags.Select(t => RemoveInvalidFileNameChars(t));
+                                    var fileName = photo.Title != null ? String.Format("{0}{1}", photo.Title, Path.GetExtension(photo.File.Name)) : photo.File.Name;
+                                    var path = Path.Combine(String.Format("{0} ({1})", String.Join("-", tags), document.Id), fileName);
+                                    if (!savedFiles.Contains(path)) {
+                                        var entry = archive.CreateEntry(path);
+                                        using (var reader = await photo.File.OpenReadAsync())
+                                        using (var writer = entry.Open()) {
+                                            await reader.CopyToAsync(writer);
+                                        }
+                                        savedFiles.Add(path);
+                                    }
                                 }
                             }
                         }
                     }
+                    await uiService.ShowNotificationAsync("exportFinished");
                 }
+            }
+            else if (status == LicenseStatus.Locked) {
+                await uiService.ShowErrorAsync("exportLocked");
+            }
+            else if (status == LicenseStatus.Error) {
+                await uiService.ShowErrorAsync("exportUnlockError");
             }
         }
 

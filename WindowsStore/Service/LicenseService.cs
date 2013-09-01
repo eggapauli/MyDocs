@@ -1,4 +1,5 @@
 ﻿using MyDocs.Common.Contract.Service;
+using MyDocs.Common.Model;
 using MyDocs.WindowsStore.Common;
 using System;
 using System.Collections.Generic;
@@ -11,21 +12,21 @@ namespace MyDocs.WindowsStore.Service
 {
     public class LicenseService : ILicenseService
     {
-        public async Task<bool> TryGetLicenseAsync(string featureName)
+        public async Task<LicenseStatus> TryGetLicenseAsync(string featureName)
         {
             if (Global.LicenseInformation.ProductLicenses[featureName].IsActive) {
-                return true;
+                return LicenseStatus.Unlocked;
             }
 
             try {
                 var result = await Global.RequestProductPurchaseAsync(featureName);
                 
                 return (result.Status == ProductPurchaseStatus.AlreadyPurchased)
-                    || (result.Status == ProductPurchaseStatus.Succeeded);
+                    || (result.Status == ProductPurchaseStatus.Succeeded) ? LicenseStatus.Unlocked : LicenseStatus.Locked;
                 
             }
             catch (Exception) {
-                return false;
+                return LicenseStatus.Error;
             }
         }
     }

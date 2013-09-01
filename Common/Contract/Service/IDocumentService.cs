@@ -13,6 +13,7 @@ namespace MyDocs.Common.Contract.Service
 		Task LoadCategoriesAsync();
 		IEnumerable<string> GetCategoryNames();
 		Category GetCategoryByName(string name);
+        Task RenameCategoryAsync(Category cat, string NewCategoryName);
 
 		Task<Document> GetDocumentById(Guid id);
 		void DetachDocument(Document doc);
@@ -20,5 +21,5 @@ namespace MyDocs.Common.Contract.Service
 		Task DeleteDocumentAsync(Document doc);
 
 		Task RemovePhotosAsync(IEnumerable<IFile> photos);
-	}
+    }
 }

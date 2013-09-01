@@ -56,18 +56,6 @@ namespace MyDocs.WindowsStore.Common
 				data.ContainsKey("Tags") ? (string[])data["Tags"] : null
 			);
 
-			// not working properly because if a FileNotFoundException occurs, no photo is loaded into the collection
-			//List<Task<StorageFile>> tasks = new List<Task<StorageFile>>();
-			//foreach (string path in (string[])data["Photos"]) {
-			//	tasks.Add(StorageFile.GetFileFromPathAsync(path).AsTask());
-			//}
-			//try {
-			//	doc.Photos = new ObservableCollection<StorageFile>(await Task.WhenAll(tasks));
-			//}
-			//catch (FileNotFoundException e) {
-			//	// TODO ?
-			//}
-
 			if (data.ContainsKey("PhotoFileNames")
 					&& data.ContainsKey("PhotoIsLocal")
 					&& data.ContainsKey("PhotoIsTemp")) {

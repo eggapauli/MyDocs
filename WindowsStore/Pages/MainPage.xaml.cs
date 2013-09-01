@@ -1,5 +1,7 @@
-﻿using GalaSoft.MvvmLight.Messaging;
+﻿using GalaSoft.MvvmLight.Ioc;
+using GalaSoft.MvvmLight.Messaging;
 using MyDocs.Common.Contract.Page;
+using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Messages;
 using MyDocs.Common.Model;
 using MyDocs.Common.ViewModel;
@@ -62,20 +64,15 @@ namespace MyDocs.WindowsStore.Pages
 		{
 			ViewModel.LoadAsync().ContinueWith(t =>
 			{
-				if (t.IsFaulted) {
-					// TODO show error
-				}
-				else {
-					if (args.NavigationParameter != null) {
-						ViewModel.SelectedDocumentId = (Guid)args.NavigationParameter;
-					}
-					if (groupedDocumentsViewSource.View != null) {
-						var collectionGroups = groupedDocumentsViewSource.View.CollectionGroups;
-						((ListViewBase)this.semanticZoom.ZoomedOutView).ItemsSource = collectionGroups;
-						((ListViewBase)this.semanticZoomTight.ZoomedOutView).ItemsSource = collectionGroups;
-					}
-				}
-			}, TaskScheduler.FromCurrentSynchronizationContext());
+                if (args.NavigationParameter != null) {
+                    ViewModel.SelectedDocumentId = (Guid)args.NavigationParameter;
+                }
+                if (groupedDocumentsViewSource.View != null) {
+                    var collectionGroups = groupedDocumentsViewSource.View.CollectionGroups;
+                    ((ListViewBase)this.semanticZoom.ZoomedOutView).ItemsSource = collectionGroups;
+                    ((ListViewBase)this.semanticZoomTight.ZoomedOutView).ItemsSource = collectionGroups;
+                }
+			}, TaskContinuationOptions.ExecuteSynchronously);
 		}
 
 		private void WindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
@@ -88,8 +85,6 @@ namespace MyDocs.WindowsStore.Pages
 			bool zoomedIn = (ApplicationView.GetForCurrentView().IsFullScreen ?
 				this.semanticZoom.IsZoomedInViewActive :
 				this.semanticZoomTight.IsZoomedInViewActive);
-			//this.editDocButton.IsEnabled = zoomedIn;
-			//this.deleteDocButton.IsEnabled = zoomedIn;
 
 			ViewModel.InZoomedInView = zoomedIn;
 		}
@@ -121,7 +116,6 @@ namespace MyDocs.WindowsStore.Pages
 
 		private void OnDocumentClick(object sender, ItemClickEventArgs e)
 		{
-			// delegate
 			ViewModel.ShowDocumentCommand.Execute((Document)e.ClickedItem);
 		}
 	}

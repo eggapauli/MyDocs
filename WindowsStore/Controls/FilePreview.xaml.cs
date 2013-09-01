@@ -51,7 +51,6 @@ namespace MyDocs.WindowsStore.Controls
 
 			if (photo != null) {
 				self.Loading.IsActive = true;
-				// TODO handle errors?
 				self.Preview.Source = (BitmapImage)(await photo.Preview.GetResizedBitmapImageAsync(self.FileSize)).Image;
 				self.Loading.IsActive = false;
 			}
