@@ -64,10 +64,16 @@
                           AutomationProperties.ItemType="Navigation Button"/>
             <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
-            <TextBlock x:Name="resultText" Grid.Column="2" Text="Results for&#x00a0; " IsHitTestVisible="false" Style="{StaticResource SubheaderTextBlockStyle}"
+            <TextBlock x:Uid="Search_ResultText" x:Name="resultText" Grid.Column="2" Text="Results for" IsHitTestVisible="false" Style="{StaticResource SubheaderTextBlockStyle}"
                        TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,0,40" />
-            <TextBox x:Name="queryText" Grid.Column="3" Text="{Binding QueryText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"  PlaceholderText="Comma-separated list of document tags"
-                     TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="10,0,100,34" />
+            <SearchBox Grid.Column="3"
+                       x:Uid="Search_QueryText"
+                       x:Name="queryText" 
+                       QueryText="{Binding QueryText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                       PlaceholderText="Comma-separated list of document tags"
+                       VerticalAlignment="Bottom" Margin="10,0,100,34"
+                       QuerySubmitted="queryText_QuerySubmitted"/>
+            <!-- SuggestionsRequested="SearchBoxEventsSuggestionsRequested" -->
         </Grid>
 
         <ScrollViewer Grid.Row="1"
@@ -115,7 +121,6 @@
         
         <Grid Grid.Row="2">
             <GridView x:Name="resultsGridView"
-                      Background="Green"
                       AutomationProperties.AutomationId="ResultsGridView"
                       AutomationProperties.Name="Search Results"
                       Margin="110,0,110,46"
@@ -129,7 +134,6 @@
                       Visibility="{Binding ShowDefaultResults, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
             <ListView x:Name="resultsListView"
-                      Background="Cornsilk"
                       AutomationProperties.AutomationId="ResultsListView"
                       AutomationProperties.Name="Search Results"
                       Margin="50,0,50,46"
@@ -143,7 +147,8 @@
                       Visibility="{Binding ShowTightResults, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
 
-            <TextBlock x:Name="noResultsTextBlock"
+            <TextBlock x:Uid="Search_NoResults"
+                       x:Name="noResultsTextBlock"
                        Margin="120,0,0,0"
                        Visibility="{Binding ShowNoResultsText, Converter={StaticResource BooleanToVisibilityConverter}}"
                        Style="{StaticResource SubheaderTextBlockStyle}"
@@ -187,9 +192,6 @@
                         </ObjectAnimationUsingKeyFrames>
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="queryText" Storyboard.TargetProperty="Margin">
                             <DiscreteObjectKeyFrame KeyTime="0" Value="50 0 50 20"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="queryText" Storyboard.TargetProperty="PlaceholderText">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="Search for document tags"/>
                         </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>

@@ -52,6 +52,7 @@ namespace MyDocs.WindowsStore.Controls
             if (photo != null) {
                 self.Loading.IsActive = true;
                 self.Preview.Source = (BitmapImage)(await photo.Preview.GetResizedBitmapImageAsync(self.FileSize)).Image;
+                await System.Threading.Tasks.Task.Delay(500); // image is not shown immediately
                 self.Loading.IsActive = false;
             }
         }

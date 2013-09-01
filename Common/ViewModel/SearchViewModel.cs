@@ -35,8 +35,6 @@ namespace MyDocs.Common.ViewModel
                 if (queryText != value) {
                     queryText = value;
                     RaisePropertyChanged(() => QueryText);
-
-                    var t = RefreshResults();
                 }
             }
         }
@@ -102,9 +100,9 @@ namespace MyDocs.Common.ViewModel
             this.documentService = documentService;
             this.navigationService = navigationService;
 
-            queryText = "";
+            QueryText = "";
             Filters = new ObservableCollection<Filter> {
-                new SearchViewModel.Filter("All", active: true)
+                new Filter("All", active: true)
             };
             foreach (string categoryName in CategoryNames) {
                 Filters.Add(new SearchViewModel.Filter(categoryName));
@@ -135,8 +133,8 @@ namespace MyDocs.Common.ViewModel
         {
             if (IsInDesignMode) {
                 QueryText = "Tag 1";
-                Filters = new List<SearchViewModel.Filter> {
-                    new SearchViewModel.Filter("All", active: true)
+                Filters = new List<Filter> {
+                    new Filter("All", active: true)
                 };
                 var t = RefreshResults();
             }

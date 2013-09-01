@@ -53,7 +53,7 @@ namespace MyDocs.WindowsStore.Common
                 ((DateTimeOffset)data["DateAdded"]).Date,
                 (TimeSpan)data["Lifespan"],
                 (bool)data["HasLimitedLifespan"],
-                data.ContainsKey("Tags") ? (string[])data["Tags"] : null
+                data.ContainsKey("Tags") ? (string[])data["Tags"] : new string[0]
             );
 
             if (data.ContainsKey("PhotoFileNames")

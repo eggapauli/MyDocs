@@ -30,7 +30,7 @@
 
                 <StackPanel Orientation="Horizontal" Grid.Column="0" Margin="40, 32, 17, 13">
                     <AppBarButton x:Name="BackButton" Icon="Back" Margin="0,3,0,0" Click="GoBack"/>
-                    <TextBlock x:Uid="settingsTitle" Margin="10,10,0,0" FontFamily="Segoe UI" FontWeight="SemiLight" FontSize="24.6667" Text="Settings" Foreground="White"/>
+                    <TextBlock x:Uid="Settings_Title" Margin="10,10,0,0" FontFamily="Segoe UI" FontWeight="SemiLight" FontSize="24.6667" Text="Settings" Foreground="White"/>
                 </StackPanel>
                 <Image Grid.Column="1" Source="Assets/SmallLogo.png" Width="29" Height="29" Margin="0,46,30,21" />
             </Grid>
@@ -45,8 +45,8 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     
-                    <TextBlock x:Uid="useRoaming" Text="Synchronize documents between your devices" Style="{StaticResource SettingTitleStyle}" />
-                    <ToggleSwitch Grid.Column="1" OnContent="Yes" OffContent="No" IsOn="{Binding SyncEnabled, Mode=TwoWay}" />
+                    <TextBlock x:Uid="Settings_UseRoamingDescription" Text="Synchronize documents between your devices" Style="{StaticResource SettingTitleStyle}" />
+                    <ToggleSwitch x:Uid="Settings_UseRoaming" Grid.Column="1" OnContent="Yes" OffContent="No" IsOn="{Binding SyncEnabled, Mode=TwoWay}" />
                 </Grid>
             </ScrollViewer>
         </Grid>

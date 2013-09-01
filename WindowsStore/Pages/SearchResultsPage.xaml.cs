@@ -45,7 +45,7 @@ namespace MyDocs.WindowsStore.Pages
 
         protected override string DetermineVisualState(double width)
         {
-            return (width < 1366 / 2) ? "TightLayout" : "DefaultLayout";
+            return (width <= 800) ? "TightLayout" : "DefaultLayout";
         }
 
         /// <summary>
@@ -87,6 +87,11 @@ namespace MyDocs.WindowsStore.Pages
         private void OnDocumentClick(object sender, ItemClickEventArgs e)
         {
             ViewModel.ShowDocumentCommand.Execute(e.ClickedItem);
+        }
+
+        private async void queryText_QuerySubmitted(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
+        {
+            await ViewModel.RefreshResults();
         }
     }
 }

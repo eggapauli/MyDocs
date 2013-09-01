@@ -120,7 +120,7 @@
   <data name="countDocumentsFormat" xml:space="preserve">
     <value>{0} document(s)</value>
   </data>
-  <data name="NoDocuments.Text" xml:space="preserve">
+  <data name="Main_NoDocuments.Text" xml:space="preserve">
     <value>No documents stored.</value>
   </data>
   <data name="countDaysFormat" xml:space="preserve">
@@ -129,19 +129,19 @@
   <data name="settings" xml:space="preserve">
     <value>Settings</value>
   </data>
-  <data name="settingsTitle.Text" xml:space="preserve">
+  <data name="Settings_Title.Text" xml:space="preserve">
     <value>Settings</value>
   </data>
-  <data name="BtnNewCategory.Content" xml:space="preserve">
+  <data name="Edit_NewCategory.Content" xml:space="preserve">
     <value>Add a new category</value>
   </data>
-  <data name="BtnUseCategory.Content" xml:space="preserve">
+  <data name="Edit_UseCategory.Content" xml:space="preserve">
     <value>Use an existing category</value>
   </data>
-  <data name="SwcLifespan.OffContent" xml:space="preserve">
+  <data name="Edit_Lifespan.OffContent" xml:space="preserve">
     <value>Unlimited</value>
   </data>
-  <data name="SwcLifespan.OnContent" xml:space="preserve">
+  <data name="Edit_Lifespan.OnContent" xml:space="preserve">
     <value>Limited</value>
   </data>
   <data name="deleteDocError" xml:space="preserve">
@@ -150,49 +150,43 @@
   <data name="privacyStatement" xml:space="preserve">
     <value>Privacy Statement</value>
   </data>
-  <data name="BtnAddDoc.Label" xml:space="preserve">
+  <data name="Main_AddDoc.Label" xml:space="preserve">
     <value>Add</value>
   </data>
-  <data name="BtnAddPhotoFromCamera.Label" xml:space="preserve">
+  <data name="Edit_AddPhotoFromCamera.Label" xml:space="preserve">
     <value>Take a picture</value>
   </data>
-  <data name="BtnAddPhotoFromFile.Label" xml:space="preserve">
+  <data name="Edit_AddPhotoFromFile.Label" xml:space="preserve">
     <value>Add from file</value>
   </data>
-  <data name="BtnEditDoc.Label" xml:space="preserve">
+  <data name="Main_EditDoc.Label" xml:space="preserve">
     <value>Edit</value>
   </data>
-  <data name="BtnRemoveDoc.Label" xml:space="preserve">
-    <value>Remove</value>
-  </data>
-  <data name="BtnSaveDoc.Label" xml:space="preserve">
+  <data name="Edit_SaveDoc.Label" xml:space="preserve">
     <value>Save</value>
   </data>
-  <data name="Photos.Text" xml:space="preserve">
-    <value>Photos</value>
-  </data>
-  <data name="BtnRemovePhoto.Label" xml:space="preserve">
+  <data name="Edit_RemovePhoto.Label" xml:space="preserve">
     <value>Remove</value>
   </data>
-  <data name="TxtNewCategoryName.Header" xml:space="preserve">
+  <data name="Edit_NewCategoryName.Header" xml:space="preserve">
     <value>Category</value>
   </data>
-  <data name="TxtNewCategoryName.PlaceholderText" xml:space="preserve">
+  <data name="Edit_NewCategoryName.PlaceholderText" xml:space="preserve">
     <value>Enter a category</value>
   </data>
-  <data name="TxtTagsInput.Header" xml:space="preserve">
+  <data name="Edit_TagsInput.Header" xml:space="preserve">
     <value>Tags</value>
   </data>
-  <data name="TxtTagsInput.PlaceholderText" xml:space="preserve">
+  <data name="Edit_TagsInput.PlaceholderText" xml:space="preserve">
     <value>Enter a comma-separated list of tags</value>
   </data>
-  <data name="TxtUseCategoryName.Header" xml:space="preserve">
+  <data name="Edit_UseCategoryName.Header" xml:space="preserve">
     <value>Category</value>
   </data>
-  <data name="TxtUseCategoryName.PlaceholderText" xml:space="preserve">
+  <data name="Edit_UseCategoryName.PlaceholderText" xml:space="preserve">
     <value>Choose a category</value>
   </data>
-  <data name="SwcLifespan.Header" xml:space="preserve">
+  <data name="Edit_Lifespan.Header" xml:space="preserve">
     <value>Lifespan</value>
   </data>
   <data name="deleteCatError" xml:space="preserve">
@@ -221,5 +215,53 @@
   </data>
   <data name="fileLoadError" xml:space="preserve">
     <value>An error occured while loading the file.</value>
+  </data>
+  <data name="Main_DeleteCatConfirmation.Text" xml:space="preserve">
+    <value>Delete category and all of its documents?</value>
+  </data>
+  <data name="Main_DeleteDoc.Label" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Main_DeleteDocConfirmation.Text" xml:space="preserve">
+    <value>Delete document?</value>
+  </data>
+  <data name="Main_ExportDocuments.Label" xml:space="preserve">
+    <value>Export documents</value>
+  </data>
+  <data name="Main_NewCategoryName.PlaceholderText" xml:space="preserve">
+    <value>New category name</value>
+  </data>
+  <data name="Main_ReallyDeleteCat.Content" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Main_ReallyDeleteDoc.Content" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Main_ReallyRenameCat.Content" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="Main_SearchDocuments.Label" xml:space="preserve">
+    <value>Search documents</value>
+  </data>
+  <data name="Main_ToggleEditCategoryMode.Label" xml:space="preserve">
+    <value>Editable categories</value>
+  </data>
+  <data name="Settings_UseRoaming.OffContent" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Settings_UseRoaming.OnContent" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="Settings_UseRoamingDescription.Text" xml:space="preserve">
+    <value>Synchronize documents between your Windows 8 devices</value>
+  </data>
+  <data name="Search_NoResults.Text" xml:space="preserve">
+    <value>No results match your search.</value>
+  </data>
+  <data name="Search_QueryText.PlaceholderText" xml:space="preserve">
+    <value>Comma-separated list of document tags</value>
+  </data>
+  <data name="Search_ResultText.Text" xml:space="preserve">
+    <value>Results for</value>
   </data>
 </root>

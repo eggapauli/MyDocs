@@ -66,8 +66,8 @@ namespace MyDocs.WindowsStore.Service
                 return;
             }
 #if DEBUG
-            await ClearAllData();
-            await InsertTestData();
+            //await ClearAllData();
+            //await InsertTestData();
 #endif
             //await Task.Delay(2000);
             //categories.Clear();
@@ -163,15 +163,16 @@ namespace MyDocs.WindowsStore.Service
 
         public async Task SaveDocumentAsync(Document doc)
         {
-            foreach (var file in doc.Photos.SelectMany(p => new[] { p.File, p.Preview })) {
-                string name = Path.GetRandomFileName() + Path.GetExtension(file.Path);
+            if (!(doc is AdDocument)) {
+                foreach (var file in doc.Photos.SelectMany(p => new[] { p.File, p.Preview })) {
+                    string name = Path.GetRandomFileName() + Path.GetExtension(file.Path);
 
-                if (file.IsInFolder(tempFolder)) {
-                    await file.MoveAsync(settingsService.PhotoFolder, name);
+                    if (file.IsInFolder(tempFolder)) {
+                        await file.MoveAsync(settingsService.PhotoFolder, name);
+                    }
                 }
+                docsDataContainer.Values[doc.Id.ToString()] = doc.ConvertToStoredDocument();
             }
-
-            docsDataContainer.Values[doc.Id.ToString()] = doc.ConvertToStoredDocument();
         }
 
         public async Task DeleteDocumentAsync(Document doc)

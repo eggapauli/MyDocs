@@ -145,29 +145,27 @@
 
                 <TextBlock Text="{Binding Name}" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Top" Margin="10 15 0 0" />
                 <AppBarButton Grid.Column="1"
-                              x:Uid="BtnRenameCat"
                               Icon="Rename"
                               IsCompact="True"
                               Visibility="{Binding DataContext.InEditCategoryMode, ElementName=pageRoot, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <AppBarButton.Flyout>
                         <Flyout>
                             <StackPanel>
-                                <TextBox Text="{Binding DataContext.NewCategoryName, ElementName=pageRoot, Mode=TwoWay}" PlaceholderText="New category name" Width="200" />
-                                <Button Content="Rename" Command="{Binding DataContext.RenameCategoryCommand, ElementName=pageRoot}" CommandParameter="{Binding}" />
+                                <TextBox x:Uid="Main_NewCategoryName" Text="{Binding DataContext.NewCategoryName, ElementName=pageRoot, Mode=TwoWay}" PlaceholderText="New category name" Width="200" />
+                                <Button x:Uid="Main_ReallyRenameCat" Content="Rename" Command="{Binding DataContext.RenameCategoryCommand, ElementName=pageRoot}" CommandParameter="{Binding}" />
                             </StackPanel>
                         </Flyout>
                     </AppBarButton.Flyout>
                 </AppBarButton>
                 <AppBarButton Grid.Column="2"
-                              x:Uid="BtnDeleteCat"
                               Icon="Remove"
                               IsCompact="True"
                               Visibility="{Binding DataContext.InEditCategoryMode, ElementName=pageRoot, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <AppBarButton.Flyout>
                         <Flyout>
                             <StackPanel>
-                                <TextBlock x:Uid="TxtDeleteCat" Text="Delete category and all of its documents?" Style="{StaticResource BodyTextBlockStyle}" Margin="0 0 0 10" />
-                                <Button Content="Delete" Command="{Binding DataContext.DeleteCategoryCommand, ElementName=pageRoot}" CommandParameter="{Binding}" />
+                                <TextBlock x:Uid="Main_DeleteCatConfirmation" Text="Delete category and all of its documents?" Style="{StaticResource BodyTextBlockStyle}" Margin="0 0 0 10" />
+                                <Button x:Uid="Main_ReallyDeleteCat" Content="Delete" Command="{Binding DataContext.DeleteCategoryCommand, ElementName=pageRoot}" CommandParameter="{Binding}" />
                             </StackPanel>
                         </Flyout>
                     </AppBarButton.Flyout>
@@ -182,23 +180,23 @@
 
     <Page.BottomAppBar>
         <CommandBar IsOpen="{Binding CategoriesEmpty}" x:Name="cmdBar">
-            <AppBarButton x:Uid="BtnAddDoc" Icon="Add" Label="Add" Command="{Binding AddDocumentCommand}" />
-            <AppBarButton x:Uid="BtnEditDoc" Icon="Edit" Label="Edit" Command="{Binding EditDocumentCommand}" Visibility="{Binding InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <AppBarButton x:Uid="BtnDeleteDoc" Name="btnDeleteDoc" Icon="Delete" Label="Delete" IsEnabled="{Binding HasSelectedDocument}" Visibility="{Binding InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <AppBarButton x:Uid="Main_AddDoc" Icon="Add" Label="Add" Command="{Binding AddDocumentCommand}" />
+            <AppBarButton x:Uid="Main_EditDoc" Icon="Edit" Label="Edit" Command="{Binding EditDocumentCommand}" Visibility="{Binding InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <AppBarButton x:Uid="Main_DeleteDoc" Icon="Delete" Label="Delete" IsEnabled="{Binding HasSelectedDocument}" Visibility="{Binding InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <AppBarButton.Flyout>
                     <Flyout>
                         <StackPanel>
-                            <TextBlock Text="Delete document?" Style="{StaticResource BodyTextBlockStyle}" Margin="0 0 0 10" />
-                            <Button Content="Delete" Command="{Binding DeleteDocumentCommand}" />
+                            <TextBlock x:Uid="Main_DeleteDocConfirmation" Text="Delete document?" Style="{StaticResource BodyTextBlockStyle}" Margin="0 0 0 10" />
+                            <Button x:Uid="Main_ReallyDeleteDoc" Content="Delete" Command="{Binding DeleteDocumentCommand}" />
                         </StackPanel>
                     </Flyout>
                 </AppBarButton.Flyout>
             </AppBarButton>
             
             <CommandBar.SecondaryCommands>
-                <AppBarToggleButton Icon="Edit" Label="Toggle edit category mode" IsChecked="{Binding InEditCategoryMode, Mode=TwoWay}" Visibility="{Binding InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <AppBarButton Icon="Find" Label="Search documents" Command="{Binding NavigateToSearchPageCommand}" />
-                <AppBarButton Icon="Download" Label="Export documents" Command="{Binding ExportDocumentsCommand}" />
+                <AppBarToggleButton x:Uid="Main_ToggleEditCategoryMode" Icon="Edit" Label="Toggle edit category mode" IsChecked="{Binding InEditCategoryMode, Mode=TwoWay}" Visibility="{Binding InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <AppBarButton x:Uid="Main_SearchDocuments" Icon="Find" Label="Search documents" Command="{Binding NavigateToSearchPageCommand}" />
+                <AppBarButton x:Uid="Main_ExportDocuments" Icon="Download" Label="Export documents" Command="{Binding ExportDocumentsCommand}" />
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
@@ -289,7 +287,7 @@
             </SemanticZoom.ZoomedInView>
         </SemanticZoom>
 
-        <TextBlock Grid.Row="1" x:Uid="NoDocuments" x:Name="noDocumentsText" Text="No documents stored." Style="{StaticResource SubheaderTextBlockStyle}" Margin="120 0 0 0" Visibility="{Binding CategoriesEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <TextBlock Grid.Row="1" x:Uid="Main_NoDocuments" x:Name="noDocumentsText" Text="No documents stored." Style="{StaticResource SubheaderTextBlockStyle}" Margin="120 0 0 0" Visibility="{Binding CategoriesEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
         <!-- Back button and page title -->
         <Grid>
