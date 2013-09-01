@@ -5,24 +5,24 @@ using Windows.UI.Xaml.Data;
 
 namespace MyDocs.WindowsStore.Converter
 {
-	public class DateToStringConverter : IValueConverter
-	{
-		public object Convert(object value, Type targetType, object parameter, string language)
-		{
-			DateTime date = (DateTime)value;
-			return date.ToString("d");
-		}
+    public class DateToStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            DateTime date = (DateTime)value;
+            return date.ToString("d");
+        }
 
-		public object ConvertBack(object value, Type targetType, object parameter, string language)
-		{
-			string strValue = value as string;
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            string strValue = value as string;
 
-			DateTime resultDateTime;
-			if (DateTime.TryParseExact(strValue, "d", null, DateTimeStyles.None, out resultDateTime)) {
-				return resultDateTime;
-			}
-			return DependencyProperty.UnsetValue;
-		}
-	}
+            DateTime resultDateTime;
+            if (DateTime.TryParseExact(strValue, "d", null, DateTimeStyles.None, out resultDateTime)) {
+                return resultDateTime;
+            }
+            return DependencyProperty.UnsetValue;
+        }
+    }
 
 }

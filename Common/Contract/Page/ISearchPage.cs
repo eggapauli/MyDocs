@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyDocs.Common.Contract.Page
 {
-	public interface ISearchPage
-	{
-	}
+    public interface ISearchPage
+    {
+    }
 }

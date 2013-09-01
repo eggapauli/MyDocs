@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace MyDocs.Common.Contract.Service
 {
-	public interface ICameraService
-	{
-		Task<Photo> CapturePhotoAsync();
-	}
+    public interface ICameraService
+    {
+        Task<Photo> CapturePhotoAsync();
+    }
 }

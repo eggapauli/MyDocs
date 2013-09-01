@@ -11,62 +11,62 @@ using Windows.UI.Xaml.Navigation;
 
 namespace MyDocs.WindowsStore.Pages
 {
-	public sealed partial class ShowDocumentPage : LayoutAwarePage, IShowDocumentPage
-	{
-		private DataTransferManager dtm;
+    public sealed partial class ShowDocumentPage : LayoutAwarePage, IShowDocumentPage
+    {
+        private DataTransferManager dtm;
 
-		public ShowDocumentPage()
-		{
-			this.InitializeComponent();
-		}
+        public ShowDocumentPage()
+        {
+            this.InitializeComponent();
+        }
 
-		public DocumentViewModel ViewModel
-		{
-			get { return this.DataContext as DocumentViewModel; }
-		}
+        public DocumentViewModel ViewModel
+        {
+            get { return this.DataContext as DocumentViewModel; }
+        }
 
-		protected override void OnNavigatedTo(NavigationEventArgs e)
-		{
-			base.OnNavigatedTo(e);
-			dtm = DataTransferManager.GetForCurrentView();
-			dtm.DataRequested += dtm_DataRequested;
-		}
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            dtm = DataTransferManager.GetForCurrentView();
+            dtm.DataRequested += dtm_DataRequested;
+        }
 
-		private void dtm_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
-		{
-			string fileTitle = ViewModel.SelectedDocument.TagsString;
+        private void dtm_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
+        {
+            string fileTitle = ViewModel.SelectedDocument.TagsString;
 
-			DataPackage data = args.Request.Data;
-			data.Properties.Title = fileTitle;
+            DataPackage data = args.Request.Data;
+            data.Properties.Title = fileTitle;
 
-			DataRequestDeferral waiter = args.Request.GetDeferral();
+            DataRequestDeferral waiter = args.Request.GetDeferral();
 
-			try {
-				var files = ViewModel.SelectedDocument.Photos.Select(p => p.File);
-				data.SetStorageItems(files.Select(f => ((WindowsStoreFile)f).File));
-			}
-			finally {
-				waiter.Complete();
-			}
-		}
+            try {
+                var files = ViewModel.SelectedDocument.Photos.Select(p => p.File);
+                data.SetStorageItems(files.Select(f => ((WindowsStoreFile)f).File));
+            }
+            finally {
+                waiter.Complete();
+            }
+        }
 
-		protected override void LoadState(object sender, LoadStateEventArgs args)
-		{
+        protected override void LoadState(object sender, LoadStateEventArgs args)
+        {
             if (args.NavigationParameter != null)
             {
                 ViewModel.SelectedDocumentId = (Guid)args.NavigationParameter;
-			}
-		}
+            }
+        }
 
-		protected override void OnNavigatedFrom(NavigationEventArgs e)
-		{
-			base.OnNavigatedFrom(e);
-			dtm.DataRequested -= dtm_DataRequested;
-		}
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+            dtm.DataRequested -= dtm_DataRequested;
+        }
 
-		private void backButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-		{
-			NavigationHelper.GoBack();
-		}
-	}
+        private void backButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            NavigationHelper.GoBack();
+        }
+    }
 }

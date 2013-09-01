@@ -3,13 +3,13 @@ using Windows.ApplicationModel.Resources;
 
 namespace MyDocs.WindowsStore.Service
 {
-	public class TranslatorService : ITranslatorService
-	{
-		private ResourceLoader rl = new ResourceLoader();
+    public class TranslatorService : ITranslatorService
+    {
+        private ResourceLoader rl = new ResourceLoader();
 
-		public string Translate(string key)
-		{
-			return rl.GetString(key);
-		}
-	}
+        public string Translate(string key)
+        {
+            return rl.GetString(key);
+        }
+    }
 }

@@ -1,9 +1,9 @@
 ﻿
 namespace MyDocs.Common.Contract.Storage
 {
-	public enum FileSize
-	{
-		Small,
-		Big
-	}
+    public enum FileSize
+    {
+        Small,
+        Big
+    }
 }

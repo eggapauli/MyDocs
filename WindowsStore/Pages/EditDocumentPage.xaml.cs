@@ -10,45 +10,45 @@ using System.Threading.Tasks;
 
 namespace MyDocs.WindowsStore.Pages
 {
-	public sealed partial class EditDocumentPage : LayoutAwarePage, IEditDocumentPage
-	{
-		public EditDocumentPage()
-		{
-			this.InitializeComponent();
-		}
+    public sealed partial class EditDocumentPage : LayoutAwarePage, IEditDocumentPage
+    {
+        public EditDocumentPage()
+        {
+            this.InitializeComponent();
+        }
 
-		public EditDocumentViewModel ViewModel
-		{
-			get { return this.DataContext as EditDocumentViewModel; }
-		}
+        public EditDocumentViewModel ViewModel
+        {
+            get { return this.DataContext as EditDocumentViewModel; }
+        }
 
-		protected override void LoadState(object sender, LoadStateEventArgs args)
-		{
-			if (args.PageState != null && args.PageState.ContainsKey("Id")) {
-				args.PageState.ConvertToDocumentAsync().ContinueWith(t =>
-				{
+        protected override void LoadState(object sender, LoadStateEventArgs args)
+        {
+            if (args.PageState != null && args.PageState.ContainsKey("Id")) {
+                args.PageState.ConvertToDocumentAsync().ContinueWith(t =>
+                {
                     ViewModel.EditingDocument = t.Result;
                     ViewModel.ShowNewCategoryInput = (bool)args.PageState["ShowNewCategoryInput"];
                     ViewModel.UseCategoryName = (string)args.PageState["UseCategoryName"];
                     ViewModel.NewCategoryName = (string)args.PageState["NewCategoryName"];
-				}, TaskContinuationOptions.ExecuteSynchronously);
-			}
-			else if (args.NavigationParameter != null) {
+                }, TaskContinuationOptions.ExecuteSynchronously);
+            }
+            else if (args.NavigationParameter != null) {
                 ViewModel.EditingDocumentId = (Guid)args.NavigationParameter;
-			}
-			else {
-				ViewModel.EditingDocument = new Document();
-			}
-		}
+            }
+            else {
+                ViewModel.EditingDocument = new Document();
+            }
+        }
 
-		protected override void SaveState(object sender, SaveStateEventArgs args)
-		{
-			if (ViewModel.EditingDocument != null) {
-				ViewModel.EditingDocument.ConvertToRestorableDocument(args.PageState);
-			}
+        protected override void SaveState(object sender, SaveStateEventArgs args)
+        {
+            if (ViewModel.EditingDocument != null) {
+                ViewModel.EditingDocument.ConvertToRestorableDocument(args.PageState);
+            }
             args.PageState["ShowNewCategoryInput"] = ViewModel.ShowNewCategoryInput;
             args.PageState["UseCategoryName"] = ViewModel.UseCategoryName;
             args.PageState["NewCategoryName"] = ViewModel.NewCategoryName;
-		}
-	}
+        }
+    }
 }

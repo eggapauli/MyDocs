@@ -8,16 +8,16 @@ using Windows.Media.Capture;
 
 namespace MyDocs.WindowsStore.Service
 {
-	public class CameraService : ICameraService
-	{
-		public async Task<Photo> CapturePhotoAsync()
-		{
-			CameraCaptureUI camera = new CameraCaptureUI();
-			var file = await camera.CaptureFileAsync(CameraCaptureUIMode.Photo);
-			if (file == null) {
-				return null;
-			}
-			return new Photo(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), new WindowsStoreFile(file));
-		}
-	}
+    public class CameraService : ICameraService
+    {
+        public async Task<Photo> CapturePhotoAsync()
+        {
+            CameraCaptureUI camera = new CameraCaptureUI();
+            var file = await camera.CaptureFileAsync(CameraCaptureUIMode.Photo);
+            if (file == null) {
+                return null;
+            }
+            return new Photo(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), new WindowsStoreFile(file));
+        }
+    }
 }

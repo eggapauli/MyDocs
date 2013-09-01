@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyDocs.Common.Messages
 {
-	public class CloseFlyoutsMessage
-	{
-	}
+    public class CloseFlyoutsMessage
+    {
+    }
 }
