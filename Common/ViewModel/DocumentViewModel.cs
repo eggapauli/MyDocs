@@ -5,12 +5,14 @@ using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Messages;
 using MyDocs.Common.Model;
+using Serializable = MyDocs.Common.Model.Serializable;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace MyDocs.Common.ViewModel
@@ -188,12 +190,11 @@ namespace MyDocs.Common.ViewModel
 
         public async Task LoadAsync()
         {
-            bool error;
+            bool error = false;
             try {
                 await documentService.LoadCategoriesAsync();
-                error = false;
             }
-            catch (Exception ex) {
+            catch (Exception) {
                 error = true;
             }
             IsLoaded = true;
@@ -283,21 +284,28 @@ namespace MyDocs.Common.ViewModel
                 var savedFiles = new HashSet<string>();
                 var zipFile = await fileSavePickerService.PickSaveFileAsync("MyDocs.zip", fileTypes);
                 if (zipFile != null) {
-                    using (var zipFileStream = await zipFile.OpenWriteAsync()) {
-                        using (ZipArchive archive = new ZipArchive(zipFileStream, ZipArchiveMode.Create)) {
-                            foreach (var document in documentService.Categories.SelectMany(c => c.Documents)) {
-                                foreach (var photo in document.Photos) {
-                                    var tags = document.Tags.Select(t => RemoveInvalidFileNameChars(t));
-                                    var fileName = photo.Title != null ? String.Format("{0}{1}", photo.Title, Path.GetExtension(photo.File.Name)) : photo.File.Name;
-                                    var path = Path.Combine(String.Format("{0} ({1})", String.Join("-", tags), document.Id), fileName);
-                                    if (!savedFiles.Contains(path)) {
-                                        var entry = archive.CreateEntry(path);
-                                        using (var reader = await photo.File.OpenReadAsync())
-                                        using (var writer = entry.Open()) {
-                                            await reader.CopyToAsync(writer);
-                                        }
-                                        savedFiles.Add(path);
+                    using (var zipFileStream = await zipFile.OpenWriteAsync())
+                    using (var archive = new ZipArchive(zipFileStream, ZipArchiveMode.Create)) {
+                        var documents = documentService.Categories.SelectMany(c => c.Documents).Where(d => !(d is AdDocument));
+
+                        var metaInfoEntry = archive.CreateEntry("Documents.xml");
+                        using (var metaInfoWriter = metaInfoEntry.Open()) {
+                            DataContractSerializer serializer = new DataContractSerializer(typeof(IEnumerable<Serializable.Document>), "Documents", "http://mydocs.eggapauli");
+                            serializer.WriteObject(metaInfoWriter, documents.Select(d => new Serializable.Document(d.Id, d.Category, d.Tags, d.DateAdded, d.Lifespan, d.HasLimitedLifespan)));
+                        }
+
+                        foreach (var document in documents) {
+                            foreach (var photo in document.Photos) {
+                                var tags = document.Tags.Select(t => RemoveInvalidFileNameChars(t));
+                                var fileName = photo.Title != null ? String.Format("{0}{1}", photo.Title, Path.GetExtension(photo.File.Name)) : photo.File.Name;
+                                var path = Path.Combine(String.Format("{0} ({1})", String.Join("-", tags), document.Id), fileName);
+                                if (!savedFiles.Contains(path)) {
+                                    var entry = archive.CreateEntry(path);
+                                    using (var photoReader = await photo.File.OpenReadAsync())
+                                    using (var entryWriter = entry.Open()) {
+                                        await photoReader.CopyToAsync(entryWriter);
                                     }
+                                    savedFiles.Add(path);
                                 }
                             }
                         }

@@ -66,8 +66,8 @@ namespace MyDocs.WindowsStore.Service
                 return;
             }
 #if DEBUG
-            //await ClearAllData();
-            //await InsertTestData();
+            await ClearAllData();
+            await InsertTestData();
 #endif
             //await Task.Delay(2000);
             //categories.Clear();

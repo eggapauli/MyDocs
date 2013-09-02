@@ -61,6 +61,7 @@
     <Compile Include="Model\Document.cs" />
     <Compile Include="Model\LicenseStatus.cs" />
     <Compile Include="Model\Photo.cs" />
+    <Compile Include="Model\Serializable\Document.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Collection\SortedObservableCollection.cs" />
     <Compile Include="ViewModel\DocumentViewModel.cs" />

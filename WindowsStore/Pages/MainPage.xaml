@@ -211,31 +211,29 @@
 
         <SemanticZoom Grid.Row="1" x:Name="semanticZoom" IsZoomOutButtonEnabled="{Binding CategoriesNotEmpty}">
             <SemanticZoom.ZoomedOutView>
-                <GridView
-                    x:Name="categoryGridView"
-                    AutomationProperties.AutomationId="ItemsGridView"
-                    AutomationProperties.Name="Items"
-                    TabIndex="1"
-                    Padding="116,0,116,46"
-                    ItemTemplate="{StaticResource CategoryTemplate}"
-                    SelectionMode="None"
-                    Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <GridView Name="categoryGridView"
+                          AutomationProperties.AutomationId="ItemsGridView"
+                          AutomationProperties.Name="Items"
+                          TabIndex="1"
+                          Padding="116,0,116,46"
+                          ItemTemplate="{StaticResource CategoryTemplate}"
+                          SelectionMode="None"
+                          Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}" />
             </SemanticZoom.ZoomedOutView>
 
             <SemanticZoom.ZoomedInView>
-                <GridView
-                        x:Name="documentGridView"
-                        AutomationProperties.AutomationId="ItemsGridView"
-                        AutomationProperties.Name="Items"
-                        TabIndex="1"
-                        Padding="116,0,116,46"
-                        ItemsSource="{Binding Source={StaticResource groupedDocumentsViewSource}}"
-                        ItemTemplateSelector="{StaticResource DefaultDocumentTemplateSelector}"
-                        IsItemClickEnabled="True"
-                        ItemClick="OnDocumentClick"
-                        SelectionMode="Single"
-                        SelectedItem="{Binding SelectedDocument, Mode=TwoWay}"
-                        Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <GridView Name="documentGridView"
+                          AutomationProperties.AutomationId="ItemsGridView"
+                          AutomationProperties.Name="Items"
+                          TabIndex="1"
+                          Padding="116,0,116,46"
+                          ItemsSource="{Binding Source={StaticResource groupedDocumentsViewSource}}"
+                          ItemTemplateSelector="{StaticResource DefaultDocumentTemplateSelector}"
+                          IsItemClickEnabled="True"
+                          ItemClick="OnDocumentClick"
+                          SelectionMode="Single"
+                          SelectedItem="{Binding SelectedDocument, Mode=TwoWay}"
+                          Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <GridView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel Orientation="Horizontal"/>
@@ -251,45 +249,49 @@
 
         <SemanticZoom Grid.Row="1" x:Name="semanticZoomTight" Visibility="Collapsed" IsZoomOutButtonEnabled="{Binding CategoriesNotEmpty}">
             <SemanticZoom.ZoomedOutView>
-                <ListView
-                    x:Name="categoryListView"
-                    AutomationProperties.AutomationId="ItemsListView"
-                    AutomationProperties.Name="Items"
-                    TabIndex="1"
-                    Margin="10,0,0,0"
-                    Padding="10,0,0,60"
-                    ItemTemplate="{StaticResource CategoryTemplate}"
-                    SelectionMode="None"
-                    Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    Width="287"/>
+                <ListView Name="categoryListView"
+                          AutomationProperties.AutomationId="ItemsListView"
+                          AutomationProperties.Name="Items"
+                          TabIndex="1"
+                          Margin="10,0,0,0"
+                          Padding="10,0,0,60"
+                          ItemTemplate="{StaticResource CategoryTemplate}"
+                          SelectionMode="None"
+                          Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"
+                          Width="287"/>
             </SemanticZoom.ZoomedOutView>
 
             <SemanticZoom.ZoomedInView>
-                <ListView
-                        x:Name="documentListView"
-                        AutomationProperties.AutomationId="ItemsListView"
-                        AutomationProperties.Name="Items"
-                        TabIndex="1"
-                        Margin="10,0,0,0"
-                        Padding="10,0,0,60"
-                        ItemsSource="{Binding Source={StaticResource groupedDocumentsViewSource}}"
-                        ItemTemplateSelector="{StaticResource DefaultDocumentTemplateSelector}"
-                        IsItemClickEnabled="True"
-                        ItemClick="OnDocumentClick"
-                        SelectionMode="Single"
-                        SelectedItem="{Binding SelectedDocument, Mode=TwoWay}"
-                        Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Width="287">
+                <ListView Name="documentListView"
+                          AutomationProperties.AutomationId="ItemsListView"
+                          AutomationProperties.Name="Items"
+                          TabIndex="1"
+                          Margin="10,0,0,0"
+                          Padding="10,0,0,60"
+                          ItemsSource="{Binding Source={StaticResource groupedDocumentsViewSource}}"
+                          ItemTemplateSelector="{StaticResource DefaultDocumentTemplateSelector}"
+                          IsItemClickEnabled="True"
+                          ItemClick="OnDocumentClick"
+                          SelectionMode="Single"
+                          SelectedItem="{Binding SelectedDocument, Mode=TwoWay}"
+                          Visibility="{Binding CategoriesNotEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"
+                          Width="287">
                     <ListView.GroupStyle>
-                        <GroupStyle HeaderTemplate="{Binding Source={StaticResource DefaultGroupStyleHeaderTemplate}}" Panel="{Binding Source={StaticResource DefaultGroupStylePanel}}" />
+                        <GroupStyle HeaderTemplate="{Binding Source={StaticResource DefaultGroupStyleHeaderTemplate}}"
+                                    Panel="{Binding Source={StaticResource DefaultGroupStylePanel}}" />
                     </ListView.GroupStyle>
                 </ListView>
             </SemanticZoom.ZoomedInView>
         </SemanticZoom>
 
-        <TextBlock Grid.Row="1" x:Uid="Main_NoDocuments" x:Name="noDocumentsText" Text="No documents stored." Style="{StaticResource SubheaderTextBlockStyle}" Margin="120 0 0 0" Visibility="{Binding CategoriesEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <TextBlock Grid.Row="1"
+                   x:Uid="Main_NoDocuments"
+                   Name="noDocumentsText"
+                   Text="No documents stored."
+                   Style="{StaticResource SubheaderTextBlockStyle}"
+                   Margin="120 0 0 0"
+                   Visibility="{Binding CategoriesEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
-        <!-- Back button and page title -->
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="120"/>
@@ -306,38 +308,11 @@
         </Grid>
 
         <VisualStateManager.VisualStateGroups>
-
-            <!-- Visual states reflect the application's view state -->
             <VisualStateGroup x:Name="ApplicationViewStates">
                 <VisualState x:Name="DefaultLayout"/>
-                <!--<VisualState x:Name="Filled"/>
 
-                -->
-                <!-- The entire page respects the narrower 100-pixel margin convention for portrait -->
-                <!--
-                <VisualState x:Name="FullScreenPortrait">
-                    <Storyboard>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PortraitBackButtonStyle}"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="categoryGridView" Storyboard.TargetProperty="Padding">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="96,136,86,56"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="documentGridView" Storyboard.TargetProperty="Padding">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="96,136,86,56"/>
-                        </ObjectAnimationUsingKeyFrames>
-                    </Storyboard>
-                </VisualState>-->
-
-                <!--
-                    The back button and title have different styles when snapped, and the list representation is substituted
-                    for the grid displayed in all other view states
-                -->
                 <VisualState x:Name="TightLayout">
                     <Storyboard>
-                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="IsCompact">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="True"/>
-                        </ObjectAnimationUsingKeyFrames>-->
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
                             <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightHeaderTextBlockStyle}"/>
                         </ObjectAnimationUsingKeyFrames>
@@ -351,16 +326,6 @@
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="semanticZoom" Storyboard.TargetProperty="Visibility">
                             <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
                         </ObjectAnimationUsingKeyFrames>
-
-                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="addDocButton" Storyboard.TargetProperty="IsCompact">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="True"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="editDocButton" Storyboard.TargetProperty="IsCompact">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="True"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="deleteDocButton" Storyboard.TargetProperty="IsCompact">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="True"/>
-                        </ObjectAnimationUsingKeyFrames>-->
                     </Storyboard>
                 </VisualState>
             </VisualStateGroup>
