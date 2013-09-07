@@ -197,6 +197,7 @@
                 <AppBarToggleButton x:Uid="Main_ToggleEditCategoryMode" Icon="Edit" Label="Toggle edit category mode" IsChecked="{Binding InEditCategoryMode, Mode=TwoWay}" Visibility="{Binding InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <AppBarButton x:Uid="Main_SearchDocuments" Icon="Find" Label="Search documents" Command="{Binding NavigateToSearchPageCommand}" />
                 <AppBarButton x:Uid="Main_ExportDocuments" Icon="Download" Label="Export documents" Command="{Binding ExportDocumentsCommand}" />
+                <AppBarButton x:Uid="Main_ImportDocuments" Icon="Upload" Label="Import documents" Command="{Binding ImportDocumentsCommand}" />
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

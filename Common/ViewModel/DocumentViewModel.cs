@@ -24,11 +24,13 @@ namespace MyDocs.Common.ViewModel
         private readonly IUserInterfaceService uiService;
         private readonly ILicenseService licenseService;
         private readonly IFileSavePickerService fileSavePickerService;
+        private readonly IFileOpenPickerService fileOpenPickerService;
         private readonly ITranslatorService translatorService;
+        private readonly IPdfService pdfService;
+        private readonly ISettingsService settingsService;
 
         #region Properties
 
-        //private ObservableCollection<Category> categories;
         private Document selectedDocument;
         private Category selectedCategory;
         private string newCategoryName;
@@ -142,14 +144,20 @@ namespace MyDocs.Common.ViewModel
             INavigationService navigationService,
             ILicenseService licenseService,
             IFileSavePickerService fileSavePickerService,
-            ITranslatorService translatorService)
+            IFileOpenPickerService fileOpenPickerService,
+            ITranslatorService translatorService,
+            IPdfService pdfService,
+            ISettingsService settingsService)
         {
             this.documentService = documentService;
             this.navigationService = navigationService;
             this.uiService = uiService;
             this.licenseService = licenseService;
             this.fileSavePickerService = fileSavePickerService;
+            this.fileOpenPickerService = fileOpenPickerService;
             this.translatorService = translatorService;
+            this.pdfService = pdfService;
+            this.settingsService = settingsService;
 
             CreateCommands();
             CreateDesignTimeData();
@@ -185,14 +193,15 @@ namespace MyDocs.Common.ViewModel
 
         #region Commands
 
-        public RelayCommand AddDocumentCommand { get; set; }
-        public RelayCommand EditDocumentCommand { get; set; }
-        public RelayCommand DeleteDocumentCommand { get; set; }
-        public RelayCommand<Document> ShowDocumentCommand { get; set; }
-        public RelayCommand<Category> RenameCategoryCommand { get; set; }
-        public RelayCommand<Category> DeleteCategoryCommand { get; set; }
-        public RelayCommand NavigateToSearchPageCommand { get; set; }
-        public RelayCommand ExportDocumentsCommand { get; set; }
+        public RelayCommand AddDocumentCommand { get; private set; }
+        public RelayCommand EditDocumentCommand { get; private set; }
+        public RelayCommand DeleteDocumentCommand { get; private set; }
+        public RelayCommand<Document> ShowDocumentCommand { get; private set; }
+        public RelayCommand<Category> RenameCategoryCommand { get; private set; }
+        public RelayCommand<Category> DeleteCategoryCommand { get; private set; }
+        public RelayCommand NavigateToSearchPageCommand { get; private set; }
+        public RelayCommand ExportDocumentsCommand { get; private set; }
+        public RelayCommand ImportDocumentsCommand { get; private set; }
 
         private void CreateCommands()
         {
@@ -211,6 +220,7 @@ namespace MyDocs.Common.ViewModel
             NavigateToSearchPageCommand = new RelayCommand(() => navigationService.Navigate<ISearchPage>());
 
             ExportDocumentsCommand = new RelayCommand(ExportDocumentsAsync);
+            ImportDocumentsCommand = new RelayCommand(ImportDocumentsAsync);
         }
 
         private void AddDocument()
@@ -269,25 +279,25 @@ namespace MyDocs.Common.ViewModel
                         var documents = documentService.Categories.SelectMany(c => c.Documents).Where(d => !(d is AdDocument));
 
                         var metaInfoEntry = archive.CreateEntry("Documents.xml");
-                        using (var metaInfoWriter = metaInfoEntry.Open()) {
+                        using (var metaInfoStream = metaInfoEntry.Open()) {
                             DataContractSerializer serializer = new DataContractSerializer(typeof(IEnumerable<Serializable.Document>), "Documents", "http://mydocs.eggapauli");
-                            var serializedDocuments = documents.Select(d => {
+                            var serializedDocuments = documents.Select(d =>
+                            {
                                 var files = d.Photos.Select(p => String.Format("{0}{1}", p.Title, Path.GetExtension(p.File.Name))).Distinct();
                                 return new Serializable.Document(d.Id, d.Category, d.Tags, d.DateAdded, d.Lifespan, d.HasLimitedLifespan, files);
                             });
-                            serializer.WriteObject(metaInfoWriter, serializedDocuments);
+                            serializer.WriteObject(metaInfoStream, serializedDocuments);
                         }
 
                         foreach (var document in documents) {
                             foreach (var photo in document.Photos) {
-                                var tags = document.Tags.Select(t => RemoveInvalidFileNameChars(t));
                                 var fileName = String.Format("{0}{1}", photo.Title, Path.GetExtension(photo.File.Name));
-                                var path = Path.Combine(String.Format("{0} ({1})", String.Join("-", tags), document.Id), fileName);
+                                var path = Path.Combine(document.GetHumanReadableDescription(), fileName);
                                 if (savedFiles.Add(path)) {
                                     var entry = archive.CreateEntry(path);
                                     using (var photoReader = await photo.File.OpenReadAsync())
-                                    using (var entryWriter = entry.Open()) {
-                                        await photoReader.CopyToAsync(entryWriter);
+                                    using (var entryStream = entry.Open()) {
+                                        await photoReader.CopyToAsync(entryStream);
                                     }
                                 }
                             }
@@ -304,9 +314,61 @@ namespace MyDocs.Common.ViewModel
             }
         }
 
-        private string RemoveInvalidFileNameChars(string fileName)
+        private async void ImportDocumentsAsync()
         {
-            return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, c) => current.Replace(c.ToString(), string.Empty));
+            var status = await licenseService.TryGetLicenseAsync("ExportImportDocuments");
+            if (status == LicenseStatus.Unlocked) {
+                var zipFile = await fileOpenPickerService.PickOpenFileAsync(new List<string> { ".zip" });
+                if (zipFile == null) {
+                    // TODO
+                }
+                using (var zipFileStream = await zipFile.OpenReadAsync())
+                using (var archive = new ZipArchive(zipFileStream, ZipArchiveMode.Read)) {
+                    var metaInfoEntry = archive.GetEntry("Documents.xml");
+                    if (metaInfoEntry == null) {
+                        // TODO
+                    }
+                    using (var metaInfoStream = metaInfoEntry.Open()) {
+                        DataContractSerializer serializer = new DataContractSerializer(typeof(IEnumerable<Serializable.Document>), "Documents", "http://mydocs.eggapauli");
+                        // TODO handle errors
+                        var serializedDocuments = (IEnumerable<Serializable.Document>)serializer.ReadObject(metaInfoStream);
+                        var createDocumentTasks = serializedDocuments.Select(async d =>
+                        {
+                            var createPhotoTasks = d.Files.Select(async fileName =>
+                            {
+                                var path = Path.Combine(d.GetHumanReadableDescription(), fileName);
+                                var entry = archive.GetEntry(path);
+                                var photoFileName = String.Format("{0}{1}", Path.GetRandomFileName(), Path.GetExtension(fileName));
+                                var photoFile = await settingsService.PhotoFolder.CreateFileAsync(photoFileName);
+                                using (var entryStream = entry.Open())
+                                using (var photoWriter = await photoFile.OpenWriteAsync()) {
+                                    await photoWriter.CopyToAsync(entryStream);
+                                }
+
+                                var title = Path.GetFileNameWithoutExtension(fileName);
+                                if (Path.GetExtension(photoFile.Name).Equals(".pdf", StringComparison.CurrentCultureIgnoreCase)) {
+                                    var pages = await pdfService.ExtractPages(photoFile);
+                                    return pages.Select(p => new Photo(title, photoFile, p));
+                                }
+                                else {
+                                    return new List<Photo> { new Photo(title, photoFile) };
+                                }
+                            });
+                            await Task.WhenAll(createPhotoTasks);
+                            var document = new Document(d.Id, d.Category, d.DateAdded, d.Lifespan, d.HasLimitedLifespan, d.Tags, createPhotoTasks.SelectMany(p => p.Result));
+                            await documentService.SaveDocumentAsync(document);
+                        });
+                        await Task.WhenAll(createDocumentTasks);
+                    }
+                }
+                await uiService.ShowNotificationAsync("importFinished");
+            }
+            else if (status == LicenseStatus.Locked) {
+                await uiService.ShowErrorAsync("importLocked");
+            }
+            else if (status == LicenseStatus.Error) {
+                await uiService.ShowErrorAsync("importUnlockError");
+            }
         }
 
         #endregion

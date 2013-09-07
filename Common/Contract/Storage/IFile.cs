@@ -6,6 +6,7 @@ namespace MyDocs.Common.Contract.Storage
     public interface IFile
     {
         string Name { get; }
+        string DisplayName { get; }
         string Path { get; }
         string GetRelativePath();
         bool IsInFolder(IFolder folder);

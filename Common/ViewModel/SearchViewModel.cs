@@ -99,7 +99,7 @@ namespace MyDocs.Common.ViewModel
 
         #region Commands
 
-        public RelayCommand<Document> ShowDocumentCommand { get; set; }
+        public RelayCommand<Document> ShowDocumentCommand { get; private set; }
 
         private void CreateCommands()
         {

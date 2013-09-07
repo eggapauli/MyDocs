@@ -49,6 +49,10 @@ namespace MyDocs.WindowsStore.ViewModel
                 SimpleIoc.Default.Register<IFileSavePickerService, FileSavePickerService>();
             }
 
+            if (!SimpleIoc.Default.IsRegistered<IPdfService>()) {
+                SimpleIoc.Default.Register<IPdfService, PdfService>();
+            }
+
             if (!SimpleIoc.Default.IsRegistered<ITranslatorService>()) {
                 SimpleIoc.Default.Register<ITranslatorService, TranslatorService>();
             }

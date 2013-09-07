@@ -1,4 +1,6 @@
 ﻿using MyDocs.Common.Contract.Storage;
+using System;
+using System.Threading.Tasks;
 using Windows.Storage;
 
 namespace MyDocs.WindowsStore.Storage
@@ -15,6 +17,11 @@ namespace MyDocs.WindowsStore.Storage
         public WindowsStoreFolder(StorageFolder folder)
         {
             Folder = folder;
+        }
+
+        public async Task<IFile> CreateFileAsync(string name)
+        {
+            return new WindowsStoreFile(await Folder.CreateFileAsync(name));
         }
     }
 }

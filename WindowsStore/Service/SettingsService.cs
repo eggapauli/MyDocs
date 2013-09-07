@@ -10,27 +10,18 @@ namespace MyDocs.WindowsStore.Service
         private enum FolderType { Local, Roaming }
         private static readonly string syncEnabledKey = "isSyncEnabled";
 
-        public IFolder PhotoFolder
-        {
-            get
-            {
-                if (IsSyncEnabled) {
-                    return new WindowsStoreFolder(ApplicationData.Current.RoamingFolder);
-                }
-                return new WindowsStoreFolder(ApplicationData.Current.LocalFolder);
-            }
-        }
+        private IFolder localFolder = new WindowsStoreFolder(ApplicationData.Current.LocalFolder);
+        private IFolder roamingFolder = new WindowsStoreFolder(ApplicationData.Current.RoamingFolder);
+        private IFolder tempFolder = new WindowsStoreFolder(ApplicationData.Current.TemporaryFolder);
 
-        public IApplicationDataContainer SettingsContainer
-        {
-            get
-            {
-                if (IsSyncEnabled) {
-                    return new WindowsStoreApplicationDataContainer(ApplicationData.Current.RoamingSettings);
-                }
-                return new WindowsStoreApplicationDataContainer(ApplicationData.Current.LocalSettings);
-            }
-        }
+        private IApplicationDataContainer roamingSettings = new WindowsStoreApplicationDataContainer(ApplicationData.Current.RoamingSettings);
+        private IApplicationDataContainer localSettings = new WindowsStoreApplicationDataContainer(ApplicationData.Current.LocalSettings);
+
+        public IFolder PhotoFolder { get { return IsSyncEnabled ? roamingFolder : localFolder; } }
+
+        public IFolder TempFolder { get { return tempFolder; } }
+
+        public IApplicationDataContainer SettingsContainer { get { return IsSyncEnabled ? roamingSettings : localSettings; } }
 
         public bool IsSyncEnabled
         {
@@ -52,7 +43,10 @@ namespace MyDocs.WindowsStore.Service
 
         private void SetSetting(string key, object value)
         {
-            ApplicationData.Current.RoamingSettings.Values[key] = value;
+            ApplicationData.Current.LocalSettings.Values[key] = value;
+            if (IsSyncEnabled) {
+                ApplicationData.Current.RoamingSettings.Values[key] = value;
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,6 +20,8 @@ namespace MyDocs.Common.ViewModel
         private readonly IUserInterfaceService uiService;
         private readonly ICameraService cameraService;
         private readonly IFileOpenPickerService filePicker;
+        private readonly ISettingsService settingsService;
+        private readonly IPdfService pdfService;
 
         #region Properties
 
@@ -160,13 +163,17 @@ namespace MyDocs.Common.ViewModel
             INavigationService navigator,
             IUserInterfaceService uiService,
             ICameraService cameraService,
-            IFileOpenPickerService filePicker)
+            IFileOpenPickerService filePicker,
+            ISettingsService settingsService,
+            IPdfService pdfService)
         {
             this.documentService = documentService;
             this.navigator = navigator;
             this.uiService = uiService;
             this.cameraService = cameraService;
             this.filePicker = filePicker;
+            this.settingsService = settingsService;
+            this.pdfService = pdfService;
 
             CreateCommands();
             CreateDesignTimeData();
@@ -192,12 +199,12 @@ namespace MyDocs.Common.ViewModel
 
         #region Commands
 
-        public RelayCommand ShowNewCategoryCommand { get; set; }
-        public RelayCommand ShowUseCategoryCommand { get; set; }
-        public RelayCommand AddPhotoFromCameraCommand { get; set; }
-        public RelayCommand AddPhotoFromFileCommand { get; set; }
-        public RelayCommand RemovePhotoCommand { get; set; }
-        public RelayCommand SaveDocumentCommand { get; set; }
+        public RelayCommand ShowNewCategoryCommand { get; private set; }
+        public RelayCommand ShowUseCategoryCommand { get; private set; }
+        public RelayCommand AddPhotoFromCameraCommand { get; private set; }
+        public RelayCommand AddPhotoFromFileCommand { get; private set; }
+        public RelayCommand RemovePhotoCommand { get; private set; }
+        public RelayCommand SaveDocumentCommand { get; private set; }
 
         private void CreateCommands()
         {
@@ -247,11 +254,32 @@ namespace MyDocs.Common.ViewModel
 
         private async void AddPhotoFromFileAsync()
         {
-            IsBusy = true;
-            var photos = await filePicker.PickMultiplePhotosAsync();
-            IsBusy = false;
-            foreach (var photo in photos) {
-                EditingDocument.Photos.Add(photo);
+            var files = await filePicker.PickMultipleFilesAsync();
+
+            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+                bool error = false;
+                foreach (var file in files) {
+                    if (Path.GetExtension(file.Name).Equals(".pdf", StringComparison.CurrentCultureIgnoreCase)) {
+                        var copy = await file.CopyAsync(settingsService.TempFolder, Path.GetRandomFileName() + Path.GetExtension(file.Name));
+
+                        try {
+                            var pages = await pdfService.ExtractPages(copy);
+                            foreach (var page in pages) {
+                                EditingDocument.Photos.Add(new Photo(copy.DisplayName, copy, page));
+                            }
+                        }
+                        catch (Exception) {
+                            error = true;
+                        }
+                    }
+                    else {
+                        EditingDocument.Photos.Add(new Photo(file.DisplayName, file));
+                    }
+                }
+
+                if (error) {
+                    await uiService.ShowErrorAsync("fileLoadError");
+                }
             }
         }
 

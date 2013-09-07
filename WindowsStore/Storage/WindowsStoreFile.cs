@@ -20,6 +20,7 @@ namespace MyDocs.WindowsStore.Storage
         }
 
         public string Name { get { return File.Name; } }
+        public string DisplayName { get { return File.DisplayName; } }
         public string Path { get { return File.Path; } }
 
         public string GetRelativePath()

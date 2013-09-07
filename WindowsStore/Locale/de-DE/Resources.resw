@@ -267,4 +267,16 @@
   <data name="all" xml:space="preserve">
     <value>Alle</value>
   </data>
+  <data name="Main_ImportDocuments.Label" xml:space="preserve">
+    <value>Dokumente importieren</value>
+  </data>
+  <data name="importFinished" xml:space="preserve">
+    <value>Alle Dokumente wurden erfolgreich importiert.</value>
+  </data>
+  <data name="importLocked" xml:space="preserve">
+    <value>Die Import-Funktion ist noch nicht freigeschaltet.</value>
+  </data>
+  <data name="importUnlockError" xml:space="preserve">
+    <value>Fehler beim Freischalten der Import-Funktion.</value>
+  </data>
 </root>

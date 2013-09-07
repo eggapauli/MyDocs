@@ -199,7 +199,7 @@
     <value>Exporting documents is still locked.</value>
   </data>
   <data name="exportUnlockError" xml:space="preserve">
-    <value>An error occured while unlocking the feature.</value>
+    <value>An error occured while unlocking the export feature.</value>
   </data>
   <data name="archive" xml:space="preserve">
     <value>Archive</value>
@@ -266,5 +266,17 @@
   </data>
   <data name="all" xml:space="preserve">
     <value>All</value>
+  </data>
+  <data name="Main_ImportDocuments.Label" xml:space="preserve">
+    <value>Import documents</value>
+  </data>
+  <data name="importFinished" xml:space="preserve">
+    <value>All documents have been imported successfully.</value>
+  </data>
+  <data name="importLocked" xml:space="preserve">
+    <value>Importing documents is still locked.</value>
+  </data>
+  <data name="importUnlockError" xml:space="preserve">
+    <value>An error occured while unlocking the import feature.</value>
   </data>
 </root>
