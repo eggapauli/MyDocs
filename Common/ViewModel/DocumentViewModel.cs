@@ -41,9 +41,7 @@ namespace MyDocs.Common.ViewModel
             get { return inZoomedInView; }
             set
             {
-                if (inZoomedInView != value) {
-                    inZoomedInView = value;
-                    RaisePropertyChanged(() => InZoomedInView);
+                if (Set(ref inZoomedInView, value)) {
                     RaisePropertyChanged(() => InZoomedOutView);
                 }
             }
@@ -56,9 +54,7 @@ namespace MyDocs.Common.ViewModel
             get { return isLoaded; }
             set
             {
-                if (isLoaded != value) {
-                    isLoaded = value;
-                    RaisePropertyChanged(() => IsLoaded);
+                if (Set(ref isLoaded, value)) {
                     RaisePropertyChanged(() => Categories);
                     RaisePropertyChanged(() => CategoriesEmpty);
                     RaisePropertyChanged(() => CategoriesNotEmpty);
@@ -82,9 +78,7 @@ namespace MyDocs.Common.ViewModel
             get { return selectedDocument; }
             set
             {
-                if (selectedDocument != value) {
-                    selectedDocument = value;
-                    RaisePropertyChanged(() => SelectedDocument);
+                if (Set(ref selectedDocument, value)) {
                     RaisePropertyChanged(() => HasSelectedDocument);
 
                     DeleteDocumentCommand.RaiseCanExecuteChanged();
@@ -118,9 +112,7 @@ namespace MyDocs.Common.ViewModel
             get { return selectedCategory; }
             set
             {
-                if (selectedCategory != value) {
-                    selectedCategory = value;
-                    RaisePropertyChanged(() => SelectedCategory);
+                if (Set(ref selectedCategory, value)) {
                     RaisePropertyChanged(() => HasSelectedCategory);
 
                     RenameCategoryCommand.RaiseCanExecuteChanged();
@@ -134,25 +126,13 @@ namespace MyDocs.Common.ViewModel
         public string NewCategoryName
         {
             get { return newCategoryName; }
-            set
-            {
-                if (newCategoryName != value) {
-                    newCategoryName = value;
-                    RaisePropertyChanged(() => NewCategoryName);
-                }
-            }
+            set { Set(ref newCategoryName, value); }
         }
 
         public bool InEditCategoryMode
         {
             get { return inCategoryEditMode; }
-            set
-            {
-                if (inCategoryEditMode != value) {
-                    inCategoryEditMode = value;
-                    RaisePropertyChanged(() => InEditCategoryMode);
-                }
-            }
+            set { Set(ref inCategoryEditMode, value); }
         }
 
         #endregion

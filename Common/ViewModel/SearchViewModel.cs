@@ -31,25 +31,13 @@ namespace MyDocs.Common.ViewModel
         public string QueryText
         {
             get { return queryText; }
-            set
-            {
-                if (queryText != value) {
-                    queryText = value;
-                    RaisePropertyChanged(() => QueryText);
-                }
-            }
+            set { Set(ref queryText, value); }
         }
 
         public IList<Filter> Filters
         {
             get { return filters; }
-            set
-            {
-                if (filters != value) {
-                    filters = value;
-                    RaisePropertyChanged(() => Filters);
-                }
-            }
+            set { Set(ref filters, value); }
         }
 
         public IEnumerable<Document> Results
@@ -57,9 +45,7 @@ namespace MyDocs.Common.ViewModel
             get { return results; }
             set
             {
-                if (results != value) {
-                    results = value;
-                    RaisePropertyChanged(() => Results);
+                if (Set(ref results, value)) {
                     RaisePropertyChanged(() => HasResults);
                     RaisePropertyChanged(() => ShowDefaultResults);
                     RaisePropertyChanged(() => ShowTightResults);
@@ -201,9 +187,7 @@ namespace MyDocs.Common.ViewModel
                 get { return name; }
                 set
                 {
-                    if (name != value) {
-                        name = value;
-                        RaisePropertyChanged(() => Name);
+                    if (Set(ref name, value)) {
                         RaisePropertyChanged(() => Description);
                     }
                 }
@@ -214,9 +198,7 @@ namespace MyDocs.Common.ViewModel
                 get { return count; }
                 set
                 {
-                    if (count != value) {
-                        count = value;
-                        RaisePropertyChanged(() => Count);
+                    if (Set(ref count, value)) {
                         RaisePropertyChanged(() => Description);
                     }
                 }
@@ -225,25 +207,13 @@ namespace MyDocs.Common.ViewModel
             public bool Active
             {
                 get { return active; }
-                set
-                {
-                    if (active != value) {
-                        active = value;
-                        RaisePropertyChanged(() => Active);
-                    }
-                }
+                set { Set(ref active, value); }
             }
 
             public bool IsAll
             {
                 get { return isAll; }
-                set
-                {
-                    if (isAll != value) {
-                        isAll = value;
-                        RaisePropertyChanged(() => IsAll);
-                    }
-                }
+                set { Set(ref isAll, value); }
             }
 
             public String Description

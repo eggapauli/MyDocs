@@ -13,37 +13,19 @@ namespace MyDocs.Common.Model
         public string Title
         {
             get { return title ?? File.Name; }
-            set
-            {
-                if (title != value) {
-                    title = value;
-                    RaisePropertyChanged(() => Title);
-                }
-            }
+            set { Set(ref title, value); }
         }
 
         public IFile File
         {
             get { return file; }
-            set
-            {
-                if (file != value) {
-                    file = value;
-                    RaisePropertyChanged(() => File);
-                }
-            }
+            set { Set(ref file, value); }
         }
 
         public IFile Preview
         {
             get { return preview ?? file; }
-            set
-            {
-                if (preview != value) {
-                    preview = value;
-                    RaisePropertyChanged(() => Preview);
-                }
-            }
+            set { Set(ref preview, value); }
         }
 
         public Photo(string title, IFile file, IFile preview = null)

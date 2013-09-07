@@ -14,13 +14,7 @@ namespace MyDocs.Common.Model
         public string Name
         {
             get { return name; }
-            set
-            {
-                if (name != value) {
-                    name = value;
-                    RaisePropertyChanged(() => Name);
-                }
-            }
+            set { Set(ref name, value); }
         }
 
         public SortedObservableCollection<Document> Documents
@@ -28,9 +22,7 @@ namespace MyDocs.Common.Model
             get { return documents; }
             set
             {
-                if (documents != value) {
-                    documents = value;
-                    RaisePropertyChanged(() => Documents);
+                if (Set(ref documents, value)) {
                     RaisePropertyChanged(() => CountDocuments);
                 }
             }

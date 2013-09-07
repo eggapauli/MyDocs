@@ -40,9 +40,7 @@ namespace MyDocs.Common.ViewModel
             get { return !HasCategories || showNewCategoryInput; }
             set
             {
-                if (showNewCategoryInput != value) {
-                    showNewCategoryInput = value;
-                    RaisePropertyChanged(() => ShowNewCategoryInput);
+                if (Set(ref showNewCategoryInput, value)) {
                     RaisePropertyChanged(() => ShowUseCategoryInput);
                     SaveDocumentCommand.RaiseCanExecuteChanged();
                 }
@@ -65,9 +63,7 @@ namespace MyDocs.Common.ViewModel
             get { return useCategoryName; }
             set
             {
-                if (useCategoryName != value) {
-                    useCategoryName = value;
-                    RaisePropertyChanged(() => UseCategoryName);
+                if (Set(ref useCategoryName, value)) {
                     SaveDocumentCommand.RaiseCanExecuteChanged();
                 }
             }
@@ -78,9 +74,7 @@ namespace MyDocs.Common.ViewModel
             get { return newCategoryName; }
             set
             {
-                if (newCategoryName != value) {
-                    newCategoryName = value;
-                    RaisePropertyChanged(() => NewCategoryName);
+                if (Set(ref newCategoryName, value)) {
                     SaveDocumentCommand.RaiseCanExecuteChanged();
                 }
             }
@@ -106,7 +100,7 @@ namespace MyDocs.Common.ViewModel
                         editingDocument = null;
                     }
                     originalDocument = value;
-                    RaisePropertyChanged(() => EditingDocument);
+                    RaisePropertyChanged();
                     SaveDocumentCommand.RaiseCanExecuteChanged();
                 }
             }
@@ -147,9 +141,7 @@ namespace MyDocs.Common.ViewModel
             get { return selectedPhoto; }
             set
             {
-                if (selectedPhoto != value) {
-                    selectedPhoto = value;
-                    RaisePropertyChanged(() => SelectedPhoto);
+                if (Set(ref selectedPhoto, value)) {
                     RemovePhotoCommand.RaiseCanExecuteChanged();
                 }
             }

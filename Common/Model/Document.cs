@@ -20,37 +20,19 @@ namespace MyDocs.Common.Model
         public Guid Id
         {
             get { return id; }
-            set
-            {
-                if (id != value) {
-                    id = value;
-                    RaisePropertyChanged(() => Id);
-                }
-            }
+            set { Set(ref id, value); }
         }
 
         public string Category
         {
             get { return category; }
-            set
-            {
-                if (category != value) {
-                    category = value;
-                    RaisePropertyChanged(() => Category);
-                }
-            }
+            set { Set(ref category, value); }
         }
 
         public ObservableCollection<Photo> Photos
         {
             get { return photos; }
-            set
-            {
-                if (photos != value) {
-                    photos = value;
-                    RaisePropertyChanged(() => Photos);
-                }
-            }
+            set { Set(ref photos, value); }
         }
 
         public Photo TitlePhoto
@@ -66,9 +48,7 @@ namespace MyDocs.Common.Model
             get { return tags; }
             set
             {
-                if (tags != value) {
-                    tags = value;
-                    RaisePropertyChanged(() => Tags);
+                if (Set(ref tags, value)) {
                     RaisePropertyChanged(() => TagsString);
                 }
             }
@@ -77,13 +57,7 @@ namespace MyDocs.Common.Model
         public DateTime DateAdded
         {
             get { return dateAdded; }
-            set
-            {
-                if (dateAdded != value) {
-                    dateAdded = value;
-                    RaisePropertyChanged(() => DateAdded);
-                }
-            }
+            set { Set(ref dateAdded, value); }
         }
 
         public TimeSpan Lifespan
@@ -91,13 +65,8 @@ namespace MyDocs.Common.Model
             get { return lifespan; }
             set
             {
-                if (lifespan != value) {
-                    lifespan = value;
-                    RaisePropertyChanged(() => Lifespan);
+                if (Set(ref lifespan, value)) {
                     RaisePropertyChanged(() => DateRemoved);
-                    RaisePropertyChanged(() => DateRemovedDay);
-                    RaisePropertyChanged(() => DateRemovedMonth);
-                    RaisePropertyChanged(() => DateRemovedYear);
                     RaisePropertyChanged(() => DaysToRemoval);
                 }
             }
@@ -108,9 +77,7 @@ namespace MyDocs.Common.Model
             get { return hasLimitedLifespan; }
             set
             {
-                if (hasLimitedLifespan != value) {
-                    hasLimitedLifespan = value;
-                    RaisePropertyChanged(() => HasLimitedLifespan);
+                if (Set(ref hasLimitedLifespan, value)) {
                     RaisePropertyChanged(() => HasInfiniteLifespan);
                 }
             }
@@ -129,7 +96,6 @@ namespace MyDocs.Common.Model
             {
                 string[] tags = value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 Tags = new ObservableCollection<string>(tags.Select(tag => tag.Trim()));
-                RaisePropertyChanged(() => TagsString);
             }
         }
 
@@ -137,36 +103,6 @@ namespace MyDocs.Common.Model
         {
             get { return DateAdded.Add(Lifespan).Date; }
             set { Lifespan = value.Subtract(DateAdded); }
-        }
-
-        public int DateRemovedDay
-        {
-            get { return DateRemoved.Day; }
-            set
-            {
-                int day = Math.Min(DateTime.DaysInMonth(DateRemoved.Year, DateRemoved.Month), value);
-                DateRemoved = new DateTime(DateRemoved.Year, DateRemoved.Month, day);
-            }
-        }
-
-        public int DateRemovedMonth
-        {
-            get { return DateRemoved.Month; }
-            set
-            {
-                int day = Math.Min(DateTime.DaysInMonth(DateRemoved.Year, value), DateRemoved.Day);
-                DateRemoved = new DateTime(DateRemoved.Year, value, day);
-            }
-        }
-
-        public int DateRemovedYear
-        {
-            get { return DateRemoved.Year; }
-            set
-            {
-                int day = Math.Min(DateTime.DaysInMonth(value, DateRemoved.Month), DateRemoved.Day);
-                DateRemoved = new DateTime(value, DateRemoved.Month, day);
-            }
         }
 
         public int DaysToRemoval
@@ -194,8 +130,7 @@ namespace MyDocs.Common.Model
             TimeSpan lifespan,
             bool hasLimitedLifespan,
             IEnumerable<string> tags,
-            IEnumerable<Photo> photos = null
-            )
+            IEnumerable<Photo> photos = null)
         {
             Id = id;
             Category = category;

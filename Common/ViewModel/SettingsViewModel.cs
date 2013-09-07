@@ -14,7 +14,7 @@ namespace MyDocs.Common.ViewModel
             {
                 if (settingsService.IsSyncEnabled != value) {
                     settingsService.IsSyncEnabled = value;
-                    RaisePropertyChanged(() => SyncEnabled);
+                    RaisePropertyChanged();
                 }
             }
         }
