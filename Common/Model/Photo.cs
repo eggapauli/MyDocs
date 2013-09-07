@@ -12,7 +12,7 @@ namespace MyDocs.Common.Model
 
         public string Title
         {
-            get { return title; }
+            get { return title ?? File.Name; }
             set
             {
                 if (title != value) {

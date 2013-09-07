@@ -28,7 +28,10 @@ namespace MyDocs.Common.Model.Serializable
         [DataMember]
         public bool HasLimitedLifespan { get; set; }
 
-        public Document(Guid id, string category, IEnumerable<string> tags, DateTime dateAdded, TimeSpan lifespan, bool hasLimitedLifespan)
+        [DataMember]
+        public IEnumerable<string> Files { get; set; }
+
+        public Document(Guid id, string category, IEnumerable<string> tags, DateTime dateAdded, TimeSpan lifespan, bool hasLimitedLifespan, IEnumerable<string> files)
         {
             Id = id;
             Category = category;
@@ -36,6 +39,7 @@ namespace MyDocs.Common.Model.Serializable
             DateAdded = dateAdded;
             Lifespan = lifespan;
             HasLimitedLifespan = hasLimitedLifespan;
+            Files = files;
         }
     }
 }

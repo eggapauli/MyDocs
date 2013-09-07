@@ -291,21 +291,24 @@ namespace MyDocs.Common.ViewModel
                         var metaInfoEntry = archive.CreateEntry("Documents.xml");
                         using (var metaInfoWriter = metaInfoEntry.Open()) {
                             DataContractSerializer serializer = new DataContractSerializer(typeof(IEnumerable<Serializable.Document>), "Documents", "http://mydocs.eggapauli");
-                            serializer.WriteObject(metaInfoWriter, documents.Select(d => new Serializable.Document(d.Id, d.Category, d.Tags, d.DateAdded, d.Lifespan, d.HasLimitedLifespan)));
+                            var serializedDocuments = documents.Select(d => {
+                                var files = d.Photos.Select(p => String.Format("{0}{1}", p.Title, Path.GetExtension(p.File.Name))).Distinct();
+                                return new Serializable.Document(d.Id, d.Category, d.Tags, d.DateAdded, d.Lifespan, d.HasLimitedLifespan, files);
+                            });
+                            serializer.WriteObject(metaInfoWriter, serializedDocuments);
                         }
 
                         foreach (var document in documents) {
                             foreach (var photo in document.Photos) {
                                 var tags = document.Tags.Select(t => RemoveInvalidFileNameChars(t));
-                                var fileName = photo.Title != null ? String.Format("{0}{1}", photo.Title, Path.GetExtension(photo.File.Name)) : photo.File.Name;
+                                var fileName = String.Format("{0}{1}", photo.Title, Path.GetExtension(photo.File.Name));
                                 var path = Path.Combine(String.Format("{0} ({1})", String.Join("-", tags), document.Id), fileName);
-                                if (!savedFiles.Contains(path)) {
+                                if (savedFiles.Add(path)) {
                                     var entry = archive.CreateEntry(path);
                                     using (var photoReader = await photo.File.OpenReadAsync())
                                     using (var entryWriter = entry.Open()) {
                                         await photoReader.CopyToAsync(entryWriter);
                                     }
-                                    savedFiles.Add(path);
                                 }
                             }
                         }
