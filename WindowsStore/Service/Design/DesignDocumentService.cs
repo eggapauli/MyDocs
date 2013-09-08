@@ -28,9 +28,15 @@ namespace MyDocs.WindowsStore.Service.Design
 
         public async Task LoadCategoriesAsync()
         {
-            StorageFolder folder = await ApplicationData.Current.LocalFolder.GetFolderAsync("design");
-            IList<IFile> photos = (await folder.GetFilesAsync()).Select<StorageFile, IFile>(f => new WindowsStoreFile(f)).ToList();
-            categories = new SortedObservableCollection<Category>(CreateCategories(photos.ToList()), new CategoryComparer());
+            IList<IFile> photos;
+            try {
+                StorageFolder folder = await ApplicationData.Current.LocalFolder.GetFolderAsync("design");
+                photos = (await folder.GetFilesAsync()).Select<StorageFile, IFile>(f => new WindowsStoreFile(f)).ToList();
+            }
+            catch (Exception) {
+                photos = null;
+            }
+            categories = new SortedObservableCollection<Category>(CreateCategories(photos), new CategoryComparer());
         }
 
         public IEnumerable<string> GetCategoryNames()
@@ -61,6 +67,9 @@ namespace MyDocs.WindowsStore.Service.Design
         private Random rand = new Random();
         private IEnumerable<Photo> GetRandomPhotos(IList<IFile> photos)
         {
+            if (photos == null) {
+                yield break;
+            }
             int count = rand.Next(1, 4);
             while (count > 0 && photos.Count > 0) {
                 int idx = rand.Next(photos.Count);

@@ -90,7 +90,7 @@ namespace MyDocs.Common.ViewModel
             }
         }
 
-        public bool HasSelectedDocument { get { return SelectedDocument != null; } }
+        public bool HasSelectedDocument { get { return SelectedDocument != null && !(SelectedDocument is AdDocument); } }
 
         public Guid SelectedDocumentId
         {
@@ -106,7 +106,7 @@ namespace MyDocs.Common.ViewModel
                     else {
                         SelectedDocument = t.Result;
                     }
-                }, TaskScheduler.FromCurrentSynchronizationContext());
+                }, TaskContinuationOptions.ExecuteSynchronously);
             }
         }
 
@@ -179,7 +179,7 @@ namespace MyDocs.Common.ViewModel
                 LoadAsync().ContinueWith(t =>
                 {
                     SelectedDocument = Categories.First().Documents.First(d => d.Tags.Count > 2);
-                }, TaskScheduler.FromCurrentSynchronizationContext());
+                }, TaskContinuationOptions.ExecuteSynchronously);
             }
         }
 
@@ -324,6 +324,7 @@ namespace MyDocs.Common.ViewModel
             }
         }
 
+        // TODO set options for import (overwrite existing documents, delete documents before importing, ...)
         private async void ImportDocumentsAsync()
         {
             using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {

@@ -13,6 +13,7 @@
     <Page.Resources>
         <Style x:Key="PhotoDetailTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource SubheaderTextBlockStyle}">
             <Setter Property="Margin" Value="50,0,0,20" />
+            <Setter Property="Foreground" Value="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" />
         </Style>
         <Style x:Key="TightPhotoDetailTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource PhotoDetailTextBlockStyle}">
             <Setter Property="Margin" Value="20,0,0,10" />
@@ -30,7 +31,7 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 
-                <!-- TODO Command doesn't work in AppBar -->
+                <!-- TODO Command on pageRoot doesn't work in AppBar -->
                 <AppBarButton x:Name="backButton" Icon="Back" Height="95" Margin="10,46,10,0"
                               Click="backButton_Click"
                               Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource Mode=Self}}"
@@ -45,28 +46,26 @@
     
     <Page.BottomAppBar>
         <AppBar IsOpen="True">
-            <StackPanel Grid.Row="1"
-                    Name="footer"
-                    VerticalAlignment="Bottom"
-                    Orientation="Vertical"
-                    Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}"
-                    Visibility="{Binding ShowInfo, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <TextBlock x:Name="category" Text="{Binding SelectedDocument.Category}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextBlockStyle}" TextWrapping="NoWrap" />
-                <TextBlock x:Name="tags" Text="{Binding SelectedDocument.TagsString}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextBlockStyle}" TextWrapping="Wrap" />
-                <TextBlock x:Name="lifespan"
-                       Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
-                       Style="{StaticResource PhotoDetailTextBlockStyle}"
-                       TextWrapping="NoWrap"
-                       Visibility="{Binding SelectedDocument.HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel Name="footer"
+                        VerticalAlignment="Bottom"
+                        Orientation="Vertical"
+                        Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}"
+                        Visibility="{Binding ShowInfo, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel.Resources>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource PhotoDetailTextBlockStyle}" />
+                </StackPanel.Resources>
+                <TextBlock Name="category" Text="{Binding SelectedDocument.Category}" TextWrapping="NoWrap" />
+                <TextBlock Name="tags" Text="{Binding SelectedDocument.TagsString}" TextWrapping="Wrap" />
+                <TextBlock Name="lifespan"
+                           TextWrapping="NoWrap"
+                           Visibility="{Binding SelectedDocument.HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Run Text="{Binding SelectedDocument.DateAdded, Converter={StaticResource DateToStringConverter}}" /> -
                 <Run Text="{Binding SelectedDocument.DateRemoved, Converter={StaticResource DateToStringConverter}}" />
                 </TextBlock>
-                <TextBlock x:Name="timeToRemoval"
-                       Text="{Binding SelectedDocument.DaysToRemoval, Converter={StaticResource TranslationConverter}, ConverterParameter='countDaysFormat'}"
-                       Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
-                       Style="{StaticResource PhotoDetailTextBlockStyle}"
-                       TextWrapping="NoWrap"
-                       Visibility="{Binding SelectedDocument.HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <TextBlock Name="timeToRemoval"
+                           Text="{Binding SelectedDocument.DaysToRemoval, Converter={StaticResource TranslationConverter}, ConverterParameter='countDaysFormat'}"
+                           TextWrapping="NoWrap"
+                           Visibility="{Binding SelectedDocument.HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             </StackPanel>
         </AppBar>
     </Page.BottomAppBar>
@@ -76,10 +75,8 @@
             <RowDefinition Height="140" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
-        <Button Name="backButtonClone" Visibility="Collapsed" Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}" />
         
-        <FlipView Grid.RowSpan="2" ItemsSource="{Binding SelectedDocument.Photos}">
+        <FlipView Grid.RowSpan="2" ItemsSource="{Binding SelectedDocument.Photos}" UseTouchAnimationsForAllNavigation="True">
             <FlipView.ItemTemplate>
                 <DataTemplate>
                     <controls:FilePreview File="{Binding}" FileSize="Big" />
@@ -88,30 +85,11 @@
         </FlipView>
         
         <VisualStateManager.VisualStateGroups>
-
-            <!-- Visual states reflect the application's view state -->
             <VisualStateGroup x:Name="ApplicationViewStates">
                 <VisualState x:Name="DefaultLayout"/>
-                <!--<VisualState x:Name="Filled"/>-->
-
-                <!-- The entire page respects the narrower 100-pixel margin convention for portrait -->
-                <!--<VisualState x:Name="FullScreenPortrait">
-                    <Storyboard>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PortraitBackButtonStyle}"/>
-                        </ObjectAnimationUsingKeyFrames>
-                    </Storyboard>
-                </VisualState>-->
-
-                <!--
-                    The back button and title have different styles when snapped, and the list representation is substituted
-                    for the grid displayed in all other view states
-                -->
+                
                 <VisualState x:Name="TightLayout">
                     <Storyboard>
-                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedBackButtonStyle}"/>
-                        </ObjectAnimationUsingKeyFrames>-->
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
                             <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightHeaderTextBlockStyle}"/>
                         </ObjectAnimationUsingKeyFrames>

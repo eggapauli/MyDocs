@@ -123,7 +123,7 @@ namespace MyDocs.Common.ViewModel
                     else {
                         EditingDocument = t.Result;
                     }
-                }, TaskScheduler.FromCurrentSynchronizationContext());
+                }, TaskContinuationOptions.ExecuteSynchronously);
             }
         }
 
@@ -188,7 +188,7 @@ namespace MyDocs.Common.ViewModel
                 documentService.LoadCategoriesAsync().ContinueWith(t =>
                 {
                     EditingDocument = documentService.Categories.First().Documents.First();
-                }, TaskScheduler.FromCurrentSynchronizationContext());
+                }, TaskContinuationOptions.ExecuteSynchronously);
             }
         }
 
