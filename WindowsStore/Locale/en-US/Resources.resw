@@ -129,7 +129,7 @@
   <data name="settings" xml:space="preserve">
     <value>Settings</value>
   </data>
-  <data name="Settings_Title.Text" xml:space="preserve">
+  <data name="Settings_Root.Title" xml:space="preserve">
     <value>Settings</value>
   </data>
   <data name="Edit_NewCategory.Content" xml:space="preserve">
@@ -225,7 +225,7 @@
   <data name="Main_DeleteDocConfirmation.Text" xml:space="preserve">
     <value>Delete document?</value>
   </data>
-  <data name="Main_ExportDocuments.Label" xml:space="preserve">
+  <data name="Settings_ExportDocuments.Content" xml:space="preserve">
     <value>Export documents</value>
   </data>
   <data name="Main_NewCategoryName.PlaceholderText" xml:space="preserve">
@@ -252,7 +252,7 @@
   <data name="Settings_UseRoaming.OnContent" xml:space="preserve">
     <value>Yes</value>
   </data>
-  <data name="Settings_UseRoamingDescription.Text" xml:space="preserve">
+  <data name="Settings_UseRoamingTitle.Text" xml:space="preserve">
     <value>Synchronize documents between your Windows 8 devices</value>
   </data>
   <data name="Search_NoResults.Text" xml:space="preserve">
@@ -267,7 +267,7 @@
   <data name="all" xml:space="preserve">
     <value>All</value>
   </data>
-  <data name="Main_ImportDocuments.Label" xml:space="preserve">
+  <data name="Settings_ImportDocuments.Content" xml:space="preserve">
     <value>Import documents</value>
   </data>
   <data name="importFinished" xml:space="preserve">
@@ -278,5 +278,14 @@
   </data>
   <data name="importUnlockError" xml:space="preserve">
     <value>An error occured while unlocking the import feature.</value>
+  </data>
+  <data name="Settings_ExportImportTitle.Text" xml:space="preserve">
+    <value>Export/Import documents</value>
+  </data>
+  <data name="Settings_UseRoaming.Header" xml:space="preserve">
+    <value>Enable synchronization</value>
+  </data>
+  <data name="documentDescriptionFileNotFound" xml:space="preserve">
+    <value>"Documents.xml" couldn't be found.</value>
   </data>
 </root>

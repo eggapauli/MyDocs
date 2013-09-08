@@ -5,6 +5,7 @@ using MyDocs.WindowsStore.Pages;
 using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Resources;
 using Windows.ApplicationModel.Store;
 using Windows.System;
 using Windows.UI.ApplicationSettings;
@@ -85,40 +86,19 @@ namespace MyDocs.WindowsStore
 
         private void App_CommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
         {
-            //SettingsCommand settingsCmd = new SettingsCommand("settings", rl.GetString("settings"), handler =>
-            //{
-            //    Popup popup = BuildSettingsItem(new SettingsPage(), 646);
-            //    popup.IsOpen = true;
-            //});
-            //args.Request.ApplicationCommands.Add(settingsCmd);
-
             var translator = SimpleIoc.Default.GetInstance<ITranslatorService>();
-            SettingsCommand privacyCmd = new SettingsCommand("privacy", translator.Translate("privacyStatement"), handler =>
+            //SettingsCommand settingsCommand = new SettingsCommand("settings", translator.Translate("settings"), handler =>
+            //{
+            //    SettingsPage settingsPage = new SettingsPage();
+            //    settingsPage.Show();
+            //});
+            //args.Request.ApplicationCommands.Add(settingsCommand);
+            
+            SettingsCommand privacyCommand = new SettingsCommand("privacy", translator.Translate("privacyStatement"), handler =>
             {
                 var task = Launcher.LaunchUriAsync(new Uri("http://eggapauli.square7.ch/windows-store/my-docs/privacy.html"));
             });
-            args.Request.ApplicationCommands.Add(privacyCmd);
-        }
-
-        private Popup BuildSettingsItem(UserControl control, int width)
-        {
-            Popup popup = new Popup();
-            popup.IsLightDismissEnabled = true;
-            popup.ChildTransitions = new TransitionCollection();
-            popup.ChildTransitions.Add(new PaneThemeTransition() {
-                Edge = (SettingsPane.Edge == SettingsEdgeLocation.Right) ?
-                        EdgeTransitionLocation.Right :
-                        EdgeTransitionLocation.Left
-            });
-
-            control.Width = width;
-            control.Height = Window.Current.Bounds.Height;
-            popup.Child = control;
-
-            popup.SetValue(Canvas.LeftProperty, SettingsPane.Edge == SettingsEdgeLocation.Right ? (Window.Current.Bounds.Width - width) : 0);
-            popup.SetValue(Canvas.TopProperty, 0);
-
-            return popup;
+            args.Request.ApplicationCommands.Add(privacyCommand);
         }
 
         /// <summary> 

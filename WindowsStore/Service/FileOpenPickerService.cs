@@ -32,14 +32,13 @@ namespace MyDocs.WindowsStore.Service
 
             var files = await filePicker.PickMultipleFilesAsync();
 
-            var fileTasks = files.Select(async f =>
-            {
-                var fileName = Path.GetRandomFileName() + Path.GetExtension(f.Name);
-                var copy = await f.CopyAsync(ApplicationData.Current.TemporaryFolder, fileName);
-                return new WindowsStoreFile(copy);
-            }).ToList();
-            await Task.WhenAll(fileTasks);
-            return fileTasks.Select(t => t.Result);
+            var copies = new List<IFile>();
+            foreach (var file in files) {
+                var fileName = Path.GetRandomFileName() + Path.GetExtension(file.Name);
+                var copy = await file.CopyAsync(ApplicationData.Current.TemporaryFolder, fileName);
+                copies.Add(new WindowsStoreFile(copy));
+            }
+            return copies;
         }
 
 

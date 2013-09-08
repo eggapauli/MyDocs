@@ -42,22 +42,23 @@ namespace MyDocs.WindowsStore.Service
                 ApplicationData.Current.TemporaryFolder
             };
 
-            var tasks = new List<Task>();
             foreach (var folder in folders) {
-                var task = folder.GetFilesAsync().AsTask();
-                tasks.AddRange(task.Result.Select(f => f.DeleteAsync().AsTask()));
+                var files = await folder.GetFilesAsync();
+                foreach (var file in files) {
+                    await file.DeleteAsync();
+                }
             }
-            await Task.WhenAll(tasks);
         }
 
         private async Task InsertTestData()
         {
             var service = new MyDocs.WindowsStore.Service.Design.DesignDocumentService();
             await service.LoadCategoriesAsync();
-            var docs = service.Categories.SelectMany(c => c.Documents);
+            var documents = service.Categories.SelectMany(c => c.Documents);
 
-            var tasks = docs.Select(d => SaveDocumentAsync(d));
-            await Task.WhenAll(tasks);
+            foreach (var document in documents) {
+                await SaveDocumentAsync(document);
+            }
         }
 
         public async Task LoadCategoriesAsync()
@@ -66,8 +67,8 @@ namespace MyDocs.WindowsStore.Service
                 return;
             }
 #if DEBUG
-            //await ClearAllData();
-            //await InsertTestData();
+            await ClearAllData();
+            await InsertTestData();
 #endif
             //await Task.Delay(2000);
             //categories.Clear();
@@ -82,14 +83,14 @@ namespace MyDocs.WindowsStore.Service
 
             var i = 0;
             foreach (var group in data) {
-                var tasks = new List<Task<Document>>();
+                var documents = new List<Document>();
                 foreach (ApplicationDataCompositeValue item in group) {
-                    tasks.Add(item.ConvertToDocumentAsync());
+                    documents.Add(await item.ConvertToDocumentAsync());
                     if (++i % 5 == 0) {
-                        tasks.Add(Task.Run<Document>(() => new AdDocument()));
+                        documents.Add(new AdDocument());
                     }
                 }
-                Categories.Add(new Category(group.Key, await Task.WhenAll(tasks)));
+                Categories.Add(new Category(group.Key, documents));
             }
 
             await RemoveOutdatedDocuments(Categories);
@@ -139,8 +140,9 @@ namespace MyDocs.WindowsStore.Service
                 Categories.Add(category);
             }
 
-            var tasks = category.Documents.Select(SaveDocumentAsync);
-            await Task.WhenAll(tasks);
+            foreach (var document in category.Documents) {
+                await SaveDocumentAsync(document);
+            }
         }
 
         public async Task<Document> GetDocumentById(Guid id)
@@ -178,8 +180,9 @@ namespace MyDocs.WindowsStore.Service
         public async Task DeleteDocumentAsync(Document doc)
         {
             if (!(doc is AdDocument)) {
-                var tasks = doc.Photos.Select(p => p.File.MoveAsync(tempFolder));
-                await Task.WhenAll(tasks);
+                foreach (var photo in doc.Photos) {
+                    await photo.File.MoveAsync(tempFolder);
+                }
 
                 docsDataContainer.Values.Remove(doc.Id.ToString());
 
@@ -189,8 +192,9 @@ namespace MyDocs.WindowsStore.Service
 
         public async Task RemovePhotosAsync(IEnumerable<IFile> photos)
         {
-            var tasks = photos.Select(p => p.DeleteAsync());
-            await Task.WhenAll(tasks);
+            foreach (var photo in photos) {
+                await photo.DeleteAsync();
+            }
         }
 
         private async Task RemoveOutdatedDocuments(ICollection<Category> categories)
@@ -202,16 +206,10 @@ namespace MyDocs.WindowsStore.Service
                         where doc.DateRemoved < DateTime.Today
                         select doc).ToList();
 
-            var tasks = new List<Task>();
             foreach (var doc in docs) {
-                var cat = categories.First(c => c.Name == doc.Category);
-                cat.Documents.Remove(doc);
-                tasks.Add(DeleteDocumentAsync(doc));
-                if (cat.Documents.Count == 0) {
-                    categories.Remove(cat);
-                }
+                DetachDocument(doc);
+                await DeleteDocumentAsync(doc);
             }
-            await Task.WhenAll(tasks);
         }
     }
 }

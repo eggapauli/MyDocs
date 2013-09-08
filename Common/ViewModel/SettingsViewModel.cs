@@ -1,5 +1,15 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using MyDocs.Common.Contract.Service;
+using MyDocs.Common.Model;
+using Serializable = MyDocs.Common.Model.Serializable;
+using System;
+using System.Collections.Generic;
+using System.IO.Compression;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace MyDocs.Common.ViewModel
 {
@@ -18,7 +28,6 @@ namespace MyDocs.Common.ViewModel
                 }
             }
         }
-
         public SettingsViewModel(ISettingsService settingsService)
         {
             this.settingsService = settingsService;

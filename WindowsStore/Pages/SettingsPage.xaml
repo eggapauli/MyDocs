@@ -1,54 +1,37 @@
-﻿<UserControl
-    x:Class="MyDocs.WindowsStore.Pages.SettingsPage"
-    DataContext="{Binding SettingsVM, Source={StaticResource Locator}}"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    d:DesignHeight="700"
-    d:DesignWidth="646">
-    
-    <UserControl.Resources>
-        <Style x:Name="SettingTitleStyle" TargetType="TextBlock" BasedOn="{StaticResource SubtitleTextBlockStyle}">
-            <Setter Property="Margin" Value="0,12,0,0" />
+﻿<SettingsFlyout x:Class="MyDocs.WindowsStore.Pages.SettingsPage"
+                Name="Settings_Root"
+                DataContext="{Binding SettingsVM, Source={StaticResource Locator}}"
+                IconSource="/Assets/SmallLogo.png"
+                HeaderBackground="#00b2f0"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                mc:Ignorable="d"
+                d:DesignHeight="700"
+                d:DesignWidth="646">
+    <SettingsFlyout.Resources>
+        <Style x:Key="SettingsFlyoutSectionStyle" TargetType="StackPanel">
+            <Setter Property="Margin" Value="0,0,0,39"/>
         </Style>
-    </UserControl.Resources>
-
-    <Border BorderBrush="#00b2f0" BorderThickness="1,0,0,0">
-        <Grid Background="Black" VerticalAlignment="Stretch">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+    </SettingsFlyout.Resources>
+    
+    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+        <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
+            <TextBlock x:Uid="Settings_ExportImportTitle" Style="{StaticResource TitleTextBlockStyle}" Text="Export/Import documents" />
             
-            <Grid Background="#00b2f0" Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Uid="Settings_ExportDocuments" Command="{Binding ExportDocumentsCommand}" Content="Export documents" />
+                <Button x:Uid="Settings_ImportDocuments" Command="{Binding ImportDocumentsCommand}" Content="Import documents" />
+            </StackPanel>
+        </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Grid.Column="0" Margin="40, 32, 17, 13">
-                    <AppBarButton x:Name="BackButton" Icon="Back" Margin="0,3,0,0" Click="GoBack"/>
-                    <TextBlock x:Uid="Settings_Title" Margin="10,10,0,0" FontFamily="Segoe UI" FontWeight="SemiLight" FontSize="24.6667" Text="Settings" Foreground="White"/>
-                </StackPanel>
-                <Image Grid.Column="1" Source="Assets/SmallLogo.png" Width="29" Height="29" Margin="0,46,30,21" />
-            </Grid>
-            
-            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1">
-                <Grid Margin="40,33,40,39">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    
-                    <TextBlock x:Uid="Settings_UseRoamingDescription" Text="Synchronize documents between your devices" Style="{StaticResource SettingTitleStyle}" />
-                    <ToggleSwitch x:Uid="Settings_UseRoaming" Grid.Column="1" OnContent="Yes" OffContent="No" IsOn="{Binding SyncEnabled, Mode=TwoWay}" />
-                </Grid>
-            </ScrollViewer>
-        </Grid>
-    </Border>
-</UserControl>
+        <!--<StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
+            <TextBlock x:Uid="Settings_UseRoamingTitle" Style="{StaticResource TitleTextBlockStyle}" Text="Synchronize documents between multiple Windows 8 devices" />
+
+            <StackPanel Orientation="Horizontal">
+                <ToggleSwitch Grid.Column="1" x:Uid="Settings_UseRoaming" Header="Enable synchronization" OnContent="Yes" OffContent="No" IsOn="{Binding SyncEnabled, Mode=TwoWay}" />
+            </StackPanel>
+        </StackPanel>-->
+    </StackPanel>
+</SettingsFlyout>
