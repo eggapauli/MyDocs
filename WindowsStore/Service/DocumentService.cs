@@ -67,8 +67,8 @@ namespace MyDocs.WindowsStore.Service
                 return;
             }
 #if DEBUG
-            await ClearAllData();
-            await InsertTestData();
+            //await ClearAllData();
+            //await InsertTestData();
 #endif
             //await Task.Delay(2000);
             //categories.Clear();
@@ -181,7 +181,12 @@ namespace MyDocs.WindowsStore.Service
         {
             if (!(doc is AdDocument)) {
                 foreach (var photo in doc.Photos) {
-                    await photo.File.MoveAsync(tempFolder);
+                    if (!photo.File.IsInFolder(tempFolder)) {
+                        await photo.File.MoveAsync(tempFolder);
+                    }
+                    if (!photo.Preview.IsInFolder(tempFolder)) {
+                        await photo.Preview.MoveAsync(tempFolder);
+                    }
                 }
 
                 docsDataContainer.Values.Remove(doc.Id.ToString());

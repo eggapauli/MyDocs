@@ -117,8 +117,8 @@ namespace MyDocs.Common.ViewModel
                 documentService.GetDocumentById(value).ContinueWith(t =>
                 {
                     if (t.IsFaulted) {
-                        uiService.ShowErrorAsync("documentNotFound");
                         EditingDocument = new Document();
+                        uiService.ShowErrorAsync("documentNotFound");
                     }
                     else {
                         EditingDocument = t.Result;
@@ -194,7 +194,9 @@ namespace MyDocs.Common.ViewModel
 
         public async Task LoadAsync()
         {
-            await documentService.LoadCategoriesAsync();
+            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+                await documentService.LoadCategoriesAsync();
+            }
         }
 
         #region Commands
@@ -225,12 +227,14 @@ namespace MyDocs.Common.ViewModel
         {
             EditingDocument.Category = ShowNewCategoryInput ? NewCategoryName : UseCategoryName;
 
-            await documentService.SaveDocumentAsync(EditingDocument);
+            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+                await documentService.SaveDocumentAsync(EditingDocument);
 
-            // Delete removed photos
-            if (originalDocument != null) {
-                var deletedPhotos = originalDocument.Photos.Where(p => !EditingDocument.Photos.Contains(p)).Select(p => p.File);
-                await documentService.RemovePhotosAsync(deletedPhotos);
+                // Delete removed photos
+                if (originalDocument != null) {
+                    var deletedPhotos = originalDocument.Photos.Where(p => !EditingDocument.Photos.Contains(p)).Select(p => p.File);
+                    await documentService.RemovePhotosAsync(deletedPhotos);
+                }
             }
 
             documentService.DetachDocument(originalDocument);

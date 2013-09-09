@@ -187,12 +187,15 @@ namespace MyDocs.Common.ViewModel
         {
             bool error = false;
             try {
-                await documentService.LoadCategoriesAsync();
+                using (new TemporaryState(() => IsLoaded = false, () => IsLoaded = true))
+                using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+                    await documentService.LoadCategoriesAsync();
+                }
             }
             catch (Exception) {
                 error = true;
             }
-            IsLoaded = true;
+
             if (error) {
                 await uiService.ShowErrorAsync("loadDocumentsError");
             }
@@ -244,7 +247,9 @@ namespace MyDocs.Common.ViewModel
         {
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
-            await documentService.DeleteDocumentAsync(SelectedDocument);
+            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+                await documentService.DeleteDocumentAsync(SelectedDocument);
+            }
 
             RaisePropertyChanged(() => CategoriesEmpty);
             RaisePropertyChanged(() => CategoriesNotEmpty);
@@ -254,7 +259,9 @@ namespace MyDocs.Common.ViewModel
         {
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
-            await documentService.RenameCategoryAsync(cat, NewCategoryName);
+            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+                await documentService.RenameCategoryAsync(cat, NewCategoryName);
+            }
 
             RaisePropertyChanged(() => CategoriesEmpty);
             RaisePropertyChanged(() => CategoriesNotEmpty);
@@ -264,8 +271,10 @@ namespace MyDocs.Common.ViewModel
         {
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
-            foreach (var document in cat.Documents.Where(d => !(d is AdDocument))) {
-                await documentService.DeleteDocumentAsync(document);
+            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+                foreach (var document in cat.Documents.Where(d => !(d is AdDocument))) {
+                    await documentService.DeleteDocumentAsync(document);
+                }
             }
 
             RaisePropertyChanged(() => CategoriesEmpty);
@@ -330,7 +339,6 @@ namespace MyDocs.Common.ViewModel
             using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
                 var status = await licenseService.TryGetLicenseAsync("ExportImportDocuments");
                 if (status == LicenseStatus.Unlocked) {
-
                     var zipFile = await fileOpenPickerService.PickOpenFileAsync(new List<string> { ".zip" });
                     if (zipFile == null) {
                         return;
