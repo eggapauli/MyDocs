@@ -1,6 +1,4 @@
 ﻿using GalaSoft.MvvmLight;
-using MyDocs.Common.Collection;
-using MyDocs.Common.Comparer;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,7 +7,7 @@ namespace MyDocs.Common.Model
     public class Category : ObservableObject
     {
         private string name;
-        private SortedObservableCollection<Document> documents;
+        private IEnumerable<IDocument> documents;
 
         public string Name
         {
@@ -17,46 +15,29 @@ namespace MyDocs.Common.Model
             set { Set(ref name, value); }
         }
 
-        public SortedObservableCollection<Document> Documents
+        public IEnumerable<IDocument> Documents
         {
             get { return documents; }
-            set
-            {
-                if (Set(ref documents, value)) {
-                    RaisePropertyChanged(() => CountDocuments);
-                }
-            }
+            set { Set(ref documents, value); }
         }
 
         public int CountDocuments
         {
-            get
-            {
-                return Documents.Count(d => !(d is AdDocument));
-            }
+            get { return Documents.OfType<Document>().Count(); }
         }
 
         public Photo TitlePhoto
         {
             get
             {
-                Document doc = Documents.FirstOrDefault(d => !(d is AdDocument));
-                if (doc != null) {
-                    return doc.TitlePhoto;
-                }
-                return null;
+                return Documents.OfType<Document>().First().TitlePhoto;
             }
         }
 
-        public Category(string name, IEnumerable<Document> documents = null)
+        public Category(string name, IEnumerable<IDocument> documents = null)
         {
             Name = name;
-            if (documents != null) {
-                Documents = new SortedObservableCollection<Document>(documents, new DocumentComparer());
-            }
-            else {
-                Documents = new SortedObservableCollection<Document>(new DocumentComparer());
-            }
+            Documents = documents;
         }
     }
 }

@@ -123,7 +123,7 @@ namespace MyDocs.Common.ViewModel
                     else {
                         EditingDocument = t.Result;
                     }
-                }, TaskContinuationOptions.ExecuteSynchronously);
+                }, TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
 
@@ -185,17 +185,17 @@ namespace MyDocs.Common.ViewModel
         private void CreateDesignTimeData()
         {
             if (IsInDesignMode) {
-                documentService.LoadCategoriesAsync().ContinueWith(t =>
+                documentService.LoadDocumentsAsync().ContinueWith(t =>
                 {
-                    EditingDocument = documentService.Categories.First().Documents.First();
-                }, TaskContinuationOptions.ExecuteSynchronously);
+                    EditingDocument = documentService.Documents.First();
+                }, TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
 
         public async Task LoadAsync()
         {
             using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
-                await documentService.LoadCategoriesAsync();
+                await documentService.LoadDocumentsAsync();
             }
         }
 
@@ -236,10 +236,6 @@ namespace MyDocs.Common.ViewModel
                     await documentService.RemovePhotosAsync(deletedPhotos);
                 }
             }
-
-            documentService.DetachDocument(originalDocument);
-            Category newCat = documentService.GetCategoryByName(EditingDocument.Category);
-            newCat.Documents.Add(EditingDocument);
 
             var doc = EditingDocument;
             EditingDocument = null;

@@ -1,4 +1,5 @@
 ﻿using MyDocs.Common.Contract.Page;
+using MyDocs.Common.Model;
 using MyDocs.Common.ViewModel;
 using MyDocs.WindowsStore.Common;
 using MyDocs.WindowsStore.Storage;
@@ -22,7 +23,7 @@ namespace MyDocs.WindowsStore.Pages
 
         public DocumentViewModel ViewModel
         {
-            get { return this.DataContext as DocumentViewModel; }
+            get { return (DocumentViewModel)DataContext; }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -34,7 +35,8 @@ namespace MyDocs.WindowsStore.Pages
 
         private void dtm_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
         {
-            string fileTitle = ViewModel.SelectedDocument.TagsString;
+            var document = ((Document)ViewModel.SelectedDocument);
+            string fileTitle = document.TagsString;
 
             DataPackage data = args.Request.Data;
             data.Properties.Title = fileTitle;
@@ -42,7 +44,7 @@ namespace MyDocs.WindowsStore.Pages
             DataRequestDeferral waiter = args.Request.GetDeferral();
 
             try {
-                var files = ViewModel.SelectedDocument.Photos.Select(p => p.File);
+                var files = document.Photos.Select(p => p.File);
                 data.SetStorageItems(files.Select(f => ((WindowsStoreFile)f).File));
             }
             finally {
@@ -52,10 +54,7 @@ namespace MyDocs.WindowsStore.Pages
 
         protected override void LoadState(object sender, LoadStateEventArgs args)
         {
-            if (args.NavigationParameter != null)
-            {
-                ViewModel.SelectedDocumentId = (Guid)args.NavigationParameter;
-            }
+            var t = ViewModel.LoadAsync((Guid?)args.NavigationParameter);
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)

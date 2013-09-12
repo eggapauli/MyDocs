@@ -27,7 +27,7 @@ namespace MyDocs.WindowsStore.Pages
 
         public DocumentViewModel ViewModel
         {
-            get { return this.DataContext as DocumentViewModel; }
+            get { return (DocumentViewModel)DataContext; }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -42,6 +42,18 @@ namespace MyDocs.WindowsStore.Pages
             Messenger.Default.Register<CloseFlyoutsMessage>(this, m => CloseFlyouts());
 
             RefreshLayout();
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+
+            this.semanticZoom.ViewChangeCompleted -= semanticZoom_ViewChangeCompleted;
+            this.semanticZoomTight.ViewChangeCompleted -= semanticZoom_ViewChangeCompleted;
+
+            Window.Current.SizeChanged -= WindowSizeChanged;
+
+            Messenger.Default.Unregister<CloseFlyoutsMessage>(this);
         }
 
         private void CloseFlyouts()
@@ -62,17 +74,14 @@ namespace MyDocs.WindowsStore.Pages
 
         protected override void LoadState(object sender, LoadStateEventArgs args)
         {
-            ViewModel.LoadAsync().ContinueWith(t =>
+            ViewModel.LoadAsync((Guid?)args.NavigationParameter).ContinueWith(t =>
             {
-                if (args.NavigationParameter != null) {
-                    ViewModel.SelectedDocumentId = (Guid)args.NavigationParameter;
-                }
                 if (groupedDocumentsViewSource.View != null) {
                     var collectionGroups = groupedDocumentsViewSource.View.CollectionGroups;
                     ((ListViewBase)this.semanticZoom.ZoomedOutView).ItemsSource = collectionGroups;
                     ((ListViewBase)this.semanticZoomTight.ZoomedOutView).ItemsSource = collectionGroups;
                 }
-            }, TaskContinuationOptions.ExecuteSynchronously);
+            }, TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private void WindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
@@ -87,18 +96,6 @@ namespace MyDocs.WindowsStore.Pages
                 this.semanticZoomTight.IsZoomedInViewActive);
 
             ViewModel.InZoomedInView = zoomedIn;
-        }
-
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            base.OnNavigatedFrom(e);
-
-            this.semanticZoom.ViewChangeCompleted -= semanticZoom_ViewChangeCompleted;
-            this.semanticZoomTight.ViewChangeCompleted -= semanticZoom_ViewChangeCompleted;
-
-            Window.Current.SizeChanged -= WindowSizeChanged;
-
-            Messenger.Default.Unregister<CloseFlyoutsMessage>(this);
         }
 
         // TODO solve this in XAML using <VisualStateGroup x:Name="SemanticZoomStates" />

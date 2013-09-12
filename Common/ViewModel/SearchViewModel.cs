@@ -139,13 +139,12 @@ namespace MyDocs.Common.ViewModel
         {
             var searchWords = QueryText.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(w => w.Trim());
 
-            await documentService.LoadCategoriesAsync();
+            await documentService.LoadDocumentsAsync();
 
-            var docs = (from category in documentService.Categories
-                        from doc in category.Documents
+            var docs = (from document in documentService.Documents
                         from word in searchWords
-                        where doc.Tags.Any(t => t.IndexOf(word, StringComparison.CurrentCultureIgnoreCase) >= 0)
-                        select doc).ToList();
+                        where document.Tags.Any(t => t.IndexOf(word, StringComparison.CurrentCultureIgnoreCase) >= 0)
+                        select document).ToList();
             foreach (var filter in Filters) {
                 IEnumerable<Document> results;
                 if (filter.IsAll) {

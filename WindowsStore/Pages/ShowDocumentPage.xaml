@@ -59,9 +59,14 @@
                 <TextBlock Name="lifespan"
                            TextWrapping="NoWrap"
                            Visibility="{Binding SelectedDocument.HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Run Text="{Binding SelectedDocument.DateAdded, Converter={StaticResource DateToStringConverter}}" /> -
-                <Run Text="{Binding SelectedDocument.DateRemoved, Converter={StaticResource DateToStringConverter}}" />
+                    <Run Text="{Binding SelectedDocument.DateAdded, Converter={StaticResource DateToStringConverter}}" />
+                    <Run Text="-" />
+                    <Run Text="{Binding SelectedDocument.DateRemoved, Converter={StaticResource DateToStringConverter}}" />
                 </TextBlock>
+                <TextBlock Name="dateAdded"
+                           Text="{Binding SelectedDocument.DateAdded, Converter={StaticResource DateToStringConverter}}"
+                           TextWrapping="NoWrap"
+                           Visibility="{Binding SelectedDocument.HasLimitedLifespan, Converter={StaticResource BooleanToNegatedVisibilityConverter}}" />
                 <TextBlock Name="timeToRemoval"
                            Text="{Binding SelectedDocument.DaysToRemoval, Converter={StaticResource TranslationConverter}, ConverterParameter='countDaysFormat'}"
                            TextWrapping="NoWrap"
@@ -101,6 +106,9 @@
                             <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightPhotoDetailTextBlockStyle}"/>
                         </ObjectAnimationUsingKeyFrames>
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="lifespan" Storyboard.TargetProperty="Style">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightPhotoDetailTextBlockStyle}"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="dateAdded" Storyboard.TargetProperty="Style">
                             <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightPhotoDetailTextBlockStyle}"/>
                         </ObjectAnimationUsingKeyFrames>
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="timeToRemoval" Storyboard.TargetProperty="Style">

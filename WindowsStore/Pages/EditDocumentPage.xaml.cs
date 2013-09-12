@@ -31,7 +31,7 @@ namespace MyDocs.WindowsStore.Pages
                     ViewModel.ShowNewCategoryInput = (bool)args.PageState["ShowNewCategoryInput"];
                     ViewModel.UseCategoryName = (string)args.PageState["UseCategoryName"];
                     ViewModel.NewCategoryName = (string)args.PageState["NewCategoryName"];
-                }, TaskContinuationOptions.ExecuteSynchronously);
+                }, TaskScheduler.FromCurrentSynchronizationContext());
             }
             else if (args.NavigationParameter != null) {
                 ViewModel.EditingDocumentId = (Guid)args.NavigationParameter;

@@ -3,19 +3,19 @@ using Windows.UI.Xaml.Data;
 
 namespace MyDocs.WindowsStore.Converter
 {
-    /// <summary>
-    /// Value converter that translates true to false and vice versa.
-    /// </summary>
-    public sealed class BooleanNegationConverter : IValueConverter
+    public sealed class BooleanConverter : IValueConverter
     {
+        public object TrueValue { get; set; }
+        public object FalseValue { get; set; }
+
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return !(value is bool && (bool)value);
+            return value is bool && (bool)value ? TrueValue : FalseValue;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
-            return !(value is bool && (bool)value);
+            throw new NotImplementedException();
         }
     }
 }

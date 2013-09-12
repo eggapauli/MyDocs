@@ -1,6 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using MyDocs.Common.Collection;
 using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Messages;
@@ -32,56 +31,42 @@ namespace MyDocs.Common.ViewModel
         #region Properties
 
         private Document selectedDocument;
-        private Category selectedCategory;
         private string newCategoryName;
         private bool inCategoryEditMode = false;
-        private bool isLoaded = false;
         private bool inZoomedInView;
+        private bool isLoading = false;
         private bool isBusy = false;
 
         public bool InZoomedInView
         {
             get { return inZoomedInView; }
-            set
-            {
-                if (Set(ref inZoomedInView, value)) {
-                    RaisePropertyChanged(() => InZoomedOutView);
-                }
-            }
+            set { Set(ref inZoomedInView, value); }
         }
 
-        public bool InZoomedOutView { get { return !InZoomedInView; } }
-
-        public bool IsLoaded
+        public IEnumerable<Category> Categories
         {
-            get { return isLoaded; }
-            set
-            {
-                if (Set(ref isLoaded, value)) {
-                    RaisePropertyChanged(() => Categories);
-                    RaisePropertyChanged(() => CategoriesEmpty);
-                    RaisePropertyChanged(() => CategoriesNotEmpty);
-                }
-            }
+            get { return documentService.Documents.OrderBy(d => d.Category).ThenByDescending(d => d.DateAdded).ThenBy(d => d.Id).SelectMany(DocumentsAndAds).GroupBy(d => d.Category).Select(g => new Category(g.Key, g)); }
         }
 
-        public SortedObservableCollection<Category> Categories
+        public IEnumerable<IDocument> DocumentsAndAds(Document document, int index)
         {
-            get { return documentService.Categories; }
+            if (index > 0 && index % 5 == 0) {
+                yield return new AdDocument(document.Category);
+            }
+            yield return document;
         }
 
         public bool CategoriesEmpty
         {
-            get { return IsLoaded && Categories.Count == 0; }
+            get { return !IsBusy && documentService.Documents.Count == 0; }
         }
-        public bool CategoriesNotEmpty { get { return !CategoriesEmpty; } }
 
-        public Document SelectedDocument
+        public IDocument SelectedDocument
         {
             get { return selectedDocument; }
             set
             {
-                if (Set(ref selectedDocument, value)) {
+                if (Set(ref selectedDocument, value as Document)) {
                     RaisePropertyChanged(() => HasSelectedDocument);
 
                     DeleteDocumentCommand.RaiseCanExecuteChanged();
@@ -90,46 +75,20 @@ namespace MyDocs.Common.ViewModel
             }
         }
 
-        public bool HasSelectedDocument { get { return SelectedDocument != null && !(SelectedDocument is AdDocument); } }
-
-        public Guid SelectedDocumentId
+        public bool HasSelectedDocument
         {
-            set
-            {
-                SelectedDocument = null;
-                documentService.GetDocumentById(value).ContinueWith(t =>
-                {
-                    if (t.IsFaulted) {
-                        uiService.ShowErrorAsync("documentNotFound");
-                        SelectedDocument = new Document();
-                    }
-                    else {
-                        SelectedDocument = t.Result;
-                    }
-                }, TaskContinuationOptions.ExecuteSynchronously);
-            }
+            get { return SelectedDocument != null; }
         }
-
-        public Category SelectedCategory
-        {
-            get { return selectedCategory; }
-            set
-            {
-                if (Set(ref selectedCategory, value)) {
-                    RaisePropertyChanged(() => HasSelectedCategory);
-
-                    RenameCategoryCommand.RaiseCanExecuteChanged();
-                    DeleteCategoryCommand.RaiseCanExecuteChanged();
-                }
-            }
-        }
-
-        public bool HasSelectedCategory { get { return SelectedCategory != null; } }
 
         public string NewCategoryName
         {
             get { return newCategoryName; }
-            set { Set(ref newCategoryName, value); }
+            set
+            {
+                if (Set(ref newCategoryName, value)) {
+                    RenameCategoryCommand.RaiseCanExecuteChanged();
+                }
+            }
         }
 
         public bool InEditCategoryMode
@@ -138,15 +97,27 @@ namespace MyDocs.Common.ViewModel
             set { Set(ref inCategoryEditMode, value); }
         }
 
+        public bool IsLoading
+        {
+            get { return isLoading; }
+            set { Set(ref isLoading, value); }
+        }
+
         public bool IsBusy
         {
             get { return isBusy; }
-            set { Set(ref isBusy, value); }
+            set
+            {
+                if (Set(ref isBusy, value)) {
+                    RaisePropertyChanged(() => CategoriesEmpty);
+                }
+            }
         }
 
         #endregion
 
-        public DocumentViewModel(IDocumentService documentService,
+        public DocumentViewModel(
+            IDocumentService documentService,
             IUserInterfaceService uiService,
             INavigationService navigationService,
             ILicenseService licenseService,
@@ -166,6 +137,12 @@ namespace MyDocs.Common.ViewModel
             this.pdfService = pdfService;
             this.settingsService = settingsService;
 
+            documentService.Documents.CollectionChanged += (s, e) =>
+            {
+                RaisePropertyChanged(() => Categories);
+                RaisePropertyChanged(() => CategoriesEmpty);
+            };
+
             CreateCommands();
             CreateDesignTimeData();
 
@@ -176,23 +153,25 @@ namespace MyDocs.Common.ViewModel
         private void CreateDesignTimeData()
         {
             if (IsInDesignMode) {
-                LoadAsync().ContinueWith(t =>
+                documentService.LoadDocumentsAsync().ContinueWith(t =>
                 {
-                    SelectedDocument = Categories.First().Documents.First(d => d.Tags.Count > 2);
-                }, TaskContinuationOptions.ExecuteSynchronously);
+                    SelectedDocument = documentService.Documents.First(d => d.Tags.Count > 2);
+                }, TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
 
-        public async Task LoadAsync()
+        public async Task LoadAsync(Guid? selectedDocumentId = null)
         {
             bool error = false;
             try {
-                using (new TemporaryState(() => IsLoaded = false, () => IsLoaded = true))
-                using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
-                    await documentService.LoadCategoriesAsync();
+                using (new TemporaryState(() => IsLoading = true, () => IsLoading = false)) {
+                    await documentService.LoadDocumentsAsync();
+                    if (selectedDocumentId.HasValue) {
+                        SelectedDocument = await documentService.GetDocumentById(selectedDocumentId.Value);
+                    }
                 }
             }
-            catch (Exception) {
+            catch (Exception ex) {
                 error = true;
             }
 
@@ -216,15 +195,11 @@ namespace MyDocs.Common.ViewModel
         private void CreateCommands()
         {
             AddDocumentCommand = new RelayCommand(AddDocument);
-            EditDocumentCommand = new RelayCommand(EditDocument,
-                () => SelectedDocument != null && !(SelectedDocument is AdDocument));
-            DeleteDocumentCommand = new RelayCommand(DeleteDocumentAsync,
-                () => SelectedDocument != null && !(SelectedDocument is AdDocument));
-            ShowDocumentCommand = new RelayCommand<Document>(
-                doc => navigationService.Navigate<IShowDocumentPage>(doc.Id),
-                doc => doc != null && !(doc is AdDocument));
+            EditDocumentCommand = new RelayCommand(EditDocument, () => SelectedDocument != null);
+            DeleteDocumentCommand = new RelayCommand(DeleteDocumentAsync, () => SelectedDocument != null);
+            ShowDocumentCommand = new RelayCommand<Document>(doc => navigationService.Navigate<IShowDocumentPage>(doc.Id), doc => doc != null);
 
-            RenameCategoryCommand = new RelayCommand<Category>(RenameCategoryAsync);
+            RenameCategoryCommand = new RelayCommand<Category>(RenameCategoryAsync, _ => !String.IsNullOrWhiteSpace(newCategoryName));
             DeleteCategoryCommand = new RelayCommand<Category>(DeleteCategoryAsync);
 
             NavigateToSearchPageCommand = new RelayCommand(() => navigationService.Navigate<ISearchPage>());
@@ -240,7 +215,7 @@ namespace MyDocs.Common.ViewModel
 
         private void EditDocument()
         {
-            navigationService.Navigate<IEditDocumentPage>(SelectedDocument.Id);
+            navigationService.Navigate<IEditDocumentPage>(selectedDocument.Id);
         }
 
         private async void DeleteDocumentAsync()
@@ -248,37 +223,29 @@ namespace MyDocs.Common.ViewModel
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
             using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
-                await documentService.DeleteDocumentAsync(SelectedDocument);
+                await documentService.DeleteDocumentAsync(selectedDocument);
             }
-
-            RaisePropertyChanged(() => CategoriesEmpty);
-            RaisePropertyChanged(() => CategoriesNotEmpty);
         }
 
-        private async void RenameCategoryAsync(Category cat)
+        private async void RenameCategoryAsync(Category category)
         {
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
             using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
-                await documentService.RenameCategoryAsync(cat, NewCategoryName);
+                await documentService.RenameCategoryAsync(category.Name, newCategoryName);
             }
-
-            RaisePropertyChanged(() => CategoriesEmpty);
-            RaisePropertyChanged(() => CategoriesNotEmpty);
+            NewCategoryName = null;
         }
 
-        private async void DeleteCategoryAsync(Category cat)
+        private async void DeleteCategoryAsync(Category category)
         {
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
             using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
-                foreach (var document in cat.Documents.Where(d => !(d is AdDocument))) {
+                foreach (var document in documentService.Documents.Where(d => d.Category == category.Name).ToList()) {
                     await documentService.DeleteDocumentAsync(document);
                 }
             }
-
-            RaisePropertyChanged(() => CategoriesEmpty);
-            RaisePropertyChanged(() => CategoriesNotEmpty);
         }
 
         private async void ExportDocumentsAsync()
@@ -294,12 +261,10 @@ namespace MyDocs.Common.ViewModel
                     if (zipFile != null) {
                         using (var zipFileStream = await zipFile.OpenWriteAsync())
                         using (var archive = new ZipArchive(zipFileStream, ZipArchiveMode.Create)) {
-                            var documents = documentService.Categories.SelectMany(c => c.Documents).Where(d => !(d is AdDocument));
-
                             var metaInfoEntry = archive.CreateEntry("Documents.xml");
                             using (var metaInfoStream = metaInfoEntry.Open()) {
                                 DataContractSerializer serializer = new DataContractSerializer(typeof(IEnumerable<Serializable.Document>), "Documents", "http://mydocs.eggapauli");
-                                var serializedDocuments = documents.Select(d =>
+                                var serializedDocuments = documentService.Documents.Select(d =>
                                 {
                                     var files = d.Photos.Select(p => String.Format("{0}{1}", p.Title, Path.GetExtension(p.File.Name))).Distinct();
                                     return new Serializable.Document(d.Id, d.Category, d.Tags, d.DateAdded, d.Lifespan, d.HasLimitedLifespan, files);
@@ -307,7 +272,7 @@ namespace MyDocs.Common.ViewModel
                                 serializer.WriteObject(metaInfoStream, serializedDocuments);
                             }
 
-                            foreach (var document in documents) {
+                            foreach (var document in documentService.Documents) {
                                 foreach (var photo in document.Photos) {
                                     var fileName = String.Format("{0}{1}", photo.Title, Path.GetExtension(photo.File.Name));
                                     var path = Path.Combine(document.GetHumanReadableDescription(), fileName);
@@ -344,7 +309,6 @@ namespace MyDocs.Common.ViewModel
                         return;
                     }
                     try {
-                        using (new TemporaryState(() => IsLoaded = false, () => IsLoaded = true))
                         using (var zipFileStream = await zipFile.OpenReadAsync())
                         using (var archive = new ZipArchive(zipFileStream, ZipArchiveMode.Read)) {
                             var metaInfoEntry = archive.GetEntry("Documents.xml");
@@ -358,13 +322,6 @@ namespace MyDocs.Common.ViewModel
                                 foreach (var serializedDocument in serializedDocuments) {
                                     var document = await DeserializeDocumentAsync(archive, serializedDocument);
                                     await documentService.SaveDocumentAsync(document);
-
-                                    var originalDocument = Categories.SelectMany(c => c.Documents).SingleOrDefault(d => d.Id == document.Id);
-                                    if (originalDocument != null) {
-                                        documentService.DetachDocument(originalDocument);
-                                    }
-                                    Category category = documentService.GetCategoryByName(document.Category);
-                                    category.Documents.Add(document);
                                 }
                             }
                         }

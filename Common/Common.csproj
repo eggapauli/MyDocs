@@ -35,8 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Comparer\CategoryComparer.cs" />
-    <Compile Include="Comparer\DocumentComparer.cs" />
     <Compile Include="Contract\Page\IEditDocumentPage.cs" />
     <Compile Include="Contract\Page\IMainPage.cs" />
     <Compile Include="Contract\Page\ISearchPage.cs" />
@@ -61,11 +59,11 @@
     <Compile Include="Model\AdDocument.cs" />
     <Compile Include="Model\Category.cs" />
     <Compile Include="Model\Document.cs" />
+    <Compile Include="Model\IDocument.cs" />
     <Compile Include="Model\LicenseStatus.cs" />
     <Compile Include="Model\Photo.cs" />
     <Compile Include="Model\Serializable\Document.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Collection\SortedObservableCollection.cs" />
     <Compile Include="TemporaryState.cs" />
     <Compile Include="ViewModel\DocumentViewModel.cs" />
     <Compile Include="ViewModel\EditDocumentViewModel.cs" />

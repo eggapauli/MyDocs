@@ -18,8 +18,9 @@
 
             <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
 
-            <converter:BooleanNegationConverter x:Key="BooleanNegationConverter" />
-            <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converter:BooleanConverter x:Key="BooleanNegationConverter" TrueValue="False" FalseValue="True" />
+            <converter:BooleanConverter x:Key="BooleanToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
+            <converter:BooleanConverter x:Key="BooleanToNegatedVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
 			<converter:DateTimeToDateTimeOffsetConverter x:Key="DateTimeToDateTimeOffsetConverter" />
             <converter:DateToStringConverter x:Key="DateToStringConverter" />
             <converter:TranslationConverter x:Key="TranslationConverter" />

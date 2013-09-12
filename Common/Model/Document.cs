@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 
 namespace MyDocs.Common.Model
 {
-    public class Document : ObservableObject
+    public class Document : ObservableObject, IDocument
     {
         private Guid id;
         private string category;
@@ -75,18 +75,7 @@ namespace MyDocs.Common.Model
         public bool HasLimitedLifespan
         {
             get { return hasLimitedLifespan; }
-            set
-            {
-                if (Set(ref hasLimitedLifespan, value)) {
-                    RaisePropertyChanged(() => HasInfiniteLifespan);
-                }
-            }
-        }
-
-        public bool HasInfiniteLifespan
-        {
-            get { return !HasLimitedLifespan; }
-            set { HasLimitedLifespan = !value; }
+            set { Set(ref hasLimitedLifespan, value); }
         }
 
         public string TagsString
@@ -107,10 +96,7 @@ namespace MyDocs.Common.Model
 
         public int DaysToRemoval
         {
-            get
-            {
-                return Convert.ToInt32(DateRemoved.Subtract(DateTime.Today).TotalDays);
-            }
+            get { return Convert.ToInt32(DateRemoved.Subtract(DateTime.Today).TotalDays); }
         }
 
         public Document()
