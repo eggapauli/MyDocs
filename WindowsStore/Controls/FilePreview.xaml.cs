@@ -29,6 +29,9 @@ namespace MyDocs.WindowsStore.Controls
         public static readonly DependencyProperty FileSizeProperty =
             DependencyProperty.Register("FileSize", typeof(StorageContract.FileSize), typeof(FilePreview), new PropertyMetadata(StorageContract.FileSize.Small, FileSizePropertyChanged));
 
+        public static readonly DependencyProperty ImageStretchProperty =
+            DependencyProperty.Register("ImageStretch", typeof(Stretch), typeof(FilePreview), new PropertyMetadata(Stretch.None));
+
         public Photo File
         {
             get { return (Photo)GetValue(FileProperty); }
@@ -39,6 +42,12 @@ namespace MyDocs.WindowsStore.Controls
         {
             get { return (StorageContract.FileSize)GetValue(FileSizeProperty); }
             set { SetValue(FileSizeProperty, value); }
+        }
+
+        public Stretch ImageStretch
+        {
+            get { return (Stretch)GetValue(ImageStretchProperty); }
+            set { SetValue(ImageStretchProperty, value); }
         }
 
         public FilePreview()

@@ -54,10 +54,7 @@
                     <Style TargetType="TextBlock" BasedOn="{StaticResource PhotoDetailTextBlockStyle}" />
                 </StackPanel.Resources>
 
-                <!--<StackPanel Orientation="Horizontal" Margin="50 0 50 20">
-                    <Button Style="{StaticResource PictureFolderButtonStyle}" Width="25" Margin="0 5 10 0" />-->
                 <TextBlock Name="category" Text="{Binding SelectedDocument.Category}" TextWrapping="NoWrap" FontSize="40" Margin="50 20 50 20" />
-                <!--</StackPanel>-->
 
                 <StackPanel Orientation="Horizontal" Margin="50 0 50 20">
                     <Button Style="{StaticResource TagButtonStyle}" Width="25" Margin="0 5 10 0" />
@@ -99,7 +96,7 @@
         <FlipView Grid.RowSpan="2" ItemsSource="{Binding SelectedDocument.Photos}" UseTouchAnimationsForAllNavigation="True">
             <FlipView.ItemTemplate>
                 <DataTemplate>
-                    <controls:FilePreview File="{Binding}" FileSize="Big" />
+                    <controls:FilePreview File="{Binding}" FileSize="Big" ImageStretch="Uniform" />
                 </DataTemplate>
             </FlipView.ItemTemplate>
         </FlipView>

@@ -23,7 +23,7 @@
         <DataTemplate x:Key="DocumentTemplate">
             <Grid HorizontalAlignment="Left" Width="250" Height="250">
                 <Border Background="Black" BorderBrush="Black" BorderThickness="2">
-                    <controls:FilePreview File="{Binding TitlePhoto}" FileSize="Small" />
+                    <controls:FilePreview File="{Binding TitlePhoto}" FileSize="Small" ImageStretch="UniformToFill" />
                 </Border>
 
                 <StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
@@ -84,7 +84,7 @@
         <DataTemplate x:Key="CategoryTemplate">
             <Grid HorizontalAlignment="Left" Width="250" Height="250">
                 <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
-                    <controls:FilePreview File="{Binding Group.TitlePhoto}" FileSize="Small" />
+                    <controls:FilePreview File="{Binding Group.TitlePhoto}" FileSize="Small" ImageStretch="UniformToFill" />
                 </Border>
                 <StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
                     <TextBlock Text="{Binding Group.Name}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextBlockStyle}" Margin="15,0,15,20"/>
