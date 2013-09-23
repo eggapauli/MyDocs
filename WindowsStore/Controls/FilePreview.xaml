@@ -12,6 +12,6 @@
     
     <Grid>
         <ProgressRing Name="Loading" IsActive="True" />
-        <Image Name="Preview" Width="{Binding Width, ElementName=ctrl}" Height="{Binding Height, ElementName=ctrl}" />
+        <Image Name="Preview" Stretch="UniformToFill" HorizontalAlignment="Center" />
     </Grid>
 </UserControl>

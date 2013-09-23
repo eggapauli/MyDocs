@@ -14,6 +14,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using MyDocs.Common.Model;
 using Windows.UI.Xaml.Media.Imaging;
+using MyDocs.Common;
+using Windows.Storage;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -50,10 +52,10 @@ namespace MyDocs.WindowsStore.Controls
             var photo = (Photo)e.NewValue;
 
             if (photo != null) {
-                self.Loading.IsActive = true;
-                self.Preview.Source = (BitmapImage)(await photo.Preview.GetResizedBitmapImageAsync(self.FileSize)).Image;
-                await System.Threading.Tasks.Task.Delay(500); // image is not shown immediately
-                self.Loading.IsActive = false;
+                using (new TemporaryState(() => self.Loading.IsActive = true, () => self.Loading.IsActive = false)) {
+                    self.Preview.Source = (BitmapImage)(await photo.Preview.GetResizedBitmapImageAsync(self.FileSize)).Image;
+                    await System.Threading.Tasks.Task.Delay(500); // image is not shown immediately
+                }
             }
         }
 

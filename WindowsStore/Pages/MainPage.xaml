@@ -22,35 +22,42 @@
 
         <DataTemplate x:Key="DocumentTemplate">
             <Grid HorizontalAlignment="Left" Width="250" Height="250">
-                <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
+                <Border Background="Black" BorderBrush="Black" BorderThickness="2">
                     <controls:FilePreview File="{Binding TitlePhoto}" FileSize="Small" />
                 </Border>
+
                 <StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
-                    <TextBlock Text="{Binding TagsString}"
-                               Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}"
-                               Style="{StaticResource TitleTextBlockStyle}"
-                               Margin="15,0,15,0"/>
-                    <TextBlock Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}"
-                               Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
-                               Style="{StaticResource CaptionTextBlockStyle}"
-                               TextWrapping="NoWrap"
-                               Margin="15,0,15,0">
+                    <StackPanel Orientation="Horizontal" Margin="15 0 15 10">
+                        <Button Style="{StaticResource TagButtonStyle}" Width="15" Margin="0 5 5 0" />
+                        <TextBlock Text="{Binding TagsString}"
+                                   Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}"
+                                   Style="{StaticResource TitleTextBlockStyle}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="15 0 15 10">
+                        <Button Style="{StaticResource CalendarButtonStyle}" Width="15" Margin="0 5 5 0" />
+                        <TextBlock Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                   Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
+                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                   TextWrapping="NoWrap">
                             <Run Text="{Binding DateAdded, Converter={StaticResource DateToStringConverter}}" />
                             <Run Text="-" />
                             <Run Text="{Binding DateRemoved, Converter={StaticResource DateToStringConverter}}" />
-                    </TextBlock>
-                    <TextBlock Text="{Binding DateAdded, Converter={StaticResource DateToStringConverter}}"
-                               Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToNegatedVisibilityConverter}}"
-                               Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
-                               Style="{StaticResource CaptionTextBlockStyle}"
-                               TextWrapping="NoWrap"
-                               Margin="15,0,15,10" />
-                    <TextBlock Text="{Binding DaysToRemoval, Converter={StaticResource TranslationConverter}, ConverterParameter='countDaysFormat'}"
-                               Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}"
-                               Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
-                               Style="{StaticResource CaptionTextBlockStyle}"
-                               TextWrapping="NoWrap"
-                               Margin="15,0,15,10" />
+                        </TextBlock>
+                        <TextBlock Text="{Binding DateAdded, Converter={StaticResource DateToStringConverter}}"
+                                   Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToNegatedVisibilityConverter}}"
+                                   Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
+                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                   TextWrapping="NoWrap" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="15 0 15 10" Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Button Style="{StaticResource HourGlassButtonStyle}" Width="15" Margin="0 5 5 0" />
+                        <TextBlock Text="{Binding DaysToRemoval, Converter={StaticResource TranslationConverter}, ConverterParameter='countDaysFormat'}"
+                                   Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
+                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                   TextWrapping="NoWrap" />
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </DataTemplate>
