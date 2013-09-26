@@ -92,7 +92,7 @@ namespace MyDocs.WindowsStore.Service.Design
             throw new NotImplementedException();
         }
 
-        public Task RemovePhotosAsync(IEnumerable<IFile> photos)
+        public Task RemovePhotosAsync(IEnumerable<Photo> photos)
         {
             throw new NotImplementedException();
         }

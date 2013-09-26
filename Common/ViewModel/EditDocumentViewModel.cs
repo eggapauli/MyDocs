@@ -232,7 +232,7 @@ namespace MyDocs.Common.ViewModel
 
                 // Delete removed photos
                 if (originalDocument != null) {
-                    var deletedPhotos = originalDocument.Photos.Where(p => !EditingDocument.Photos.Contains(p)).Select(p => p.File);
+                    var deletedPhotos = originalDocument.Photos.Where(p => !EditingDocument.Photos.Contains(p));
                     await documentService.RemovePhotosAsync(deletedPhotos);
                 }
             }
@@ -264,9 +264,7 @@ namespace MyDocs.Common.ViewModel
 
                         try {
                             var pages = await pdfService.ExtractPages(copy);
-                            foreach (var page in pages) {
-                                EditingDocument.Photos.Add(new Photo(copy.DisplayName, copy, page));
-                            }
+                            EditingDocument.Photos.Add(new Photo(copy.DisplayName, copy, pages));
                         }
                         catch (Exception) {
                             error = true;

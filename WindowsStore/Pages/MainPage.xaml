@@ -27,16 +27,28 @@
                 </Border>
 
                 <StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
-                    <StackPanel Orientation="Horizontal" Margin="15 0 15 10">
+                    <Grid Margin="15 0 15 10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
                         <Button Style="{StaticResource TagButtonStyle}" Width="15" Margin="0 5 5 0" />
-                        <TextBlock Text="{Binding TagsString}"
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding TagsString}"
                                    Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}"
                                    Style="{StaticResource TitleTextBlockStyle}"/>
-                    </StackPanel>
+                    </Grid>
 
-                    <StackPanel Orientation="Horizontal" Margin="15 0 15 10">
+                    <Grid Margin="15 0 15 10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
                         <Button Style="{StaticResource CalendarButtonStyle}" Width="15" Margin="0 5 5 0" />
-                        <TextBlock Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        <TextBlock Grid.Column="1"
+                                   Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}"
                                    Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
                                    Style="{StaticResource CaptionTextBlockStyle}"
                                    TextWrapping="NoWrap">
@@ -44,20 +56,27 @@
                             <Run Text="-" />
                             <Run Text="{Binding DateRemoved, Converter={StaticResource DateToStringConverter}}" />
                         </TextBlock>
-                        <TextBlock Text="{Binding DateAdded, Converter={StaticResource DateToStringConverter}}"
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding DateAdded, Converter={StaticResource DateToStringConverter}}"
                                    Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToNegatedVisibilityConverter}}"
                                    Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
                                    Style="{StaticResource CaptionTextBlockStyle}"
                                    TextWrapping="NoWrap" />
-                    </StackPanel>
+                    </Grid>
 
-                    <StackPanel Orientation="Horizontal" Margin="15 0 15 10" Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid Margin="15 0 15 10" Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
                         <Button Style="{StaticResource HourGlassButtonStyle}" Width="15" Margin="0 5 5 0" />
-                        <TextBlock Text="{Binding DaysToRemoval, Converter={StaticResource TranslationConverter}, ConverterParameter='countDaysFormat'}"
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding DaysToRemoval, Converter={StaticResource TranslationConverter}, ConverterParameter='countDaysFormat'}"
                                    Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
                                    Style="{StaticResource CaptionTextBlockStyle}"
                                    TextWrapping="NoWrap" />
-                    </StackPanel>
+                    </Grid>
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -221,7 +240,7 @@
                               AutomationProperties.AutomationId="ItemsGridView"
                               AutomationProperties.Name="Items"
                               TabIndex="1"
-                              Padding="116,0,116,46"
+                              Padding="116,0,116,20"
                               ItemTemplate="{StaticResource CategoryTemplate}"
                               SelectionMode="None"
                               Visibility="{Binding CategoriesEmpty, Converter={StaticResource BooleanToNegatedVisibilityConverter}}" />
@@ -232,7 +251,7 @@
                               AutomationProperties.AutomationId="ItemsGridView"
                               AutomationProperties.Name="Items"
                               TabIndex="1"
-                              Padding="116,0,116,46"
+                              Padding="116,0,116,20"
                               ItemsSource="{Binding Source={StaticResource groupedDocumentsViewSource}}"
                               ItemTemplateSelector="{StaticResource DefaultDocumentTemplateSelector}"
                               IsItemClickEnabled="True"

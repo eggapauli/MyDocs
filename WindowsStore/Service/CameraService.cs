@@ -17,7 +17,7 @@ namespace MyDocs.WindowsStore.Service
             if (file == null) {
                 return null;
             }
-            return new Photo(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), new WindowsStoreFile(file));
+            return new Photo(DateTime.Now.ToString("G"), new WindowsStoreFile(file));
         }
     }
 }

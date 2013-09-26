@@ -113,7 +113,10 @@ namespace MyDocs.WindowsStore.Pages
 
         private void OnDocumentClick(object sender, ItemClickEventArgs e)
         {
-            ViewModel.ShowDocumentCommand.Execute((Document)e.ClickedItem);
+            var document = e.ClickedItem as Document;
+            if (document != null) {
+                ViewModel.ShowDocumentCommand.Execute(document);
+            }
         }
     }
 }

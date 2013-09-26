@@ -93,7 +93,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <FlipView Grid.RowSpan="2" ItemsSource="{Binding SelectedDocument.Photos}" UseTouchAnimationsForAllNavigation="True">
+        <FlipView Grid.RowSpan="2" ItemsSource="{Binding SelectedDocument.Previews}" UseTouchAnimationsForAllNavigation="True">
             <FlipView.ItemTemplate>
                 <DataTemplate>
                     <controls:FilePreview File="{Binding}" FileSize="Big" ImageStretch="Uniform" />

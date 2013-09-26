@@ -18,6 +18,6 @@ namespace MyDocs.Common.Contract.Service
         Task SaveDocumentAsync(Document doc);
         Task DeleteDocumentAsync(Document doc);
 
-        Task RemovePhotosAsync(IEnumerable<IFile> photos);
+        Task RemovePhotosAsync(IEnumerable<Photo> photos);
     }
 }

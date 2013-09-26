@@ -8,23 +8,33 @@ namespace MyDocs.WindowsStore.Service
 {
     public class NavigationService : INavigationService
     {
+        private Frame Frame
+        {
+            get { return (Frame)Window.Current.Content; }
+        }
+
+        public bool CanGoBack
+        {
+            get { return Frame.CanGoBack; }
+        }
+
         public void Navigate<T>()
         {
             // TODO get type without creating an instance
             var type = SimpleIoc.Default.GetInstance<T>().GetType();
-            ((Frame)Window.Current.Content).Navigate(type);
+            Frame.Navigate(type);
         }
 
         public void Navigate<T>(object parameter)
         {
             // TODO get type without creating an instance
             var type = SimpleIoc.Default.GetInstance<T>().GetType();
-            ((Frame)Window.Current.Content).Navigate(type, parameter);
+            Frame.Navigate(type, parameter);
         }
 
         public void GoBack()
         {
-            ((Frame)Window.Current.Content).GoBack();
+            Frame.GoBack();
         }
     }
 }

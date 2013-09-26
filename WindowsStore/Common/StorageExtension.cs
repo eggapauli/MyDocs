@@ -1,4 +1,5 @@
-﻿using MyDocs.Common.Model;
+﻿using MyDocs.Common.Contract.Storage;
+using MyDocs.Common.Model;
 using MyDocs.WindowsStore.Storage;
 using System;
 using System.Collections.Generic;
@@ -27,9 +28,9 @@ namespace MyDocs.WindowsStore.Common
                 
                 { "PhotoTitles", doc.Photos.Count > 0 ? doc.Photos.Select(p => p.Title).ToArray() : null },
 
-                { "PhotoPreviewNames", doc.Photos.Count > 0 ? doc.Photos.Select(p => p.Preview.GetRelativePath()).ToArray() : null },
-                { "PhotoPreviewIsTemp", doc.Photos.Count > 0 ? doc.Photos.Select(p => p.Preview.IsInFolder(tempFolder)).ToArray() : null },
-                { "PhotoPreviewIsLocal", doc.Photos.Count > 0 ? doc.Photos.Select(p => p.Preview.IsInFolder(localFolder)).ToArray() : null },
+                { "PhotoPreviewNames", doc.Photos.Count > 0 ? doc.Photos.Select(p => String.Join("|", p.Previews.Select(preview => preview.GetRelativePath()))).ToArray() : null },
+                { "PhotoPreviewIsTemp", doc.Photos.Count > 0 ? doc.Photos.Select(p => String.Join("|", p.Previews.Select(preview => preview.IsInFolder(tempFolder)))).ToArray() : null },
+                { "PhotoPreviewIsLocal", doc.Photos.Count > 0 ? doc.Photos.Select(p => String.Join("|", p.Previews.Select(preview => preview.IsInFolder(localFolder)))).ToArray() : null },
 
                 { "PhotoFileNames", doc.Photos.Count > 0 ? doc.Photos.Select(p => p.File.GetRelativePath()).ToArray() : null },
                 { "PhotoIsTemp", doc.Photos.Count > 0 ? doc.Photos.Select(p => p.File.IsInFolder(tempFolder)).ToArray() : null },
@@ -61,9 +62,9 @@ namespace MyDocs.WindowsStore.Common
                     && data.ContainsKey("PhotoIsTemp")) {
                 string[] photoTitles = data.ContainsKey("PhotoTitles") ? (string[])data["PhotoTitles"] : null;
 
-                string[] photoPreviewNames = data.ContainsKey("PhotoPreviewNames") ? (string[])data["PhotoPreviewNames"] : null;
-                bool[] photoPreviewIsLocal = data.ContainsKey("PhotoPreviewIsLocal") ? (bool[])data["PhotoPreviewIsLocal"] : null;
-                bool[] photoPreviewIsTemp = data.ContainsKey("PhotoPreviewIsTemp") ? (bool[])data["PhotoPreviewIsTemp"] : null;
+                string[][] photoPreviewNames = data.ContainsKey("PhotoPreviewNames") ? ((string[])data["PhotoPreviewNames"]).Select(joined => joined.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)).ToArray() : null;
+                bool[][] photoPreviewIsLocal = data.ContainsKey("PhotoPreviewIsLocal") ? ((string[])data["PhotoPreviewIsLocal"]).Select(joined => joined.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries).Select(flag => Boolean.Parse(flag)).ToArray()).ToArray() : null;
+                bool[][] photoPreviewIsTemp = data.ContainsKey("PhotoPreviewIsTemp") ? ((string[])data["PhotoPreviewIsTemp"]).Select(joined => joined.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries).Select(flag => Boolean.Parse(flag)).ToArray()).ToArray() : null;
 
                 string[] photoFileNames = (string[])data["PhotoFileNames"];
                 bool[] photoIsLocal = (bool[])data["PhotoIsLocal"];
@@ -72,8 +73,6 @@ namespace MyDocs.WindowsStore.Common
                 if (photoFileNames != null && photoIsLocal != null && photoIsTemp != null) {
                     for (int i = 0; i < photoFileNames.Length; i++) {
                         try {
-                            var title = photoTitles != null ? photoTitles[i] : null;
-
                             IStorageFolder fileFolder;
                             if (photoIsLocal[i]) {
                                 fileFolder = ApplicationData.Current.LocalFolder;
@@ -85,26 +84,31 @@ namespace MyDocs.WindowsStore.Common
                                 fileFolder = ApplicationData.Current.RoamingFolder;
                             }
 
-                            WindowsStoreFile preview = null;
-                            if (photoPreviewNames != null && photoPreviewIsLocal != null && photoPreviewIsTemp != null && photoPreviewNames[i] != photoFileNames[i]) {
-                                IStorageFolder previewFolder;
-                                if (photoPreviewIsLocal[i]) {
-                                    previewFolder = ApplicationData.Current.LocalFolder;
+                            ICollection<IFile> previews = null;
+                            if (photoPreviewNames != null && photoPreviewIsLocal != null && photoPreviewIsTemp != null) {
+                                previews = new List<IFile>();
+                                for (var j = 0; j < photoPreviewNames[i].Length; j++) {
+                                    IStorageFolder previewFolder;
+                                    if (photoPreviewIsLocal[i][j]) {
+                                        previewFolder = ApplicationData.Current.LocalFolder;
+                                    }
+                                    else if (photoPreviewIsTemp[i][j]) {
+                                        previewFolder = ApplicationData.Current.TemporaryFolder;
+                                    }
+                                    else {
+                                        previewFolder = ApplicationData.Current.RoamingFolder;
+                                    }
+                                    string previewPath = Path.Combine(previewFolder.Path, photoPreviewNames[i][j]);
+                                    StorageFile previewFile = await StorageFile.GetFileFromPathAsync(previewPath);
+                                    previews.Add(new WindowsStoreFile(previewFile));
                                 }
-                                else if (photoPreviewIsTemp[i]) {
-                                    previewFolder = ApplicationData.Current.TemporaryFolder;
-                                }
-                                else {
-                                    previewFolder = ApplicationData.Current.RoamingFolder;
-                                }
-                                string previewPath = Path.Combine(previewFolder.Path, photoPreviewNames[i]);
-                                StorageFile previewFile = await StorageFile.GetFileFromPathAsync(previewPath);
-                                preview = new WindowsStoreFile(previewFile);
                             }
 
                             string filePath = Path.Combine(fileFolder.Path, photoFileNames[i]);
                             StorageFile file = await StorageFile.GetFileFromPathAsync(filePath);
-                            doc.Photos.Add(new Photo(title, new WindowsStoreFile(file), preview));
+                            var title = photoTitles != null ? photoTitles[i] : file.DateCreated.ToString("G");
+
+                            doc.Photos.Add(new Photo(title, new WindowsStoreFile(file), previews));
                         }
                         catch (FileNotFoundException) {
                             // should not occur, unless the user manually deleted the file

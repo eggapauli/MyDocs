@@ -18,7 +18,7 @@ namespace MyDocs.Common.Model
         public IEnumerable<IDocument> Documents
         {
             get { return documents; }
-            set { Set(ref documents, value); }
+            private set { Set(ref documents, value); }
         }
 
         public int CountDocuments
@@ -28,10 +28,7 @@ namespace MyDocs.Common.Model
 
         public Photo TitlePhoto
         {
-            get
-            {
-                return Documents.OfType<Document>().First().TitlePhoto;
-            }
+            get { return Documents.OfType<Document>().First().TitlePhoto; }
         }
 
         public Category(string name, IEnumerable<IDocument> documents = null)

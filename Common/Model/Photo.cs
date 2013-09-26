@@ -1,5 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using MyDocs.Common.Contract.Storage;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MyDocs.Common.Model
@@ -8,31 +10,42 @@ namespace MyDocs.Common.Model
     {
         private string title;
         private IFile file;
-        private IFile preview;
+        private IEnumerable<IFile> previews;
 
         public string Title
         {
             get { return title ?? File.Name; }
-            set { Set(ref title, value); }
+            private set { Set(ref title, value); }
         }
 
         public IFile File
         {
             get { return file; }
-            set { Set(ref file, value); }
+            private set { Set(ref file, value); }
         }
 
-        public IFile Preview
+        public IEnumerable<IFile> Previews
         {
-            get { return preview ?? file; }
-            set { Set(ref preview, value); }
+            get { return previews; }
+            private set { Set(ref previews, value); }
         }
 
-        public Photo(string title, IFile file, IFile preview = null)
+        public IEnumerable<IFile> Files
         {
-            Title = title;
-            File = file;
-            Preview = preview;
+            get
+            {
+                foreach (var preview in previews) {
+                    yield return preview;
+                }
+                yield return file;
+            }
+        }
+
+        public Photo(string title, IFile file, IEnumerable<IFile> previews = null)
+        {
+            this.title = title;
+            this.file = file;
+            this.previews = previews ?? new List<IFile>();
         }
     }
 }

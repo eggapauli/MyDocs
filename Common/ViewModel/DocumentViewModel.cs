@@ -344,12 +344,12 @@ namespace MyDocs.Common.ViewModel
         {
             var photos = new List<Photo>();
             foreach (var fileName in document.Files) {
-                photos.AddRange(await DeserializePhotosAsync(archive, document, fileName));
+                photos.Add(await DeserializePhotosAsync(archive, document, fileName));
             }
             return new Document(document.Id, document.Category, document.DateAdded, document.Lifespan, document.HasLimitedLifespan, document.Tags, photos);
         }
 
-        private async Task<IEnumerable<Photo>> DeserializePhotosAsync(ZipArchive archive, Serializable.Document document, string fileName)
+        private async Task<Photo> DeserializePhotosAsync(ZipArchive archive, Serializable.Document document, string fileName)
         {
             var path = String.Format("{0}/{1}", document.GetHumanReadableDescription(), fileName);
             var dirEntry = archive.GetEntry(document.GetHumanReadableDescription());
@@ -364,10 +364,10 @@ namespace MyDocs.Common.ViewModel
             var title = Path.GetFileNameWithoutExtension(fileName);
             if (Path.GetExtension(photoFile.Name).Equals(".pdf", StringComparison.CurrentCultureIgnoreCase)) {
                 var pages = await pdfService.ExtractPages(photoFile);
-                return pages.Select(p => new Photo(title, photoFile, p));
+                return new Photo(title, photoFile, pages);
             }
             else {
-                return new List<Photo> { new Photo(title, photoFile) };
+                return new Photo(title, photoFile);
             }
         }
 

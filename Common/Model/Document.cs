@@ -1,12 +1,15 @@
 ﻿using GalaSoft.MvvmLight;
+using MyDocs.Common.Contract.Storage;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 
 namespace MyDocs.Common.Model
 {
+    [DebuggerDisplay("{Id} - {Category}")]
     public class Document : ObservableObject, IDocument
     {
         private Guid id;
@@ -20,7 +23,7 @@ namespace MyDocs.Common.Model
         public Guid Id
         {
             get { return id; }
-            set { Set(ref id, value); }
+            private set { Set(ref id, value); }
         }
 
         public string Category
@@ -32,15 +35,29 @@ namespace MyDocs.Common.Model
         public ObservableCollection<Photo> Photos
         {
             get { return photos; }
-            set { Set(ref photos, value); }
+            private set { Set(ref photos, value); }
+        }
+
+        public IEnumerable<Photo> Previews
+        {
+            get
+            {
+                foreach (var photo in photos) {
+                    if (photo.Previews.Any()) {
+                        foreach (var preview in photo.Previews) {
+                            yield return new Photo(photo.Title, preview);
+                        }
+                    }
+                    else {
+                        yield return new Photo(photo.Title, photo.File);
+                    }
+                }
+            }
         }
 
         public Photo TitlePhoto
         {
-            get
-            {
-                return Photos.FirstOrDefault();
-            }
+            get { return Photos.FirstOrDefault(); }
         }
 
         public ObservableCollection<string> Tags
@@ -135,7 +152,7 @@ namespace MyDocs.Common.Model
 
         public Document Clone()
         {
-            return new Document(id, category, dateAdded, lifespan, hasLimitedLifespan, tags, photos);
+            return new Document(id, category, dateAdded, lifespan, hasLimitedLifespan, tags, new ObservableCollection<Photo>(photos));
         }
     }
 }
