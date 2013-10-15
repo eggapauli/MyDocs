@@ -233,7 +233,6 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-
             <SemanticZoom Grid.Row="1" x:Name="semanticZoom" IsZoomOutButtonEnabled="{Binding CategoriesEmpty, Converter={StaticResource BooleanNegationConverter}}">
                 <SemanticZoom.ZoomedOutView>
                     <GridView Name="categoryGridView"
@@ -316,6 +315,12 @@
                        Style="{StaticResource SubheaderTextBlockStyle}"
                        Margin="120 0 0 0"
                        Visibility="{Binding CategoriesEmpty, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+            <ProgressBar Grid.Row="1"
+                         IsEnabled="{Binding IsBusy}"
+                         IsIndeterminate="{Binding IsBusy}"
+                         Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"
+                         VerticalAlignment="Top"/>
 
             <Grid>
                 <Grid.ColumnDefinitions>

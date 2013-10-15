@@ -308,6 +308,7 @@ namespace MyDocs.Common.ViewModel
                     if (zipFile == null) {
                         return;
                     }
+                    bool error = false;
                     try {
                         using (var zipFileStream = await zipFile.OpenReadAsync())
                         using (var archive = new ZipArchive(zipFileStream, ZipArchiveMode.Read)) {
@@ -329,6 +330,10 @@ namespace MyDocs.Common.ViewModel
                     }
                     catch (Exception ex) {
                         // TODO see which exceptions could occur (when Documents.xml is invalid, photos not found, etc.)
+                        error = true;
+                    }
+                    if (error) {
+                        await uiService.ShowNotificationAsync("importError");
                     }
                 }
                 else if (status == LicenseStatus.Locked) {
@@ -351,9 +356,13 @@ namespace MyDocs.Common.ViewModel
 
         private async Task<Photo> DeserializePhotosAsync(ZipArchive archive, Serializable.Document document, string fileName)
         {
-            var path = String.Format("{0}/{1}", document.GetHumanReadableDescription(), fileName);
+            var path = Path.Combine(document.GetHumanReadableDescription(), fileName);
             var dirEntry = archive.GetEntry(document.GetHumanReadableDescription());
             var entry = archive.GetEntry(path);
+            if (entry == null) {
+                // TODO refine
+                throw new Exception("Entry no found.");
+            }
             var photoFileName = String.Format("{0}{1}", Path.GetRandomFileName(), Path.GetExtension(fileName));
             var photoFile = await settingsService.PhotoFolder.CreateFileAsync(photoFileName);
             using (var entryStream = entry.Open())

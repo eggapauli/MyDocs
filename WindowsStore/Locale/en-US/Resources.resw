@@ -288,4 +288,7 @@
   <data name="documentDescriptionFileNotFound" xml:space="preserve">
     <value>"Documents.xml" couldn't be found.</value>
   </data>
+  <data name="importError" xml:space="preserve">
+    <value>An error occured while importing documents.</value>
+  </data>
 </root>
