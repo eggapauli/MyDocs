@@ -56,14 +56,25 @@
 
                 <TextBlock Name="category" Text="{Binding SelectedDocument.Category}" TextWrapping="NoWrap" FontSize="40" Margin="50 20 50 20" />
 
-                <StackPanel Orientation="Horizontal" Margin="50 0 50 20">
+                <Grid Margin="50 0 50 20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    
                     <Button Style="{StaticResource TagButtonStyle}" Width="25" Margin="0 5 10 0" />
-                    <TextBlock Name="tags" Text="{Binding SelectedDocument.TagsString}" TextWrapping="Wrap" />
-                </StackPanel>
+                    <TextBlock Grid.Column="1" Name="tags" Text="{Binding SelectedDocument.TagsString}" TextWrapping="NoWrap" />
+                </Grid>
 
-                <StackPanel Orientation="Horizontal" Margin="50 0 50 20">
+                <Grid Margin="50 0 50 20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    
                     <Button Style="{StaticResource CalendarButtonStyle}" Width="25" Margin="0 5 10 0" />
-                    <TextBlock Name="lifespan"
+                    <TextBlock Grid.Column="1"
+                               Name="lifespan"
                                TextWrapping="NoWrap"
                                Visibility="{Binding SelectedDocument.HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Run Text="{Binding SelectedDocument.DateAdded, Converter={StaticResource DateToStringConverter}}" />
@@ -71,18 +82,24 @@
                         <Run Text="{Binding SelectedDocument.DateRemoved, Converter={StaticResource DateToStringConverter}}" />
                     </TextBlock>
 
-                    <TextBlock Name="dateAdded"
+                    <TextBlock Grid.Column="1"
+                               Name="dateAdded"
                                Text="{Binding SelectedDocument.DateAdded, Converter={StaticResource DateToStringConverter}}"
                                TextWrapping="NoWrap"
                                Visibility="{Binding SelectedDocument.HasLimitedLifespan, Converter={StaticResource BooleanToNegatedVisibilityConverter}}" />
-                </StackPanel>
+                </Grid>
 
-                <StackPanel Orientation="Horizontal" Margin="50 0 50 20" Visibility="{Binding SelectedDocument.HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid Margin="50 0 50 20" Visibility="{Binding SelectedDocument.HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
                     <Button Style="{StaticResource HourGlassButtonStyle}" Width="25" Margin="0 5 10 0" />
-                    <TextBlock Name="timeToRemoval"
+                    <TextBlock Grid.Column="1"
+                               Name="timeToRemoval"
                                Text="{Binding SelectedDocument.DaysToRemoval, Converter={StaticResource TranslationConverter}, ConverterParameter='countDaysFormat'}"
                                TextWrapping="NoWrap" />
-                </StackPanel>
+                </Grid>
             </StackPanel>
         </AppBar>
     </Page.BottomAppBar>

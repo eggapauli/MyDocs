@@ -32,7 +32,7 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        
+
                         <Button Style="{StaticResource TagButtonStyle}" Width="15" Margin="0 5 5 0" />
                         <TextBlock Grid.Column="1"
                                    Text="{Binding TagsString}"
@@ -45,7 +45,7 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        
+
                         <Button Style="{StaticResource CalendarButtonStyle}" Width="15" Margin="0 5 5 0" />
                         <TextBlock Grid.Column="1"
                                    Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -69,7 +69,7 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        
+
                         <Button Style="{StaticResource HourGlassButtonStyle}" Width="15" Margin="0 5 5 0" />
                         <TextBlock Grid.Column="1"
                                    Text="{Binding DaysToRemoval, Converter={StaticResource TranslationConverter}, ConverterParameter='countDaysFormat'}"
@@ -337,44 +337,44 @@
                            IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
             </Grid>
 
-            <VisualStateManager.VisualStateGroups>
-                <VisualStateGroup x:Name="ApplicationViewStates">
-                    <VisualState x:Name="DefaultLayout"/>
+        </Grid>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ApplicationViewStates">
+                <VisualState x:Name="DefaultLayout"/>
 
-                    <VisualState x:Name="TightLayout">
-                        <Storyboard>
-                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
-                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightHeaderTextBlockStyle}"/>
-                            </ObjectAnimationUsingKeyFrames>
-                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="noDocumentsText" Storyboard.TargetProperty="Style">
-                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightSubheaderTextBlockStyle}"/>
-                            </ObjectAnimationUsingKeyFrames>
-
-                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="semanticZoomTight" Storyboard.TargetProperty="Visibility">
-                                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
-                            </ObjectAnimationUsingKeyFrames>
-                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="semanticZoom" Storyboard.TargetProperty="Visibility">
-                                <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
-                            </ObjectAnimationUsingKeyFrames>
-                        </Storyboard>
-                    </VisualState>
-                </VisualStateGroup>
-
-                <!--<VisualStateGroup x:Name="SemanticZoomStates">
-                <VisualState x:Name="ZoomInView" />
-
-                <VisualState x:Name="ZoomOutView">
+                <VisualState x:Name="TightLayout">
                     <Storyboard>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="editDocButton" Storyboard.TargetProperty="(UIElement.IsEnabled)">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="False"/>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightHeaderTextBlockStyle}"/>
                         </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="deleteDocButton" Storyboard.TargetProperty="(UIElement.IsEnabled)">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="False"/>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="noDocumentsText" Storyboard.TargetProperty="Style">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource TightSubheaderTextBlockStyle}"/>
+                        </ObjectAnimationUsingKeyFrames>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="semanticZoomTight" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="semanticZoom" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
                         </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
-            </VisualStateGroup>-->
-            </VisualStateManager.VisualStateGroups>
-        </Grid>
+            </VisualStateGroup>
+
+        <!--<VisualStateGroup x:Name="SemanticZoomStates">
+            <VisualState x:Name="ZoomInView" />
+
+            <VisualState x:Name="ZoomOutView">
+                <Storyboard>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="editDocButton" Storyboard.TargetProperty="(UIElement.IsEnabled)">
+                        <DiscreteObjectKeyFrame KeyTime="0" Value="False"/>
+                    </ObjectAnimationUsingKeyFrames>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="deleteDocButton" Storyboard.TargetProperty="(UIElement.IsEnabled)">
+                        <DiscreteObjectKeyFrame KeyTime="0" Value="False"/>
+                    </ObjectAnimationUsingKeyFrames>
+                </Storyboard>
+            </VisualState>
+        </VisualStateGroup>-->
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 </common:LayoutAwarePage>
