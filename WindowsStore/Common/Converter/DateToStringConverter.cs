@@ -3,7 +3,7 @@ using System.Globalization;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace MyDocs.WindowsStore.Converter
+namespace MyDocs.WindowsStore.Common.Converter
 {
 	public class DateToStringConverter : IValueConverter
 	{

@@ -1,5 +1,4 @@
-﻿using MyDocs.WindowsStore.Common;
-using MyDocs.Common.Contract.Storage;
+﻿using MyDocs.Common.Contract.Storage;
 using System;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -41,32 +40,19 @@ namespace MyDocs.WindowsStore.Storage
 			return System.IO.Path.GetDirectoryName(File.Path).StartsWith(folder.Path);
 		}
 
-		public async Task<IBitmapImage> GetResizedBitmapImageAsync(FileSize fileSize = FileSize.Small)
+		public async Task<IBitmapImage> GetResizedBitmapImageAsync(FileSize fileSize = FileSize.SMALL)
 		{
 			int size;
 			switch (fileSize) {
-				case FileSize.Big: size = (int)Math.Max(Window.Current.Bounds.Width, Window.Current.Bounds.Height); break;
-				case FileSize.Small:
+				case FileSize.BIG: size = (int)Math.Max(Window.Current.Bounds.Width, Window.Current.Bounds.Height); break;
+				case FileSize.SMALL:
 				default: size = 250; break;
 			}
-
-			BitmapImage bmp;
-			if (File.IsImage()) {
-				bmp = new BitmapImage(new Uri(File.Path));
-				if (bmp.PixelWidth > bmp.PixelHeight) {
-					bmp.DecodePixelWidth = size;
-				}
-				else {
-					bmp.DecodePixelHeight = size;
-				}
+			BitmapImage bmp = new BitmapImage();
+			using (StorageItemThumbnail thumbnail = await File.GetThumbnailAsync(ThumbnailMode.SingleItem, (uint)size)) {
+				await bmp.SetSourceAsync(thumbnail);
+				return new WindowsStoreBitmapImage(bmp, File.Name);
 			}
-			else {
-				bmp = new BitmapImage();
-				using (StorageItemThumbnail thumbnail = await File.GetThumbnailAsync(ThumbnailMode.SingleItem, (uint)size)) {
-					await bmp.SetSourceAsync(thumbnail);
-				}
-			}
-			return new WindowsStoreBitmapImage(bmp, File.Name);
 		}
 
 		public async Task MoveAsync(IFolder folder)

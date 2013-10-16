@@ -1,7 +1,7 @@
 ﻿using System;
 using Windows.UI.Xaml.Data;
 
-namespace MyDocs.WindowsStore.Converter
+namespace MyDocs.WindowsStore.Common.Converter
 {
 	/// <summary>
 	/// Value converter that translates true to false and vice versa.

@@ -28,12 +28,12 @@
 		<FlipView Grid.RowSpan="2" ItemsSource="{Binding Photos}">
 			<FlipView.ItemTemplate>
 				<DataTemplate>
-					<common:FilePreview File="{Binding}" FileSize="Big" />
+					<common:FilePreview File="{Binding}" FileSize="BIG" />
 				</DataTemplate>
 			</FlipView.ItemTemplate>
 		</FlipView>
 
-		<StackPanel Orientation="Horizontal" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
+		<StackPanel Orientation="Horizontal">
 			<Button x:Name="backButton" Click="GoBack" IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}"/>
 			<TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" IsHitTestVisible="false" Style="{StaticResource PageHeaderTextStyle}"/>
 		</StackPanel>
@@ -41,7 +41,7 @@
 		<StackPanel Grid.Row="1" VerticalAlignment="Bottom" Orientation="Vertical" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
 			<TextBlock x:Name="category" Text="{Binding Category}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextStyle}" TextWrapping="NoWrap" />
 			<TextBlock x:Name="tags" Text="{Binding TagsString}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextStyle}" TextWrapping="Wrap" />
-			<TextBlock x:Name="lifespan" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextStyle}" TextWrapping="NoWrap" Visibility="{Binding HasLimitedLifespan, Converter={StaticResource BooleanToVisibilityConverter}}">
+			<TextBlock x:Name="lifespan" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource PhotoDetailTextStyle}" TextWrapping="NoWrap">
 				<Run Text="{Binding DateAdded, Converter={StaticResource DateToStringConverter}}" /> -
 				<Run Text="{Binding DateRemoved, Converter={StaticResource DateToStringConverter}}" />
 			</TextBlock>

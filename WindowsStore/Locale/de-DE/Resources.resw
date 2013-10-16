@@ -183,7 +183,4 @@
   <data name="Photos.Text" xml:space="preserve">
     <value>Fotos</value>
   </data>
-  <data name="protectedDocumentError" xml:space="preserve">
-    <value>Die Datei konnte nicht geöffnet werden, weil sie passwortgeschützt ist.</value>
-  </data>
 </root>

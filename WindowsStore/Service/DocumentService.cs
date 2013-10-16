@@ -135,13 +135,26 @@ namespace MyDocs.WindowsStore.Service
 
 		public async Task SaveDocumentAsync(Document doc)
 		{
-			foreach (var file in doc.Photos.SelectMany(p => new[] { p.File, p.Preview })) {
-				string name = Path.GetRandomFileName() + Path.GetExtension(file.Path);
+			var tasks = new List<Task>();
+			foreach (var photo in doc.Photos) {
+				if (!photo.File.IsInFolder(settingsService.PhotoFolder)) {
+					string name = Path.GetRandomFileName() + Path.GetExtension(photo.File.Path);
 
-				if (file.IsInFolder(tempFolder)) {
-					await file.MoveAsync(settingsService.PhotoFolder, name);
+					Task task;
+					if (photo.File.IsInFolder(tempFolder)) {
+						task = photo.File.MoveAsync(settingsService.PhotoFolder, name);
+					}
+					else {
+						task = photo.File.CopyAsync(settingsService.PhotoFolder, name).ContinueWith(t =>
+						{
+							// TODO is this the correct `photo`?
+							photo.File = t.Result;
+						}, TaskScheduler.FromCurrentSynchronizationContext());
+					}
+					tasks.Add(task);
 				}
 			}
+			await Task.WhenAll(tasks);
 
 			docsDataContainer.Values[doc.Id.ToString()] = doc.ConvertToStoredDocument();
 		}

@@ -1,6 +1,5 @@
 ﻿using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Contract.Storage;
-using MyDocs.Common.Model;
 using MyDocs.WindowsStore.Storage;
 using System;
 using System.Threading.Tasks;
@@ -10,14 +9,14 @@ namespace MyDocs.WindowsStore.Service
 {
 	public class CameraService : ICameraService
 	{
-		public async Task<Photo> CapturePhotoAsync()
+		public async Task<IFile> CaptureFileAsync()
 		{
 			CameraCaptureUI camera = new CameraCaptureUI();
 			var file = await camera.CaptureFileAsync(CameraCaptureUIMode.Photo);
 			if (file == null) {
 				return null;
 			}
-			return new Photo(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), new WindowsStoreFile(file));
+			return new WindowsStoreFile(file);
 		}
 	}
 }
