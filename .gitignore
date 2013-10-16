@@ -1,9 +1,9 @@
-*.suo
 packages
-
 AppPackages
 bin
 obj
-*.csproj.user
 
+*.csproj.user
+*.sdf
+*.suo
 Thumbs.db
