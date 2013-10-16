@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -17,6 +17,9 @@
     <PackageCertificateThumbprint>262A57619D859EA779356180D63EC04E20A4C2DF</PackageCertificateThumbprint>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
+    <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
+    <AppxPackageDir>C:\Users\Johannes Egger\Desktop</AppxPackageDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -107,39 +110,46 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Common\Converter\DateToStringConverter.cs" />
-    <Compile Include="Common\Converter\TranslationConverter.cs" />
+    <Compile Include="Common\Global.cs" />
+    <Compile Include="Common\VisualTreeHelperEx.cs" />
+    <Compile Include="Converter\DateTimeToDateTimeOffsetConverter.cs" />
+    <Compile Include="Converter\DateToStringConverter.cs" />
+    <Compile Include="Converter\TranslationConverter.cs" />
     <Compile Include="Common\DocumentTemplateSelector.cs" />
-    <Compile Include="Common\FilePreview.xaml.cs">
+    <Compile Include="Controls\FilePreview.xaml.cs">
       <DependentUpon>FilePreview.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\NavigationHelper.cs" />
+    <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="Service\CameraService.cs" />
+    <Compile Include="Service\FileSavePickerService.cs" />
+    <Compile Include="Service\LicenseService.cs" />
     <Compile Include="Service\ModernUIService.cs" />
+    <Compile Include="Service\PdfService.cs" />
     <Compile Include="Service\SettingsService.cs" />
     <Compile Include="Common\StorageExtension.cs" />
-    <Compile Include="Page\EditDocumentPage.xaml.cs">
+    <Compile Include="Pages\EditDocumentPage.xaml.cs">
       <DependentUpon>EditDocumentPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Page\MainPage.xaml.cs">
+    <Compile Include="Pages\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Common\Converter\BooleanToVisibilityConverter.cs" />
-    <Compile Include="Common\Converter\BooleanNegationConverter.cs" />
+    <Compile Include="Converter\BooleanConverter.cs" />
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
-    <Compile Include="Page\SearchResultsPage.xaml.cs">
+    <Compile Include="Pages\SearchResultsPage.xaml.cs">
       <DependentUpon>SearchResultsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Service\Design\DesignDocumentService.cs" />
     <Compile Include="Service\DocumentService.cs" />
     <Compile Include="Service\NavigationService.cs" />
     <Compile Include="Service\TranslatorService.cs" />
-    <Compile Include="Service\FilePickerService.cs" />
-    <Compile Include="Page\SettingsPage.xaml.cs">
+    <Compile Include="Service\FileOpenPickerService.cs" />
+    <Compile Include="Pages\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Page\ShowDocumentPage.xaml.cs">
+    <Compile Include="Pages\ShowDocumentPage.xaml.cs">
       <DependentUpon>ShowDocumentPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Storage\WindowsStoreApplicationDataContainer.cs" />
@@ -173,50 +183,35 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Common\FilePreview.xaml">
+    <Page Include="Controls\FilePreview.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Common\StandardStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Common\Styles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
-    <Page Include="Page\EditDocumentPage.xaml">
+    <Page Include="Pages\EditDocumentPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Page\MainPage.xaml">
+    <Page Include="Pages\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Page\SearchResultsPage.xaml">
+    <Page Include="Pages\SearchResultsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Page\SettingsPage.xaml">
+    <Page Include="Pages\SettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Page\ShowDocumentPage.xaml">
+    <Page Include="Pages\ShowDocumentPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <SDKReference Include="MSAdvertisingXaml, Version=6.1">
-      <Name>Microsoft Advertising SDK for Windows 8 %28Xaml%29</Name>
-    </SDKReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{6666ff12-6c2c-4aed-a1dd-f1e1f08445f8}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GalaSoft.MvvmLight">
@@ -236,8 +231,19 @@
       <HintPath>..\packages\Windows.UI.Interactivity.1.3.0.0\lib\win8\Windows.UI.Interactivity.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
-    <VisualStudioVersion>11.0</VisualStudioVersion>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{6666ff12-6c2c-4aed-a1dd-f1e1f08445f8}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="MSAdvertisingXaml, Version=8.1">
+      <Name>Microsoft Advertising SDK for Windows 8.1 %28Xaml%29</Name>
+    </SDKReference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
+    <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

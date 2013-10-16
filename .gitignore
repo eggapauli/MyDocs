@@ -1,9 +1,10 @@
 packages
 AppPackages
-bin
-obj
+bin/
+obj/
 
 *.csproj.user
 *.sdf
 *.suo
 Thumbs.db
+*.sdf

@@ -7,338 +7,285 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace MyDocs.Common.ViewModel
 {
-	public class EditDocumentViewModel : ViewModelBase
-	{
-		private readonly IDocumentService documentService;
-		private readonly INavigationService navigator;
-		private readonly ITranslatorService translator;
-		private readonly IUserInterfaceService uiService;
-		private readonly ICameraService cameraService;
-		private readonly IFilePickerService filePicker;
+    public class EditDocumentViewModel : ViewModelBase
+    {
+        private readonly IDocumentService documentService;
+        private readonly INavigationService navigator;
+        private readonly IUserInterfaceService uiService;
+        private readonly ICameraService cameraService;
+        private readonly IFileOpenPickerService filePicker;
+        private readonly ISettingsService settingsService;
+        private readonly IPdfService pdfService;
 
-		#region Properties
+        #region Properties
 
-		private bool showNewCategoryInput;
-		private string useCategoryName;
-		private string newCategoryName;
-		private Document originalDocument;
-		private Document editingDocument;
-		private Photo selectedPhoto;
+        private bool showNewCategoryInput;
+        private string useCategoryName;
+        private string newCategoryName;
+        private Document originalDocument;
+        private Document editingDocument;
+        private Photo selectedPhoto;
+        private bool isBusy;
 
-		public IEnumerable<string> CategoryNames
-		{
-			get { return documentService.GetCategoryNames(); }
-		}
+        public IEnumerable<string> CategoryNames
+        {
+            get { return documentService.GetCategoryNames(); }
+        }
 
-		public bool ShowNewCategoryInput
-		{
-			get { return !HasCategories || showNewCategoryInput; }
-			set
-			{
-				if (showNewCategoryInput != value) {
-					showNewCategoryInput = value;
-					RaisePropertyChanged(() => ShowNewCategoryInput);
-					RaisePropertyChanged(() => ShowUseCategoryInput);
-					SaveDocumentCommand.RaiseCanExecuteChanged();
-				}
-			}
-		}
+        public bool ShowNewCategoryInput
+        {
+            get { return !HasCategories || showNewCategoryInput; }
+            set
+            {
+                if (Set(ref showNewCategoryInput, value)) {
+                    RaisePropertyChanged(() => ShowUseCategoryInput);
+                    SaveDocumentCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
 
-		public bool ShowUseCategoryInput
-		{
-			get { return !ShowNewCategoryInput; }
-			set { ShowNewCategoryInput = !value; }
-		}
-		
-		public bool HasCategories
-		{
-			get { return CategoryNames.Any(); }
-		}
+        public bool ShowUseCategoryInput
+        {
+            get { return !ShowNewCategoryInput; }
+            set { ShowNewCategoryInput = !value; }
+        }
 
-		public string UseCategoryName
-		{
-			get { return useCategoryName; }
-			set
-			{
-				if (useCategoryName != value) {
-					useCategoryName = value;
-					RaisePropertyChanged(() => UseCategoryName);
-					SaveDocumentCommand.RaiseCanExecuteChanged();
-				}
-			}
-		}
+        public bool HasCategories
+        {
+            get { return CategoryNames.Any(); }
+        }
 
-		public string NewCategoryName
-		{
-			get { return newCategoryName; }
-			set
-			{
-				if (newCategoryName != value) {
-					newCategoryName = value;
-					RaisePropertyChanged(() => NewCategoryName);
-					SaveDocumentCommand.RaiseCanExecuteChanged();
-				}
-			}
-		}
+        public string UseCategoryName
+        {
+            get { return useCategoryName; }
+            set
+            {
+                if (Set(ref useCategoryName, value)) {
+                    SaveDocumentCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
 
-		public Document EditingDocument
-		{
-			get { return editingDocument; }
-			set
-			{
-				if (editingDocument != null) {
-					editingDocument.PropertyChanged -= EditingDocumentChangedHandler;
-				}
-				if (editingDocument != value) {
-					if (value != null) {
-						editingDocument = value.Clone();
-						NewCategoryName = editingDocument.Category;
-						UseCategoryName = editingDocument.Category;
-						editingDocument.PropertyChanged += EditingDocumentChangedHandler;
-						editingDocument.Photos.CollectionChanged += EditingDocumentPhotoCollectionChanged;
-					}
-					else {
-						editingDocument = null;
-					}
-					originalDocument = value;
-					RaisePropertyChanged(() => EditingDocument);
-					SaveDocumentCommand.RaiseCanExecuteChanged();
-				}
-			}
-		}
+        public string NewCategoryName
+        {
+            get { return newCategoryName; }
+            set
+            {
+                if (Set(ref newCategoryName, value)) {
+                    SaveDocumentCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
 
-		public Guid EditingDocumentId
-		{
-			set
-			{
-				EditingDocument = null;
-				documentService.GetDocumentById(value).ContinueWith(t =>
-				{
-					if (t.IsFaulted) {
-						// TODO show error
-						EditingDocument = new Document();
-					}
-					else {
-						EditingDocument = t.Result;
-					}
-				}, TaskScheduler.FromCurrentSynchronizationContext());
-			}
-		}
+        public Document EditingDocument
+        {
+            get { return editingDocument; }
+            set
+            {
+                if (editingDocument != null) {
+                    editingDocument.PropertyChanged -= EditingDocumentChangedHandler;
+                }
+                if (editingDocument != value) {
+                    if (value != null) {
+                        editingDocument = value.Clone();
+                        NewCategoryName = editingDocument.Category;
+                        UseCategoryName = editingDocument.Category;
+                        editingDocument.PropertyChanged += EditingDocumentChangedHandler;
+                        editingDocument.Photos.CollectionChanged += EditingDocumentPhotoCollectionChanged;
+                    }
+                    else {
+                        editingDocument = null;
+                    }
+                    originalDocument = value;
+                    RaisePropertyChanged();
+                    SaveDocumentCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
 
-		private void EditingDocumentChangedHandler(object sender, PropertyChangedEventArgs e)
-		{
-			if (e.PropertyName == "Tags" || e.PropertyName == "Category") {
-				SaveDocumentCommand.RaiseCanExecuteChanged();
-			}
-			if (e.PropertyName == "DateRemoved") {
-				RaisePropertyChanged(() => DateRemovedDays);
-			}
-		}
+        public Guid EditingDocumentId
+        {
+            set
+            {
+                EditingDocument = null;
+                documentService.GetDocumentById(value).ContinueWith(t =>
+                {
+                    if (t.IsFaulted) {
+                        EditingDocument = new Document();
+                        uiService.ShowErrorAsync("documentNotFound");
+                    }
+                    else {
+                        EditingDocument = t.Result;
+                    }
+                }, TaskScheduler.FromCurrentSynchronizationContext());
+            }
+        }
 
-		private void EditingDocumentPhotoCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-		{
-			SaveDocumentCommand.RaiseCanExecuteChanged();
-		}
+        private void EditingDocumentChangedHandler(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Tags" || e.PropertyName == "Category") {
+                SaveDocumentCommand.RaiseCanExecuteChanged();
+            }
+        }
 
-		public IEnumerable<int> DateRemovedDays
-		{
-			get
-			{
-				int days;
-				if (EditingDocument != null) {
-					var date = EditingDocument.DateRemoved;
-					days = DateTime.DaysInMonth(date.Year, date.Month);
-				}
-				else {
-					days = 31;
-				}
-				return Enumerable.Range(1, days);
-			}
-		}
+        private void EditingDocumentPhotoCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            SaveDocumentCommand.RaiseCanExecuteChanged();
+        }
 
-		public IEnumerable<int> DateRemovedMonths
-		{
-			get
-			{
-				return Enumerable.Range(1, 12);
-			}
-		}
+        public Photo SelectedPhoto
+        {
+            get { return selectedPhoto; }
+            set
+            {
+                if (Set(ref selectedPhoto, value)) {
+                    RemovePhotoCommand.RaiseCanExecuteChanged();
+                }
+            }
+        }
 
-		public IEnumerable<int> DateRemovedYears
-		{
-			get
-			{
-				return Enumerable.Range(DateTime.Today.Year, 20);
-			}
-		}
+        public bool IsBusy
+        {
+            get { return isBusy; }
+            set { Set(ref isBusy, value); }
+        }
 
-		public Photo SelectedPhoto
-		{
-			get { return selectedPhoto; }
-			set
-			{
-				if (selectedPhoto != value) {
-					selectedPhoto = value;
-					RaisePropertyChanged(() => SelectedPhoto);
-					RemovePhotoCommand.RaiseCanExecuteChanged();
-				}
-			}
-		}
+        #endregion
 
-		public string LifespanInfiniteText { get { return translator.Translate("lifespanInfiniteText"); } }
-		public string LifespanLimitedText { get { return translator.Translate("lifespanLimitedText"); } }
+        public EditDocumentViewModel(
+            IDocumentService documentService,
+            INavigationService navigator,
+            IUserInterfaceService uiService,
+            ICameraService cameraService,
+            IFileOpenPickerService filePicker,
+            ISettingsService settingsService,
+            IPdfService pdfService)
+        {
+            this.documentService = documentService;
+            this.navigator = navigator;
+            this.uiService = uiService;
+            this.cameraService = cameraService;
+            this.filePicker = filePicker;
+            this.settingsService = settingsService;
+            this.pdfService = pdfService;
 
-		#endregion
+            CreateCommands();
+            CreateDesignTimeData();
 
-		public EditDocumentViewModel(
-			IDocumentService documentService,
-			INavigationService navigator,
-			ITranslatorService translator,
-			IUserInterfaceService uiService,
-			ICameraService cameraService,
-			IFilePickerService filePicker)
-		{
-			this.documentService = documentService;
-			this.navigator = navigator;
-			this.translator = translator;
-			this.uiService = uiService;
-			this.cameraService = cameraService;
-			this.filePicker = filePicker;
+            ShowUseCategoryInput = documentService.GetCategoryNames().Any();
+        }
 
-			CreateCommands();
-			CreateDesignTimeData();
+        [Conditional("DEBUG")]
+        private void CreateDesignTimeData()
+        {
+            if (IsInDesignMode) {
+                documentService.LoadDocumentsAsync().ContinueWith(t =>
+                {
+                    EditingDocument = documentService.Documents.First();
+                }, TaskScheduler.FromCurrentSynchronizationContext());
+            }
+        }
 
-			ShowUseCategoryInput = documentService.GetCategoryNames().Any();
-		}
+        public async Task LoadAsync()
+        {
+            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+                await documentService.LoadDocumentsAsync();
+            }
+        }
 
-		[Conditional("DEBUG")]
-		private void CreateDesignTimeData()
-		{
-			if (IsInDesignMode) {
-				documentService.LoadCategoriesAsync().ContinueWith(t =>
-				{
-					EditingDocument = documentService.Categories.First().Documents.First();
-				}, TaskScheduler.FromCurrentSynchronizationContext());
-			}
-		}
+        #region Commands
 
-		public async Task LoadAsync()
-		{
-			await documentService.LoadCategoriesAsync();
-		}
+        public RelayCommand ShowNewCategoryCommand { get; private set; }
+        public RelayCommand ShowUseCategoryCommand { get; private set; }
+        public RelayCommand AddPhotoFromCameraCommand { get; private set; }
+        public RelayCommand AddPhotoFromFileCommand { get; private set; }
+        public RelayCommand RemovePhotoCommand { get; private set; }
+        public RelayCommand SaveDocumentCommand { get; private set; }
 
-		#region Commands
+        private void CreateCommands()
+        {
+            AddPhotoFromCameraCommand = new RelayCommand(AddPhotoFromCameraAsync);
+            AddPhotoFromFileCommand = new RelayCommand(AddPhotoFromFileAsync);
+            RemovePhotoCommand = new RelayCommand(RemovePhoto, () => SelectedPhoto != null);
+            SaveDocumentCommand = new RelayCommand(SaveDocumentAsync, () =>
+                EditingDocument != null
+                && EditingDocument.Tags.Any()
+                && (ShowNewCategoryInput && !String.IsNullOrWhiteSpace(NewCategoryName)
+                    || ShowUseCategoryInput && !String.IsNullOrWhiteSpace(UseCategoryName))
+                && EditingDocument.Photos.Count > 0);
+            ShowNewCategoryCommand = new RelayCommand(() => { ShowNewCategoryInput = true; });
+            ShowUseCategoryCommand = new RelayCommand(() => { ShowNewCategoryInput = false; });
+        }
 
-		public RelayCommand ShowNewCategoryCommand { get; set; }
-		public RelayCommand ShowUseCategoryCommand { get; set; }
-		public RelayCommand AddPhotoFromCameraCommand { get; set; }
-		public RelayCommand AddPhotoFromFileCommand { get; set; }
-		public RelayCommand RemovePhotoCommand { get; set; }
-		public RelayCommand SaveDocumentCommand { get; set; }
+        private async void SaveDocumentAsync()
+        {
+            EditingDocument.Category = ShowNewCategoryInput ? NewCategoryName : UseCategoryName;
 
-		private void CreateCommands()
-		{
-			AddPhotoFromCameraCommand = new RelayCommand(AddPhotoFromCameraHandler);
-			AddPhotoFromFileCommand = new RelayCommand(AddPhotoFromFileHandler);
-			RemovePhotoCommand = new RelayCommand(RemovePhotoHandler, () => SelectedPhoto != null);
-			SaveDocumentCommand = new RelayCommand(SaveDocumentHandler, () =>
-				EditingDocument != null
-				&& EditingDocument.Tags.Any()
-				&& (ShowNewCategoryInput && !String.IsNullOrWhiteSpace(NewCategoryName)
-					|| ShowUseCategoryInput && !String.IsNullOrWhiteSpace(UseCategoryName))
-				&& EditingDocument.Photos.Count > 0);
-			ShowNewCategoryCommand = new RelayCommand(() => { ShowNewCategoryInput = true; });
-			ShowUseCategoryCommand = new RelayCommand(() => { ShowNewCategoryInput = false; });
-		}
+            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+                await documentService.SaveDocumentAsync(EditingDocument);
 
-		private void SaveDocumentHandler()
-		{
-			EditingDocument.Category = ShowNewCategoryInput ? NewCategoryName : UseCategoryName;
+                // Delete removed photos
+                if (originalDocument != null) {
+                    var deletedPhotos = originalDocument.Photos.Where(p => !EditingDocument.Photos.Contains(p));
+                    await documentService.RemovePhotosAsync(deletedPhotos);
+                }
+            }
 
-			documentService.SaveDocumentAsync(EditingDocument).ContinueWith(t =>
-			{
-				if (t.IsFaulted) {
-					var tmp = uiService.ShowErrorAsync("saveDocError");
-				}
-				else {
-					// remove deleted photos
-					if (originalDocument != null) {
-						var deletedPhotos = originalDocument.Photos.Where(p => !EditingDocument.Photos.Contains(p)).Select(p => p.File);
-						documentService.RemovePhotosAsync(deletedPhotos).ContinueWith(t2 =>
-						{
-							if (t.IsFaulted) {
-								var tmp = uiService.ShowErrorAsync("saveDocError");
-							}
-						});
-					}
+            var doc = EditingDocument;
+            EditingDocument = null;
+            originalDocument = doc;
 
-					documentService.DetachDocument(originalDocument);
-					Category newCat = documentService.GetCategoryByName(EditingDocument.Category);
-					newCat.Documents.Add(EditingDocument);
+            navigator.Navigate<IMainPage>(originalDocument.Id);
+        }
 
-					var doc = EditingDocument;
-					EditingDocument = null;
-					originalDocument = doc;
+        private async void AddPhotoFromCameraAsync()
+        {
+            var photo = await cameraService.CapturePhotoAsync();
+            if (photo != null) {
+                EditingDocument.Photos.Add(photo);
+            }
+        }
 
-					// reset title photo in case there was none or the user deleted the old one
-					//var photo = originalDocument.Photos.FirstOrDefault();
-					//if (photo != null) {
-					//	photo.GenerateThumbnail().ContinueWith(t2 =>
-					//	{
-					//		if (t2.IsFaulted) {
-					//			var tmp = ShowErrorAsync("saveDocError");
-					//		}
-					//		else {
-					//			//SelectedDocument.TitlePhoto = t2.Result;
-					//			navigationService.Navigate(typeof(MainPage));
-					//		}
-					//	}, TaskScheduler.FromCurrentSynchronizationContext());
-					//}
-					navigator.Navigate(typeof(IMainPage), originalDocument.Id);
-				}
-			}, TaskScheduler.FromCurrentSynchronizationContext());
-		}
+        private async void AddPhotoFromFileAsync()
+        {
+            var files = await filePicker.PickMultipleFilesAsync();
 
-		private void AddPhotoFromCameraHandler()
-		{
-			cameraService.CaptureFileAsync().ContinueWith(t =>
-			{
-				if (t.IsFaulted) {
-					var tmp = uiService.ShowErrorAsync("addPhotoError");
-				}
-				else {
-					if (t.Result != null) {
-						EditingDocument.Photos.Add(new Photo(t.Result));
-					}
-				}
-			}, TaskScheduler.FromCurrentSynchronizationContext());
-		}
+            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+                bool error = false;
+                foreach (var file in files) {
+                    if (Path.GetExtension(file.Name).Equals(".pdf", StringComparison.CurrentCultureIgnoreCase)) {
+                        var copy = await file.CopyAsync(settingsService.TempFolder, Path.GetRandomFileName() + Path.GetExtension(file.Name));
 
-		private void AddPhotoFromFileHandler()
-		{
-			filePicker.PickMultipleFilesAsync().ContinueWith(t =>
-			{
-				if (t.IsFaulted) {
-					// TODO show error
-				}
-				else {
-					foreach (var file in t.Result) {
-						EditingDocument.Photos.Add(new Photo(file));
-					}
-				}
-			}, TaskScheduler.FromCurrentSynchronizationContext());
-		}
+                        try {
+                            var pages = await pdfService.ExtractPages(copy);
+                            EditingDocument.Photos.Add(new Photo(copy.DisplayName, copy, pages));
+                        }
+                        catch (Exception) {
+                            error = true;
+                        }
+                    }
+                    else {
+                        EditingDocument.Photos.Add(new Photo(file.DisplayName, file));
+                    }
+                }
 
-		private void RemovePhotoHandler()
-		{
-			EditingDocument.Photos.Remove(SelectedPhoto);
-		}
+                if (error) {
+                    await uiService.ShowErrorAsync("fileLoadError");
+                }
+            }
+        }
 
-		#endregion
-	}
+        private void RemovePhoto()
+        {
+            EditingDocument.Photos.Remove(SelectedPhoto);
+        }
+
+        #endregion
+    }
 }

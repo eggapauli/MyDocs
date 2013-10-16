@@ -35,14 +35,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Comparer\CategoryComparer.cs" />
-    <Compile Include="Comparer\DocumentComparer.cs" />
     <Compile Include="Contract\Page\IEditDocumentPage.cs" />
     <Compile Include="Contract\Page\IMainPage.cs" />
+    <Compile Include="Contract\Page\ISearchPage.cs" />
     <Compile Include="Contract\Page\IShowDocumentPage.cs" />
     <Compile Include="Contract\Service\ICameraService.cs" />
-    <Compile Include="Contract\Service\IFilePickerService.cs" />
+    <Compile Include="Contract\Service\IFileOpenPickerService.cs" />
+    <Compile Include="Contract\Service\IFileSavePickerService.cs" />
     <Compile Include="Contract\Service\II18NService.cs" />
+    <Compile Include="Contract\Service\ILicenseService.cs" />
+    <Compile Include="Contract\Service\IPdfService.cs" />
     <Compile Include="Contract\Service\IUserInterfaceService.cs" />
     <Compile Include="Contract\Service\IDocumentService.cs" />
     <Compile Include="Contract\Service\INavigationService.cs" />
@@ -52,12 +54,17 @@
     <Compile Include="Contract\Storage\IBitmapImage.cs" />
     <Compile Include="Contract\Storage\IFile.cs" />
     <Compile Include="Contract\Storage\IFolder.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Messages\CloseFlyoutsMessage.cs" />
     <Compile Include="Model\AdDocument.cs" />
     <Compile Include="Model\Category.cs" />
     <Compile Include="Model\Document.cs" />
+    <Compile Include="Model\IDocument.cs" />
+    <Compile Include="Model\LicenseStatus.cs" />
     <Compile Include="Model\Photo.cs" />
+    <Compile Include="Model\Serializable\Document.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Collection\SortedObservableCollection.cs" />
+    <Compile Include="TemporaryState.cs" />
     <Compile Include="ViewModel\DocumentViewModel.cs" />
     <Compile Include="ViewModel\EditDocumentViewModel.cs" />
     <Compile Include="ViewModel\SearchViewModel.cs" />
@@ -73,12 +80,20 @@
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\packages\Portable.CommonServiceLocator.1.2.2\lib\portable-net4+sl4+wp7+win8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
+    <Reference Include="System.IO.Compression">
+      <HintPath>..\packages\Microsoft.Bcl.Compression.3.9.69\lib\portable-net45+win8+wp8\System.IO.Compression.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.10\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.10\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.10\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.10\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
   <!--<Import Project="..\packages\Microsoft.Bcl.Build.1.0.7\tools\Microsoft.Bcl.Build.targets" />-->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

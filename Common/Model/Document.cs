@@ -1,219 +1,158 @@
 ﻿using GalaSoft.MvvmLight;
+using MyDocs.Common.Contract.Storage;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace MyDocs.Common.Model
 {
-	public class Document : ObservableObject
-	{
-		private Guid id;
-		private string category;
-		private ObservableCollection<Photo> photos;
-		private ObservableCollection<string> tags;
-		private DateTime dateAdded;
-		private TimeSpan lifespan;
-		private bool hasLimitedLifespan;
+    [DebuggerDisplay("{Id} - {Category}")]
+    public class Document : ObservableObject, IDocument
+    {
+        private Guid id;
+        private string category;
+        private ObservableCollection<Photo> photos;
+        private ObservableCollection<string> tags;
+        private DateTime dateAdded;
+        private TimeSpan lifespan;
+        private bool hasLimitedLifespan;
 
-		public Guid Id
-		{
-			get { return id; }
-			set
-			{
-				if (id != value) {
-					id = value;
-					RaisePropertyChanged(() => Id);
-				}
-			}
-		}
+        public Guid Id
+        {
+            get { return id; }
+            private set { Set(ref id, value); }
+        }
 
-		public string Category
-		{
-			get { return category; }
-			set
-			{
-				if (category != value) {
-					category = value;
-					RaisePropertyChanged(() => Category);
-				}
-			}
-		}
+        public string Category
+        {
+            get { return category; }
+            set { Set(ref category, value); }
+        }
 
-		public ObservableCollection<Photo> Photos
-		{
-			get { return photos; }
-			set
-			{
-				if (photos != value) {
-					photos = value;
-					RaisePropertyChanged(() => Photos);
-				}
-			}
-		}
+        public ObservableCollection<Photo> Photos
+        {
+            get { return photos; }
+            private set { Set(ref photos, value); }
+        }
 
-		public Photo TitlePhoto
-		{
-			get
-			{
-				return Photos.FirstOrDefault();
-			}
-		}
+        public IEnumerable<Photo> Previews
+        {
+            get
+            {
+                foreach (var photo in photos) {
+                    if (photo.Previews.Any()) {
+                        foreach (var preview in photo.Previews) {
+                            yield return new Photo(photo.Title, preview);
+                        }
+                    }
+                    else {
+                        yield return new Photo(photo.Title, photo.File);
+                    }
+                }
+            }
+        }
 
-		public ObservableCollection<string> Tags
-		{
-			get { return tags; }
-			set
-			{
-				if (tags != value) {
-					tags = value;
-					RaisePropertyChanged(() => Tags);
-					RaisePropertyChanged(() => TagsString);
-				}
-			}
-		}
+        public Photo TitlePhoto
+        {
+            get { return Photos.FirstOrDefault(); }
+        }
 
-		public DateTime DateAdded
-		{
-			get { return dateAdded; }
-			set
-			{
-				if (dateAdded != value) {
-					dateAdded = value;
-					RaisePropertyChanged(() => DateAdded);
-				}
-			}
-		}
+        public ObservableCollection<string> Tags
+        {
+            get { return tags; }
+            set
+            {
+                if (Set(ref tags, value)) {
+                    RaisePropertyChanged(() => TagsString);
+                }
+            }
+        }
 
-		public TimeSpan Lifespan
-		{
-			get { return lifespan; }
-			set
-			{
-				if (lifespan != value) {
-					lifespan = value;
-					RaisePropertyChanged(() => Lifespan);
-					RaisePropertyChanged(() => DateRemoved);
-					RaisePropertyChanged(() => DateRemovedDay);
-					RaisePropertyChanged(() => DateRemovedMonth);
-					RaisePropertyChanged(() => DateRemovedYear);
-					RaisePropertyChanged(() => DaysToRemoval);
-				}
-			}
-		}
+        public DateTime DateAdded
+        {
+            get { return dateAdded; }
+            set { Set(ref dateAdded, value); }
+        }
 
-		public bool HasLimitedLifespan
-		{
-			get { return hasLimitedLifespan; }
-			set
-			{
-				if (hasLimitedLifespan != value) {
-					hasLimitedLifespan = value;
-					RaisePropertyChanged(() => HasLimitedLifespan);
-					RaisePropertyChanged(() => HasInfiniteLifespan);
-				}
-			}
-		}
+        public TimeSpan Lifespan
+        {
+            get { return lifespan; }
+            set
+            {
+                if (Set(ref lifespan, value)) {
+                    RaisePropertyChanged(() => DateRemoved);
+                    RaisePropertyChanged(() => DaysToRemoval);
+                }
+            }
+        }
 
-		public bool HasInfiniteLifespan
-		{
-			get { return !HasLimitedLifespan; }
-			set { HasLimitedLifespan = !value; }
-		}
+        public bool HasLimitedLifespan
+        {
+            get { return hasLimitedLifespan; }
+            set { Set(ref hasLimitedLifespan, value); }
+        }
 
-		public string TagsString
-		{
-			get { return String.Join(", ", Tags); }
-			set
-			{
-				string[] tags = value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-				Tags = new ObservableCollection<string>(tags.Select(tag => tag.Trim()));
-				RaisePropertyChanged(() => TagsString);
-			}
-		}
+        public string TagsString
+        {
+            get { return String.Join(", ", Tags); }
+            set
+            {
+                string[] tags = value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                Tags = new ObservableCollection<string>(tags.Select(tag => tag.Trim()));
+            }
+        }
 
-		public DateTime DateRemoved
-		{
-			get { return DateAdded.Add(Lifespan).Date; }
-			set { Lifespan = value.Subtract(DateAdded); }
-		}
+        public DateTime DateRemoved
+        {
+            get { return DateAdded.Add(Lifespan).Date; }
+            set { Lifespan = value.Subtract(DateAdded); }
+        }
 
-		public int DateRemovedDay
-		{
-			get { return DateRemoved.Day; }
-			set
-			{
-				int day = Math.Min(DateTime.DaysInMonth(DateRemoved.Year, DateRemoved.Month), value);
-				DateRemoved = new DateTime(DateRemoved.Year, DateRemoved.Month, day);
-			}
-		}
+        public int DaysToRemoval
+        {
+            get { return Convert.ToInt32(DateRemoved.Subtract(DateTime.Today).TotalDays); }
+        }
 
-		public int DateRemovedMonth
-		{
-			get { return DateRemoved.Month; }
-			set
-			{
-				int day = Math.Min(DateTime.DaysInMonth(DateRemoved.Year, value), DateRemoved.Day);
-				DateRemoved = new DateTime(DateRemoved.Year, value, day);
-			}
-		}
+        public Document()
+        {
+            Id = Guid.NewGuid();
+            DateAdded = DateTime.Today.AddDays(1);
+            Lifespan = DateTime.Today.AddYears(2).Subtract(DateTime.Today);
+            HasLimitedLifespan = true;
+            Tags = new ObservableCollection<string>();
+            Photos = new ObservableCollection<Photo>();
+        }
 
-		public int DateRemovedYear
-		{
-			get { return DateRemoved.Year; }
-			set
-			{
-				int day = Math.Min(DateTime.DaysInMonth(value, DateRemoved.Month), DateRemoved.Day);
-				DateRemoved = new DateTime(value, DateRemoved.Month, day);
-			}
-		}
+        public Document(
+            Guid id,
+            string category,
+            DateTime dateAdded,
+            TimeSpan lifespan,
+            bool hasLimitedLifespan,
+            IEnumerable<string> tags,
+            IEnumerable<Photo> photos = null)
+        {
+            Id = id;
+            Category = category;
+            DateAdded = dateAdded;
+            Lifespan = lifespan;
+            HasLimitedLifespan = hasLimitedLifespan;
+            Tags = tags as ObservableCollection<string> ?? new ObservableCollection<string>(tags);
 
-		public int DaysToRemoval
-		{
-			get
-			{
-				return Convert.ToInt32(DateRemoved.Subtract(DateTime.Today).TotalDays);
-			}
-		}
+            if (photos != null) {
+                Photos = photos as ObservableCollection<Photo> ?? new ObservableCollection<Photo>(photos);
+            }
+            else {
+                Photos = new ObservableCollection<Photo>();
+            }
+        }
 
-		public Document()
-		{
-			Id = Guid.NewGuid();
-			DateAdded = DateTime.Today.AddDays(1);
-			Lifespan = DateTime.Today.AddYears(2).Subtract(DateTime.Today);
-			HasLimitedLifespan = true;
-			Tags = new ObservableCollection<string>();
-			Photos = new ObservableCollection<Photo>();
-		}
-
-		public Document(
-			Guid id,
-			string category,
-			DateTime dateAdded,
-			TimeSpan lifespan,
-			bool hasLimitedLifespan,
-			IEnumerable<string> tags,
-			IEnumerable<Photo> photos = null
-			)
-		{
-			Id = id;
-			Category = category;
-			DateAdded = dateAdded;
-			Lifespan = lifespan;
-			HasLimitedLifespan = hasLimitedLifespan;
-			Tags = new ObservableCollection<string>(tags);
-
-			if (photos != null) {
-				Photos = new ObservableCollection<Photo>(photos);
-			}
-			else {
-				Photos = new ObservableCollection<Photo>();
-			}
-		}
-
-		public Document Clone()
-		{
-			return new Document(id, category, dateAdded, lifespan, hasLimitedLifespan, tags, photos);
-		}
-	}
+        public Document Clone()
+        {
+            return new Document(id, category, dateAdded, lifespan, hasLimitedLifespan, tags, new ObservableCollection<Photo>(photos));
+        }
+    }
 }

@@ -1,70 +1,40 @@
 ﻿using GalaSoft.MvvmLight;
-using MyDocs.Common.Collection;
-using MyDocs.Common.Comparer;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace MyDocs.Common.Model
 {
-	public class Category : ObservableObject
-	{
-		private string name;
-		private SortedObservableCollection<Document> documents;
+    public class Category : ObservableObject
+    {
+        private string name;
+        private IEnumerable<IDocument> documents;
 
-		public string Name
-		{
-			get { return name; }
-			set
-			{
-				if (name != value) {
-					name = value;
-					RaisePropertyChanged(() => Name);
-				}
-			}
-		}
+        public string Name
+        {
+            get { return name; }
+            set { Set(ref name, value); }
+        }
 
-		public SortedObservableCollection<Document> Documents
-		{
-			get { return documents; }
-			set
-			{
-				if (documents != value) {
-					documents = value;
-					RaisePropertyChanged(() => Documents);
-					RaisePropertyChanged(() => CountDocuments);
-				}
-			}
-		}
+        public IEnumerable<IDocument> Documents
+        {
+            get { return documents; }
+            private set { Set(ref documents, value); }
+        }
 
-		public int CountDocuments
-		{
-			get
-			{
-				return Documents.Count(d => !(d is AdDocument));
-			}
-		}
+        public int CountDocuments
+        {
+            get { return Documents.OfType<Document>().Count(); }
+        }
 
-		public Photo TitlePhoto
-		{
-			get
-			{
-				Document doc = Documents.FirstOrDefault(d => !(d is AdDocument));
-				if (doc != null) {
-					return doc.TitlePhoto;
-				}
-				return null;
-			}
-		}
+        public Photo TitlePhoto
+        {
+            get { return Documents.OfType<Document>().First().TitlePhoto; }
+        }
 
-		public Category(string name, IEnumerable<Document> documents = null)
-		{
-			Name = name;
-			if (documents != null) {
-				Documents = new SortedObservableCollection<Document>(documents, new DocumentComparer());
-			}
-			else {
-				Documents = new SortedObservableCollection<Document>(new DocumentComparer());
-			}
-		}
-	}
+        public Category(string name, IEnumerable<IDocument> documents = null)
+        {
+            Name = name;
+            Documents = documents;
+        }
+    }
 }

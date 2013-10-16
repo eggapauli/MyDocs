@@ -8,21 +8,22 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d">
 
-	<Application.Resources>
-		<ResourceDictionary>
+    <Application.Resources>
+        <ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
 				<ResourceDictionary Source="Common/Styles.xaml"/>
-				<ResourceDictionary Source="Common/StandardStyles.xaml"/>
-			</ResourceDictionary.MergedDictionaries>
-			
-			<x:String x:Key="AppName">My Docs</x:String>
-			
-			<vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
-			
-			<converter:BooleanNegationConverter x:Key="BooleanNegationConverter" />
-			<converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-			<converter:DateToStringConverter x:Key="DateToStringConverter" />
-			<converter:TranslationConverter x:Key="TranslationConverter" />
-		</ResourceDictionary>
-	</Application.Resources>
+            </ResourceDictionary.MergedDictionaries>
+
+            <x:String x:Key="AppName">My Docs</x:String>
+
+            <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
+
+            <converter:BooleanConverter x:Key="BooleanNegationConverter" TrueValue="False" FalseValue="True" />
+            <converter:BooleanConverter x:Key="BooleanToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
+            <converter:BooleanConverter x:Key="BooleanToNegatedVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+			<converter:DateTimeToDateTimeOffsetConverter x:Key="DateTimeToDateTimeOffsetConverter" />
+            <converter:DateToStringConverter x:Key="DateToStringConverter" />
+            <converter:TranslationConverter x:Key="TranslationConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>

@@ -6,25 +6,35 @@ using Windows.UI.Xaml.Controls;
 
 namespace MyDocs.WindowsStore.Service
 {
-	public class NavigationService : INavigationService
-	{
-		public void Navigate(Type interfaceType)
-		{
-			// TODO get type without creating an instance
-			var type = SimpleIoc.Default.GetInstance(interfaceType).GetType();
-			((Frame)Window.Current.Content).Navigate(type);
-		}
+    public class NavigationService : INavigationService
+    {
+        private Frame Frame
+        {
+            get { return (Frame)Window.Current.Content; }
+        }
 
-		public void Navigate(Type interfaceType, object parameter)
-		{
-			// TODO get type without creating an instance
-			var type = SimpleIoc.Default.GetInstance(interfaceType).GetType();
-			((Frame)Window.Current.Content).Navigate(type, parameter);
-		}
+        public bool CanGoBack
+        {
+            get { return Frame.CanGoBack; }
+        }
 
-		public void GoBack()
-		{
-			((Frame)Window.Current.Content).GoBack();
-		}
-	}
+        public void Navigate<T>()
+        {
+            // TODO get type without creating an instance
+            var type = SimpleIoc.Default.GetInstance<T>().GetType();
+            Frame.Navigate(type);
+        }
+
+        public void Navigate<T>(object parameter)
+        {
+            // TODO get type without creating an instance
+            var type = SimpleIoc.Default.GetInstance<T>().GetType();
+            Frame.Navigate(type, parameter);
+        }
+
+        public void GoBack()
+        {
+            Frame.GoBack();
+        }
+    }
 }

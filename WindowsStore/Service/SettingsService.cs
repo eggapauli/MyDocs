@@ -5,54 +5,48 @@ using Windows.Storage;
 
 namespace MyDocs.WindowsStore.Service
 {
-	public class SettingsService : ISettingsService
-	{
-		private enum FolderType { Local, Roaming }
-		private static readonly string syncEnabledKey = "isSyncEnabled";
+    public class SettingsService : ISettingsService
+    {
+        private enum FolderType { Local, Roaming }
+        private static readonly string syncEnabledKey = "isSyncEnabled";
 
-		public IFolder PhotoFolder
-		{
-			get
-			{
-				if (IsSyncEnabled) {
-					return new WindowsStoreFolder(ApplicationData.Current.RoamingFolder);
-				}
-				return new WindowsStoreFolder(ApplicationData.Current.LocalFolder);
-			}
-		}
+        private IFolder localFolder = new WindowsStoreFolder(ApplicationData.Current.LocalFolder);
+        private IFolder roamingFolder = new WindowsStoreFolder(ApplicationData.Current.RoamingFolder);
+        private IFolder tempFolder = new WindowsStoreFolder(ApplicationData.Current.TemporaryFolder);
 
-		public IApplicationDataContainer SettingsContainer
-		{
-			get
-			{
-				if (IsSyncEnabled) {
-					return new WindowsStoreApplicationDataContainer(ApplicationData.Current.RoamingSettings);
-				}
-				return new WindowsStoreApplicationDataContainer(ApplicationData.Current.LocalSettings);
-			}
-		}
+        private IApplicationDataContainer roamingSettings = new WindowsStoreApplicationDataContainer(ApplicationData.Current.RoamingSettings);
+        private IApplicationDataContainer localSettings = new WindowsStoreApplicationDataContainer(ApplicationData.Current.LocalSettings);
 
-		public bool IsSyncEnabled
-		{
-			get { return GetSetting(syncEnabledKey, false); }
-			set { SetSetting(syncEnabledKey, value); }
-		}
+        public IFolder PhotoFolder { get { return IsSyncEnabled ? roamingFolder : localFolder; } }
 
-		private T GetSetting<T>(string key, T defaultValue)
-		{
-			object value;
-			if (ApplicationData.Current.LocalSettings.Values.TryGetValue(key, out value)) {
-				return (T)value;
-			}
-			else if (ApplicationData.Current.RoamingSettings.Values.TryGetValue(key, out value)) {
-				return (T)value;
-			}
-			return defaultValue;
-		}
+        public IFolder TempFolder { get { return tempFolder; } }
 
-		private void SetSetting(string key, object value)
-		{
-			ApplicationData.Current.RoamingSettings.Values[key] = value;
-		}
-	}
+        public IApplicationDataContainer SettingsContainer { get { return IsSyncEnabled ? roamingSettings : localSettings; } }
+
+        public bool IsSyncEnabled
+        {
+            get { return GetSetting(syncEnabledKey, false); }
+            set { SetSetting(syncEnabledKey, value); }
+        }
+
+        private T GetSetting<T>(string key, T defaultValue)
+        {
+            object value;
+            if (ApplicationData.Current.LocalSettings.Values.TryGetValue(key, out value)) {
+                return (T)value;
+            }
+            else if (ApplicationData.Current.RoamingSettings.Values.TryGetValue(key, out value)) {
+                return (T)value;
+            }
+            return defaultValue;
+        }
+
+        private void SetSetting(string key, object value)
+        {
+            ApplicationData.Current.LocalSettings.Values[key] = value;
+            if (IsSyncEnabled) {
+                ApplicationData.Current.RoamingSettings.Values[key] = value;
+            }
+        }
+    }
 }
