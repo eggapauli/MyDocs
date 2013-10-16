@@ -13,6 +13,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
+using MyDocs.Common.Contract.Storage;
 
 namespace MyDocs.Common.ViewModel
 {
@@ -162,21 +163,11 @@ namespace MyDocs.Common.ViewModel
 
         public async Task LoadAsync(Guid? selectedDocumentId = null)
         {
-            bool error = false;
-            try {
-                using (new TemporaryState(() => IsLoading = true, () => IsLoading = false)) {
-                    await documentService.LoadDocumentsAsync();
-                    if (selectedDocumentId.HasValue) {
-                        SelectedDocument = await documentService.GetDocumentById(selectedDocumentId.Value);
-                    }
+            using (new TemporaryState(() => IsLoading = true, () => IsLoading = false)) {
+                await documentService.LoadDocumentsAsync();
+                if (selectedDocumentId.HasValue) {
+                    SelectedDocument = await documentService.GetDocumentById(selectedDocumentId.Value);
                 }
-            }
-            catch (Exception ex) {
-                error = true;
-            }
-
-            if (error) {
-                await uiService.ShowErrorAsync("loadDocumentsError");
             }
         }
 
@@ -371,13 +362,11 @@ namespace MyDocs.Common.ViewModel
             }
 
             var title = Path.GetFileNameWithoutExtension(fileName);
+            IEnumerable<IFile> pages = null;
             if (Path.GetExtension(photoFile.Name).Equals(".pdf", StringComparison.CurrentCultureIgnoreCase)) {
-                var pages = await pdfService.ExtractPages(photoFile);
-                return new Photo(title, photoFile, pages);
+                pages = await pdfService.ExtractPages(photoFile);
             }
-            else {
-                return new Photo(title, photoFile);
-            }
+            return new Photo(title, photoFile, pages);
         }
 
         #endregion

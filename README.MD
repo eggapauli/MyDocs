@@ -8,7 +8,7 @@ My Docs manages any kind of documents like bills, certificates or account statem
 * Store any number of photos for a document
 * Optionally set a point in time to automatically delete the document
 * Share your document with other apps (e.g. an e-mail client)
-* Export your documents to use it outside of My Docs
+* Export and import your documents to use it outside of My Docs
 
 ## Keywords
 * document
