@@ -19,7 +19,7 @@
     <RestorePackages>true</RestorePackages>
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
-    <AppxPackageDir>C:\Users\Johannes Egger\Desktop</AppxPackageDir>
+    <AppxPackageDir>C:\Users\Johannes\Desktop\</AppxPackageDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
