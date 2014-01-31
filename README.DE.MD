@@ -19,6 +19,8 @@ My Docs verwaltet Dokumente wie z.B. Rechnungen, Urkunden, Bankbelege usw. Fotog
 * rechnungen verwalten
  
 ## TODO
+* Kategorien verschachteln
+* Dokumente zoomen
 * Dokumente importieren
 * Dokumente ausdrucken
 * Einstellungen (Synchronisation mit anderen Geräten)
