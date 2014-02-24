@@ -192,7 +192,6 @@
   <data name="deleteCatError" xml:space="preserve">
     <value>The category couldn't be deleted.</value>
   </data>
-  </data>
   <data name="exportLocked" xml:space="preserve">
     <value>Exporting documents is still locked.</value>
   </data>
@@ -288,4 +287,5 @@
   </data>
   <data name="importError" xml:space="preserve">
     <value>An error occured while importing documents.</value>
+  </data>
 </root>

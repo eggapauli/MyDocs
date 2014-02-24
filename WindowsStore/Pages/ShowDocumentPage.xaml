@@ -96,7 +96,9 @@
         <FlipView Grid.RowSpan="2" ItemsSource="{Binding SelectedDocument.Previews}" UseTouchAnimationsForAllNavigation="True">
             <FlipView.ItemTemplate>
                 <DataTemplate>
-                    <controls:FilePreview File="{Binding}" FileSize="Big" ImageStretch="Uniform" />
+                    <ScrollViewer ZoomMode="Enabled" MinZoomFactor="0.7" MaxZoomFactor="2">
+                        <controls:FilePreview File="{Binding}" FileSize="Big" ImageStretch="Uniform" />
+                    </ScrollViewer>
                 </DataTemplate>
             </FlipView.ItemTemplate>
         </FlipView>
