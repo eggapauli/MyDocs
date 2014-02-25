@@ -87,17 +87,29 @@
         </AppBar>
     </Page.BottomAppBar>
 
-    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Name="mainGrid" Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="140" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <FlipView Grid.RowSpan="2" ItemsSource="{Binding SelectedDocument.Previews}" UseTouchAnimationsForAllNavigation="True">
+        <FlipView Grid.RowSpan="2"
+                  Name="imageFlipView"
+                  ItemsSource="{Binding SelectedDocument.Previews}"
+                  UseTouchAnimationsForAllNavigation="True"
+                  SelectionChanged="FlipView_SelectionChanged">
             <FlipView.ItemTemplate>
                 <DataTemplate>
-                    <ScrollViewer ZoomMode="Enabled" MinZoomFactor="0.7" MaxZoomFactor="2">
-                        <controls:FilePreview File="{Binding}" FileSize="Big" ImageStretch="Uniform" />
+                    <ScrollViewer ZoomMode="Enabled"
+                                  MinZoomFactor="0.7"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto">
+                        <controls:FilePreview File="{Binding}"
+                                              FileSize="Big"
+                                              ImageStretch="Uniform"
+                                              Width="{Binding ActualWidth, ElementName=mainGrid}"
+                                              Height="{Binding ActualHeight, ElementName=mainGrid}"
+                                              Background="Red"/>
                     </ScrollViewer>
                 </DataTemplate>
             </FlipView.ItemTemplate>
