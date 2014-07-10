@@ -41,10 +41,10 @@ namespace MyDocs.WindowsStore.Pages
             var document = ((Document)ViewModel.SelectedDocument);
             string fileTitle = document.TagsString;
 
-            DataPackage data = args.Request.Data;
+            var data = args.Request.Data;
             data.Properties.Title = fileTitle;
 
-            DataRequestDeferral waiter = args.Request.GetDeferral();
+            var waiter = args.Request.GetDeferral();
 
             try {
                 var files = document.Photos.Select(p => p.File);
