@@ -81,12 +81,12 @@ namespace MyDocs.WindowsStore.Pages
                 .Where(container => container != null);
             foreach (var flipViewItem in flipViewItems) {
                 var scrollViewItem = VisualTreeHelperEx.GetChildren(flipViewItem).OfType<ScrollViewer>().First();
-                scrollViewItem.Width = e.Size.Width;
-                scrollViewItem.Height = e.Size.Height; // Reset width and height to match the new size
-                System.Diagnostics.Debug.WriteLine(scrollViewItem.Width);
-                System.Diagnostics.Debug.WriteLine(scrollViewItem.Height);
-                System.Diagnostics.Debug.WriteLine(e.Size);
                 scrollViewItem.ChangeView(0, 0, 1, true);
+
+                // TODO size should automatically adapt because of binding
+                var filePreview = VisualTreeHelperEx.GetChildren(flipViewItem).OfType<MyDocs.WindowsStore.Controls.FilePreview>().Single();
+                filePreview.Width = e.Size.Width;
+                filePreview.Height = e.Size.Height;
             }
         }
 
