@@ -358,8 +358,21 @@
   <AccountPackageIdentityNames />
   <PackageInfoList LandingUrl="https://appdev.microsoft.com:443/StorePortals/Developer/Catalog/ReleaseAnchor/36ab3ae9-1d0a-4d9b-8a68-ba059076e2ec">
     <PackageInfo>
+      <OsMinVersion>6.2.1.0</OsMinVersion>
       <PackageArchitecture>neutral</PackageArchitecture>
       <PackageMaxArchitectureVersion>1.2.0.7</PackageMaxArchitectureVersion>
     </PackageInfo>
+    <BundleInfo>
+      <PackageInfo>
+        <OsMinVersion>6.3.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>2.0.0.13</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>6.3.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>2.0.0.13</PackageMaxArchitectureVersion>
+      </PackageInfo>
+    </BundleInfo>
   </PackageInfoList>
 </StoreAssociation>

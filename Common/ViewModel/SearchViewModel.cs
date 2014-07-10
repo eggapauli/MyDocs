@@ -137,13 +137,16 @@ namespace MyDocs.Common.ViewModel
 
         public async Task RefreshResults()
         {
-            var searchWords = QueryText.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(w => w.Trim());
+            var searchWords = QueryText.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(w => w.Trim());
 
             await documentService.LoadDocumentsAsync();
 
             var docs = (from document in documentService.Documents
-                        from word in searchWords
-                        where document.Tags.Any(t => t.IndexOf(word, StringComparison.CurrentCultureIgnoreCase) >= 0)
+                        where searchWords.Any(word => 
+                            document.Tags.Any(t =>
+                                t.IndexOf(word, StringComparison.CurrentCultureIgnoreCase) >= 0
+                            )
+                        )
                         select document).ToList();
             foreach (var filter in Filters) {
                 IEnumerable<Document> results;

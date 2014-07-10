@@ -9,6 +9,8 @@ using System.Runtime.Serialization;
 
 namespace MyDocs.Common.Model
 {
+    #pragma warning disable 0659 // GetHashCode not needed, because documents are not stored in dictionaries
+
     [DebuggerDisplay("{Id} - {Category}")]
     public class Document : ObservableObject, IDocument
     {
@@ -148,6 +150,16 @@ namespace MyDocs.Common.Model
             else {
                 Photos = new ObservableCollection<Photo>();
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as Document;
+            if (other == null) {
+                return false;
+            }
+
+            return this.Id.Equals(other.Id);
         }
 
         public Document Clone()
