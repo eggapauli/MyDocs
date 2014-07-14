@@ -15,17 +15,31 @@ namespace Common.Test.Search
     public class SearchViewModelTest
     {
         [TestMethod]
-        public async Task RefreshResults_SpaceDelimitedStrings_Succeeds()
+        public async Task RefreshResults_SingleTag_ReturnsDocumentsWithTag()
         {
             var documents = MakeTestDocuments().ToList();
-            var expected = documents.First();
+            var expected = documents.Take(2);
             var documentService = MakeDocumentService(documents);
             var sut = MakeSut(documentService);
-            sut.QueryText = "tag1 tag2";
+            sut.QueryText = "tag2";
 
             await sut.RefreshResults();
 
-            Assert.IsTrue(sut.Results.Any(r => r.Equals(expected)));
+            CollectionAssert.AreEqual(expected.ToList(), sut.Results.ToList());
+        }
+
+        [TestMethod]
+        public async Task RefreshResults_MultipleTags_ReturnsDocumentsWhichHaveAllTags()
+        {
+            var documents = MakeTestDocuments().ToList();
+            var expected = documents.Take(2);
+            var documentService = MakeDocumentService(documents);
+            var sut = MakeSut(documentService);
+            sut.QueryText = "tag2 tag3";
+
+            await sut.RefreshResults();
+
+            CollectionAssert.AreEqual(expected.ToList(), sut.Results.ToList());
         }
 
         [TestMethod]
@@ -35,7 +49,7 @@ namespace Common.Test.Search
             var expected = documents.First();
             var documentService = MakeDocumentService(documents);
             var sut = MakeSut(documentService);
-            sut.QueryText = "tag1,tag2";
+            sut.QueryText = "tag1 tag2";
 
             await sut.RefreshResults();
 
@@ -45,14 +59,15 @@ namespace Common.Test.Search
         private IEnumerable<Document> MakeTestDocuments()
         {
             yield return new Document(Guid.NewGuid(), "testcategory", DateTime.Now, TimeSpan.FromDays(5), true, new[] { "tag1", "tag2", "tag3" });
-            yield return new Document(Guid.NewGuid(), "testcategory", DateTime.Now, TimeSpan.FromDays(5), true, new[] { "tag4", "tag5", "tag6" });
-            yield return new Document(Guid.NewGuid(), "testcategory", DateTime.Now, TimeSpan.FromDays(5), true, new[] { "tag7", "tag8", "tag9" });
+            yield return new Document(Guid.NewGuid(), "testcategory", DateTime.Now, TimeSpan.FromDays(5), true, new[] { "tag2", "tag3", "tag4" });
+            yield return new Document(Guid.NewGuid(), "testcategory", DateTime.Now, TimeSpan.FromDays(5), true, new[] { "tag3", "tag4", "tag5" });
         }
 
         private IDocumentService MakeDocumentService(IEnumerable<Document> documents)
         {
             var documentService = A.Fake<IDocumentService>();
             A.CallTo(() => documentService.Documents).Returns(new ObservableCollection<Document>(documents));
+            A.CallTo(() => documentService.GetCategoryNames()).Returns(new [] { "testcategory" });
             return documentService;
         }
 

@@ -142,7 +142,7 @@ namespace MyDocs.Common.ViewModel
             await documentService.LoadDocumentsAsync();
 
             var docs = (from document in documentService.Documents
-                        where searchWords.Any(word => 
+                        where searchWords.All(word => 
                             document.Tags.Any(t =>
                                 t.IndexOf(word, StringComparison.CurrentCultureIgnoreCase) >= 0
                             )
