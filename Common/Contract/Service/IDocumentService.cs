@@ -12,6 +12,7 @@ namespace MyDocs.Common.Contract.Service
         ObservableCollection<Document> Documents { get; }
         Task LoadDocumentsAsync();
         IEnumerable<string> GetCategoryNames();
+        IEnumerable<int> GetDistinctDocumentYears();
         Task RenameCategoryAsync(string oldName, string newName);
 
         Task<Document> GetDocumentById(Guid id);

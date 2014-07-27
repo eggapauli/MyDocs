@@ -19,9 +19,11 @@ namespace MyDocs.Common.ViewModel
         private ITranslatorService translatorService;
 
         private string queryText;
-        private IList<Filter> filters;
-        private IEnumerable<Document> results;
+        private Tuple<int?, string> filterYear;
+        private List<int> filterYears;
+        private List<Filter> filters;
         private bool isInDefaultLayout;
+        private Filter allFilter;
 
         public IEnumerable<string> CategoryNames
         {
@@ -34,34 +36,48 @@ namespace MyDocs.Common.ViewModel
             set { Set(ref queryText, value); }
         }
 
-        public IList<Filter> Filters
+        public IEnumerable<Filter> Filters
         {
-            get { return filters; }
-            set { Set(ref filters, value); }
-        }
-
-        public IEnumerable<Document> Results
-        {
-            get { return results; }
-            set
+            get
             {
-                if (Set(ref results, value)) {
-                    RaisePropertyChanged(() => HasResults);
-                    RaisePropertyChanged(() => ShowDefaultResults);
-                    RaisePropertyChanged(() => ShowTightResults);
-                    RaisePropertyChanged(() => ShowNoResultsText);
+                yield return allFilter;
+                foreach (var filter in filters) {
+                    yield return filter;
                 }
             }
         }
 
+        private Tuple<int?, string> allYears = Tuple.Create<int?, string>(null, "All");
+        public IEnumerable<Tuple<int?, string>> FilterYears
+        {
+            get
+            {
+                yield return allYears;
+                foreach (var year in documentService.GetDistinctDocumentYears()) {
+                    yield return Tuple.Create<int?, string>(year, year.ToString());
+                }
+            }
+        }
+
+        public Tuple<int?, string> FilterYear
+        {
+            get { return filterYear ?? FilterYears.First(); }
+            set { Set(ref filterYear, value); }
+        }
+
+        public IEnumerable<Document> Results
+        {
+            get { return Filters.Single(f => f.Active).FilteredDocuments; }
+        }
+
         public bool ShowFilters
         {
-            get { return Filters != null && Filters.Count > 1; }
+            get { return filters.Count > 1; }
         }
 
         public bool HasResults
         {
-            get { return Filters.Single(f => f.Active).Count > 0; }
+            get { return Filters.Single(f => f.Active).FilteredDocumentCount > 0; }
         }
 
         public bool IsInDefaultLayout
@@ -91,8 +107,22 @@ namespace MyDocs.Common.ViewModel
             this.navigationService = navigationService;
             this.translatorService = translatorService;
 
-            QueryText = "";
-            
+            QueryText = string.Empty;
+            filters = new List<Filter>();
+            filterYears = new List<int>();
+            allFilter = new Filter(translatorService.Translate("all"), _ => true, active: true);
+
+            this.PropertyChanged += async (s, e) => {
+                var propertyNames = new[] { "FilterYear" };
+                foreach (var name in propertyNames) {
+                    VerifyPropertyName(name);
+                }
+
+                if (propertyNames.Contains(e.PropertyName)) {
+                    await RefreshResults();
+                }
+            };
+
             CreateCommands();
             CreateDesignTimeData();
         }
@@ -114,25 +144,20 @@ namespace MyDocs.Common.ViewModel
         #endregion
 
         [Conditional("DEBUG")]
-        private void CreateDesignTimeData()
+        private async void CreateDesignTimeData()
         {
             if (IsInDesignMode) {
                 QueryText = "Tag 1";
-                Filters = new List<Filter> {
-                    new Filter(translatorService.Translate("all"), active: true, isAll: true)
-                };
-                var t = RefreshResults();
+                await RefreshResults();
             }
         }
 
         public void LoadFilters()
         {
-            Filters = new ObservableCollection<Filter> {
-                new Filter(translatorService.Translate("all"), active: true, isAll: true)
-            };
-            foreach (string categoryName in CategoryNames) {
-                Filters.Add(new SearchViewModel.Filter(categoryName));
-            }
+            filters.Clear();
+            var newFilters = CategoryNames.Select(categoryName => new SearchViewModel.Filter(categoryName, d => d.Category == categoryName));
+            filters.AddRange(newFilters);
+            RaisePropertyChanged(() => Filters);
         }
 
         public async Task RefreshResults()
@@ -142,68 +167,69 @@ namespace MyDocs.Common.ViewModel
             await documentService.LoadDocumentsAsync();
 
             var docs = (from document in documentService.Documents
-                        where searchWords.All(word => 
+                        where searchWords.All(word =>
                             document.Tags.Any(t =>
                                 t.IndexOf(word, StringComparison.CurrentCultureIgnoreCase) >= 0
                             )
                         )
+                        where !FilterYear.Item1.HasValue || document.DateAdded.Year == FilterYear.Item1.Value
                         select document).ToList();
             foreach (var filter in Filters) {
-                IEnumerable<Document> results;
-                if (filter.IsAll) {
-                    filter.Count = docs.Count;
-                    results = docs;
-                }
-                else {
-                    results = docs.Where(d => d.Category == filter.Name);
-                    filter.Count = results.Count();
-                }
-                if (filter.Active) {
-                    Results = results;
-                }
+                filter.Apply(docs);
             }
+
+            RaisePropertyChanged(() => Results);
+            RaisePropertyChanged(() => HasResults);
+            RaisePropertyChanged(() => ShowDefaultResults);
+            RaisePropertyChanged(() => ShowTightResults);
+            RaisePropertyChanged(() => ShowNoResultsText);
         }
 
         public class Filter : ObservableObject
         {
             private string name;
-            private int count;
+            private Func<Document, bool> applies;
+            private IEnumerable<Document> filteredDocuments;
             private bool active;
-            private bool isAll;
 
-            public Filter(string name, int count = 0, bool active = false, bool isAll = false)
+            public Filter(string name, Func<Document, bool> applies, bool active = false)
             {
-                Name = name;
-                Count = count;
-                Active = active;
-                IsAll = isAll;
+                this.name = name;
+                this.applies = applies;
+                this.active = active;
+
+                this.PropertyChanged += (s, e) => {
+                    var propertyNames = new[] { "Name", "FilteredDocuments" };
+                    foreach (var propertyName in propertyNames) {
+                        VerifyPropertyName(propertyName);
+                    }
+
+                    if (propertyNames.Contains(e.PropertyName)) {
+                        RaisePropertyChanged(() => Description);
+                    }
+                };
             }
 
-            public override String ToString()
+            public void Apply(IEnumerable<Document> documents)
             {
-                return Description;
+                FilteredDocuments = documents.Where(d => applies(d));
             }
 
             public string Name
             {
                 get { return name; }
-                set
-                {
-                    if (Set(ref name, value)) {
-                        RaisePropertyChanged(() => Description);
-                    }
-                }
+                set { Set(ref name, value); }
             }
 
-            public int Count
+            public IEnumerable<Document> FilteredDocuments
             {
-                get { return count; }
-                set
-                {
-                    if (Set(ref count, value)) {
-                        RaisePropertyChanged(() => Description);
-                    }
-                }
+                get { return filteredDocuments ?? Enumerable.Empty<Document>(); }
+                set { Set(ref filteredDocuments, value); }
+            }
+
+            public int FilteredDocumentCount
+            {
+                get { return filteredDocuments.Count(); }
             }
 
             public bool Active
@@ -212,16 +238,22 @@ namespace MyDocs.Common.ViewModel
                 set { Set(ref active, value); }
             }
 
-            public bool IsAll
-            {
-                get { return isAll; }
-                set { Set(ref isAll, value); }
-            }
-
             public String Description
             {
-                get { return String.Format("{0} ({1})", name, Count); }
+                get { return String.Format("{0} ({1})", name, FilteredDocumentCount); }
             }
+        }
+
+        public async Task SetActiveFilter(Filter filter)
+        {
+            foreach (var activeFilter in Filters.Where(f => f.Active)) {
+                activeFilter.Active = false;
+            }
+
+            filter = filter ?? Filters.First();
+            filter.Active = true;
+
+            await RefreshResults();
         }
     }
 }

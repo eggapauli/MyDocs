@@ -60,17 +60,7 @@ namespace MyDocs.WindowsStore.Pages
         /// <param name="e">Event data describing how the selected filter was changed.</param>
         private async void Filter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var removedFilters = e.RemovedItems.Select(item => (SearchViewModel.Filter)item);
-            foreach (var filter in removedFilters) {
-                filter.Active = false;
-            }
-
-            var selectedFilter = e.AddedItems.FirstOrDefault() as SearchViewModel.Filter;
-            if (selectedFilter != null) {
-                selectedFilter.Active = true;
-            }
-
-            await ViewModel.RefreshResults();
+            await ViewModel.SetActiveFilter(e.AddedItems.FirstOrDefault() as SearchViewModel.Filter);
         }
 
         /// <summary>

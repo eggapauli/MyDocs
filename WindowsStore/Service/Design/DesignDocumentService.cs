@@ -42,6 +42,11 @@ namespace MyDocs.WindowsStore.Service.Design
             return Enumerable.Range(1, 5).Select(i => "Category " + i);
         }
 
+        public IEnumerable<int> GetDistinctDocumentYears()
+        {
+            yield return DateTime.Today.Year;
+        }
+
         private IEnumerable<Document> CreateDocuments(IList<IFile> photos)
         {
             for (int i = 0; i < 4; i++) {

@@ -95,8 +95,10 @@ namespace MyDocs.WindowsStore.Pages
         {
             var flipView = (FlipView)sender;
             var flipViewItem = flipView.ContainerFromIndex(flipView.SelectedIndex);
-            var scrollViewItem = VisualTreeHelperEx.GetChildren(flipViewItem).OfType<ScrollViewer>().First();
-            scrollViewItem.ChangeView(0, 0, 1, true);
+            if (flipViewItem != null) {
+                var scrollViewItem = VisualTreeHelperEx.GetChildren(flipViewItem).OfType<ScrollViewer>().First();
+                scrollViewItem.ChangeView(0, 0, 1, true);
+            }
         }
     }
 }

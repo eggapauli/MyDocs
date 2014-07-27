@@ -107,12 +107,22 @@ namespace MyDocs.WindowsStore.Service
 
         public IEnumerable<string> GetCategoryNames()
         {
+            // TODO use distinct?
             return from obj in docsDataContainer.Values.Values
                    let item = obj as ApplicationDataCompositeValue
                    let categoryName = (string)(item["Category"])
                    group item by categoryName into category
                    orderby category.Key
                    select category.Key;
+        }
+
+        public IEnumerable<int> GetDistinctDocumentYears()
+        {
+            return (from obj in docsDataContainer.Values.Values
+                    let item = obj as ApplicationDataCompositeValue
+                    let yearAdded = ((DateTimeOffset)(item["DateAdded"])).Year
+                    orderby yearAdded
+                    select yearAdded).Distinct();
         }
 
         public async Task RenameCategoryAsync(string oldName, string newName)
