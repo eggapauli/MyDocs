@@ -72,12 +72,12 @@ namespace MyDocs.Common.ViewModel
 
         public bool ShowFilters
         {
-            get { return filters.Count > 1; }
+            get { return filters.Count > 0; }
         }
 
         public bool HasResults
         {
-            get { return Filters.Single(f => f.Active).FilteredDocumentCount > 0; }
+            get { return Filters.Single(f => f.Active).FilteredDocuments.Any(); }
         }
 
         public bool IsInDefaultLayout
@@ -155,9 +155,15 @@ namespace MyDocs.Common.ViewModel
         public void LoadFilters()
         {
             filters.Clear();
-            var newFilters = CategoryNames.Select(categoryName => new SearchViewModel.Filter(categoryName, d => d.Category == categoryName));
+            var newFilters = documentService.GetCategoryNames()
+                .Select(categoryName =>
+                    new SearchViewModel.Filter(categoryName, d => d.Category == categoryName));
             filters.AddRange(newFilters);
+
             RaisePropertyChanged(() => Filters);
+            RaisePropertyChanged(() => ShowFilters);
+            RaisePropertyChanged(() => HasResults);
+            RaisePropertyChanged(() => Results);
         }
 
         public async Task RefreshResults()
@@ -227,20 +233,15 @@ namespace MyDocs.Common.ViewModel
                 set { Set(ref filteredDocuments, value); }
             }
 
-            public int FilteredDocumentCount
-            {
-                get { return filteredDocuments.Count(); }
-            }
-
             public bool Active
             {
                 get { return active; }
                 set { Set(ref active, value); }
             }
 
-            public String Description
+            public string Description
             {
-                get { return String.Format("{0} ({1})", name, FilteredDocumentCount); }
+                get { return string.Format("{0} ({1})", name, FilteredDocuments.Count()); }
             }
         }
 

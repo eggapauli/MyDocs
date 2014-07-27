@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <StoreAssociation xmlns="http://schemas.microsoft.com/appx/2010/storeassociation">
   <Publisher>CN=5A8B3D00-8FD6-45C1-8434-44D01F6EBB40</Publisher>
-  <NamespacePrefix>33108JohannesEgger</NamespacePrefix>
   <PublisherDisplayName>Johannes Egger</PublisherDisplayName>
   <GeneratePackageHash>http://www.w3.org/2001/04/xmlenc#sha256</GeneratePackageHash>
   <SupportedLocales>
@@ -366,12 +365,12 @@
       <PackageInfo>
         <OsMinVersion>6.3.0.0</OsMinVersion>
         <PackageArchitecture>Neutral</PackageArchitecture>
-        <PackageMaxArchitectureVersion>2.0.0.13</PackageMaxArchitectureVersion>
+        <PackageMaxArchitectureVersion>2.0.1.18</PackageMaxArchitectureVersion>
       </PackageInfo>
       <PackageInfo>
         <OsMinVersion>6.3.0.0</OsMinVersion>
         <PackageArchitecture>Neutral</PackageArchitecture>
-        <PackageMaxArchitectureVersion>2.0.0.13</PackageMaxArchitectureVersion>
+        <PackageMaxArchitectureVersion>2.0.1.18</PackageMaxArchitectureVersion>
       </PackageInfo>
     </BundleInfo>
   </PackageInfoList>

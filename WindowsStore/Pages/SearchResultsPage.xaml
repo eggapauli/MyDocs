@@ -109,9 +109,9 @@
         </Grid>
 
         <StackPanel Grid.Row="1"
-                    Orientation="Horizontal">
-            <TextBlock Text="Year:"
-                       Margin="110 0 10 0" VerticalAlignment="Center" FontSize="15" />
+                    Orientation="Horizontal"
+                    Margin="120 0 10 0">
+            <TextBlock x:Uid="Search_Year" Text="Year:" VerticalAlignment="Center" Style="{StaticResource SubheaderTextBlockStyle}" Margin="0 0 20 0" />
             <ComboBox ItemsSource="{Binding FilterYears}"
                       SelectedItem="{Binding FilterYear, Mode=TwoWay}"
                       DisplayMemberPath="Item2"
@@ -123,10 +123,9 @@
                       Visibility="{Binding ShowFilters, Converter={StaticResource BooleanToVisibilityConverter}}"
                       HorizontalScrollBarVisibility="Auto"
                       VerticalScrollBarVisibility="Disabled"
-                      Margin="100,0">
+                      Margin="100 10 100 0">
             <ItemsControl x:Name="filtersItemsControl"
-                          ItemsSource="{Binding Source={StaticResource filtersViewSource}}"
-                          Margin="0 0 0 20">
+                          ItemsSource="{Binding Source={StaticResource filtersViewSource}}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" />
@@ -149,12 +148,12 @@
             </ItemsControl>
         </ScrollViewer>
 
-        <ComboBox Grid.Row="1"
+        <ComboBox Grid.Row="2"
                   x:Name="filtersComboBox"
                   ItemsSource="{Binding Source={StaticResource filtersViewSource}}"
                   SelectionChanged="Filter_SelectionChanged"
                   Visibility="Collapsed"
-                  Margin="50 0 50 20">
+                  Margin="50 10 50 0">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Description}" />
@@ -162,11 +161,11 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
             <GridView x:Name="resultsGridView"
                       AutomationProperties.AutomationId="ResultsGridView"
                       AutomationProperties.Name="Search Results"
-                      Margin="110,0,110,46"
+                      Margin="110,20,110,46"
                       TabIndex="1"
                       SelectionMode="None"
                       IsSwipeEnabled="false"
@@ -179,7 +178,7 @@
             <ListView x:Name="resultsListView"
                       AutomationProperties.AutomationId="ResultsListView"
                       AutomationProperties.Name="Search Results"
-                      Margin="50,0,50,46"
+                      Margin="50,20,50,46"
                       TabIndex="1"
                       SelectionMode="None"
                       IsSwipeEnabled="false"

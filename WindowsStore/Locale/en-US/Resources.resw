@@ -288,4 +288,7 @@
   <data name="importError" xml:space="preserve">
     <value>An error occured while importing documents.</value>
   </data>
+  <data name="Search_Year.Text" xml:space="preserve">
+    <value>Year:</value>
+  </data>
 </root>

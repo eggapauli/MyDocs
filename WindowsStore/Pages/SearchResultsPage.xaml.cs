@@ -18,6 +18,10 @@ namespace MyDocs.WindowsStore.Pages
         public SearchResultsPage()
         {
             this.InitializeComponent();
+
+            this.Loaded += async (s, e) => {
+                await ViewModel.RefreshResults();
+            };
         }
 
         public SearchViewModel ViewModel
