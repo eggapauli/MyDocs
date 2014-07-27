@@ -8,3 +8,6 @@ obj/
 *.suo
 Thumbs.db
 *.sdf
+
+/*.ncrunchsolution.user
+/_NCrunch_*
