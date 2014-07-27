@@ -347,7 +347,9 @@ namespace MyDocs.Common.ViewModel
 
         private async Task<Photo> DeserializePhotosAsync(ZipArchive archive, Serializable.Document document, string fileName)
         {
-            var path = Path.Combine(document.GetHumanReadableDescription(), fileName);
+            // Folders must be separated by "/", not by "\\"
+            //var path = Path.Combine(document.GetHumanReadableDescription(), fileName);
+            var path = document.GetHumanReadableDescription() + "/" + fileName;
             var dirEntry = archive.GetEntry(document.GetHumanReadableDescription());
             var entry = archive.GetEntry(path);
             if (entry == null) {
