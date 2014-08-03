@@ -12,9 +12,9 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>MyDocs_StoreKey.pfx</PackageCertificateKeyFile>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <PackageCertificateThumbprint>262A57619D859EA779356180D63EC04E20A4C2DF</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>WindowsStore_StoreKey.pfx</PackageCertificateKeyFile>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <PackageCertificateThumbprint>997D0576494F85E4135AB9AB38D2B301335CB238</PackageCertificateThumbprint>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
@@ -167,6 +167,8 @@
     <None Include="MyDocs_StoreKey.pfx" />
     <None Include="MyDocs_TemporaryKey.pfx" />
     <None Include="packages.config" />
+    <None Include="WindowsStore_StoreKey.pfx" />
+    <None Include="WindowsStore_TemporaryKey.pfx" />
     <PRIResource Include="Locale\de-DE\Resources.resw" />
     <PRIResource Include="Locale\en-US\Resources.resw" />
   </ItemGroup>
