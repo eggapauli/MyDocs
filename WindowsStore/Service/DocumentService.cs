@@ -15,40 +15,24 @@ namespace MyDocs.WindowsStore.Service
 {
     public class DocumentService : IDocumentService
     {
-        private ISettingsService settingsService;
+        private IPersistDocuments documentStorage;
         private INavigationService navigationService;
-        private IApplicationDataContainer docsDataContainer;
-
-        private readonly IFolder tempFolder = new WindowsStoreFolder(ApplicationData.Current.TemporaryFolder);
 
         public ObservableCollection<Document> Documents { get; private set; }
 
-        public DocumentService(ISettingsService settingsService, INavigationService navigationService)
+        public DocumentService(IPersistDocuments documentStorage, INavigationService navigationService)
         {
-            this.settingsService = settingsService;
+            this.documentStorage = documentStorage;
             this.navigationService = navigationService;
 
             Documents = new ObservableCollection<Document>();
 
-            docsDataContainer = settingsService.SettingsContainer.CreateContainer("docs");
+            documentStorage.Init();
         }
 
         private async Task ClearAllData()
         {
-            docsDataContainer.Values.Clear();
-
-            var folders = new[] {
-                ApplicationData.Current.LocalFolder,
-                ApplicationData.Current.RoamingFolder,
-                ApplicationData.Current.TemporaryFolder
-            };
-
-            foreach (var folder in folders) {
-                var files = await folder.GetFilesAsync();
-                foreach (var file in files) {
-                    await file.DeleteAsync();
-                }
-            }
+            await documentStorage.RemoveAllDocumentsAsync();
         }
 
         private async Task InsertTestData()
@@ -74,8 +58,8 @@ namespace MyDocs.WindowsStore.Service
             //await Task.Delay(2000);
             //categories.Clear();
 
-            foreach (var item in docsDataContainer.Values.Values.Cast<ApplicationDataCompositeValue>()) {
-                Documents.Add(await item.ConvertToDocumentAsync());
+            foreach (var item in await documentStorage.GetAllDocumentsAsync()) {
+                Documents.Add(item);
             }
 
             await RemoveOutdatedDocuments();
@@ -107,22 +91,12 @@ namespace MyDocs.WindowsStore.Service
 
         public IEnumerable<string> GetCategoryNames()
         {
-            // TODO use distinct?
-            return from obj in docsDataContainer.Values.Values
-                   let item = obj as ApplicationDataCompositeValue
-                   let categoryName = (string)(item["Category"])
-                   group item by categoryName into category
-                   orderby category.Key
-                   select category.Key;
+            return documentStorage.GetDistinctCategories();
         }
 
         public IEnumerable<int> GetDistinctDocumentYears()
         {
-            return (from obj in docsDataContainer.Values.Values
-                    let item = obj as ApplicationDataCompositeValue
-                    let yearAdded = ((DateTimeOffset)(item["DateAdded"])).Year
-                    orderby yearAdded
-                    select yearAdded).Distinct();
+            return documentStorage.GetDistinctDocumentYears();
         }
 
         public async Task RenameCategoryAsync(string oldName, string newName)
@@ -145,12 +119,7 @@ namespace MyDocs.WindowsStore.Service
 
         public async Task SaveDocumentAsync(Document document)
         {
-            foreach (var file in document.Photos.SelectMany(p => p.Files).Where(f => f.IsInFolder(tempFolder))) {
-                string name = Path.GetRandomFileName() + Path.GetExtension(file.Path);
-                await file.MoveAsync(settingsService.PhotoFolder, name);
-            }
-
-            docsDataContainer.Values[document.Id.ToString()] = document.ConvertToStoredDocument();
+            await documentStorage.SaveAsync(document);
 
             var existingDocument = Documents.SingleOrDefault(d => d.Id == document.Id);
             if (existingDocument != null) {
@@ -163,15 +132,13 @@ namespace MyDocs.WindowsStore.Service
         {
             await RemovePhotosAsync(document.Photos);
 
-            docsDataContainer.Values.Remove(document.Id.ToString());
+            documentStorage.Remove(document.Id.ToString());
             Documents.Remove(document);
         }
 
         public async Task RemovePhotosAsync(IEnumerable<Photo> photos)
         {
-            foreach (var file in photos.SelectMany(p => p.Files).Where(f => !f.IsInFolder(tempFolder))) {
-                await file.MoveAsync(tempFolder);
-            }
+            await documentStorage.RemovePhotosAsync(photos);
         }
     }
 }

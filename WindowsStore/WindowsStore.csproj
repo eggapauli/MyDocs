@@ -123,6 +123,7 @@
     </Compile>
     <Compile Include="Common\NavigationHelper.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
+    <Compile Include="Service\ApplicationDataContainerDocumentStorage.cs" />
     <Compile Include="Service\CameraService.cs" />
     <Compile Include="Service\FileSavePickerService.cs" />
     <Compile Include="Service\LicenseService.cs" />

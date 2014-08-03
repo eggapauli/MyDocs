@@ -45,6 +45,7 @@
     <Compile Include="Contract\Service\II18NService.cs" />
     <Compile Include="Contract\Service\ILicenseService.cs" />
     <Compile Include="Contract\Service\IPdfService.cs" />
+    <Compile Include="Contract\Service\IPersistDocuments.cs" />
     <Compile Include="Contract\Service\IUserInterfaceService.cs" />
     <Compile Include="Contract\Service\IDocumentService.cs" />
     <Compile Include="Contract\Service\INavigationService.cs" />

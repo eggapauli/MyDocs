@@ -16,71 +16,41 @@ namespace MyDocs.WindowsStore.ViewModel
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
-            if (!SimpleIoc.Default.IsRegistered<IDocumentService>()) {
-                if (ViewModelBase.IsInDesignModeStatic) {
-                    SimpleIoc.Default.Register<IDocumentService, DesignDocumentService>();
-                }
-                else {
-                    SimpleIoc.Default.Register<IDocumentService, DocumentService>();
-                }
+            if (ViewModelBase.IsInDesignModeStatic) {
+                Register<IDocumentService, DesignDocumentService>();
+            }
+            else {
+                Register<IDocumentService, DocumentService>();
             }
 
-            if (!SimpleIoc.Default.IsRegistered<INavigationService>()) {
-                SimpleIoc.Default.Register<INavigationService, NavigationService>();
-            }
-
-            if (!SimpleIoc.Default.IsRegistered<ISettingsService>()) {
-                SimpleIoc.Default.Register<ISettingsService, SettingsService>();
-            }
-
-            if (!SimpleIoc.Default.IsRegistered<IUserInterfaceService>()) {
-                SimpleIoc.Default.Register<IUserInterfaceService, ModernUIService>();
-            }
-
-            if (!SimpleIoc.Default.IsRegistered<ICameraService>()) {
-                SimpleIoc.Default.Register<ICameraService, CameraService>();
-            }
-
-            if (!SimpleIoc.Default.IsRegistered<IFileOpenPickerService>()) {
-                SimpleIoc.Default.Register<IFileOpenPickerService, FileOpenPickerService>();
-            }
-
-            if (!SimpleIoc.Default.IsRegistered<IFileSavePickerService>()) {
-                SimpleIoc.Default.Register<IFileSavePickerService, FileSavePickerService>();
-            }
-
-            if (!SimpleIoc.Default.IsRegistered<IPdfService>()) {
-                SimpleIoc.Default.Register<IPdfService, PdfService>();
-            }
-
-            if (!SimpleIoc.Default.IsRegistered<ITranslatorService>()) {
-                SimpleIoc.Default.Register<ITranslatorService, TranslatorService>();
-            }
-
-            if (!SimpleIoc.Default.IsRegistered<ILicenseService>()) {
-                SimpleIoc.Default.Register<ILicenseService, LicenseService>();
-            }
-
-            if (!SimpleIoc.Default.IsRegistered<IMainPage>()) {
-                SimpleIoc.Default.Register<IMainPage, MainPage>();
-            }
-
-            if (!SimpleIoc.Default.IsRegistered<IEditDocumentPage>()) {
-                SimpleIoc.Default.Register<IEditDocumentPage, EditDocumentPage>();
-            }
-
-            if (!SimpleIoc.Default.IsRegistered<IShowDocumentPage>()) {
-                SimpleIoc.Default.Register<IShowDocumentPage, ShowDocumentPage>();
-            }
-
-            if (!SimpleIoc.Default.IsRegistered<ISearchPage>()) {
-                SimpleIoc.Default.Register<ISearchPage, SearchResultsPage>();
-            }
+            Register<IPersistDocuments, ApplicationDataContainerDocumentStorage>();
+            Register<INavigationService, NavigationService>();
+            Register<ISettingsService, SettingsService>();
+            Register<IUserInterfaceService, ModernUIService>();
+            Register<ICameraService, CameraService>();
+            Register<IFileOpenPickerService, FileOpenPickerService>();
+            Register<IFileSavePickerService, FileSavePickerService>();
+            Register<IPdfService, PdfService>();
+            Register<ITranslatorService, TranslatorService>();
+            Register<ILicenseService, LicenseService>();
+            Register<IMainPage, MainPage>();
+            Register<IEditDocumentPage, EditDocumentPage>();
+            Register<IShowDocumentPage, ShowDocumentPage>();
+            Register<ISearchPage, SearchResultsPage>();
 
             SimpleIoc.Default.Register<DocumentViewModel>();
             SimpleIoc.Default.Register<EditDocumentViewModel>();
             SimpleIoc.Default.Register<SearchViewModel>();
             SimpleIoc.Default.Register<SettingsViewModel>();
+        }
+
+        private void Register<TInterface, TClass>()
+            where TInterface : class
+            where TClass : class
+        {
+            if (!SimpleIoc.Default.IsRegistered<TInterface>()) {
+                SimpleIoc.Default.Register<TInterface, TClass>();
+            }
         }
 
         public DocumentViewModel DocumentVM
