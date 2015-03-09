@@ -32,7 +32,7 @@ namespace MyDocs.Common.ViewModel
         private Document selectedDocument;
         private string newCategoryName;
         private bool inCategoryEditMode = false;
-        private bool inZoomedInView;
+        private bool inZoomedInView = true;
         private bool isLoading = false;
         private bool isBusy = false;
 
@@ -138,8 +138,6 @@ namespace MyDocs.Common.ViewModel
 
             CreateCommands();
             CreateDesignTimeData();
-
-            InZoomedInView = true;
         }
 
         [Conditional("DEBUG")]
