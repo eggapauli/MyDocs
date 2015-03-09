@@ -44,7 +44,15 @@ namespace MyDocs.Common.ViewModel
 
         public IEnumerable<Category> Categories
         {
-            get { return documentService.Documents.OrderBy(d => d.Category).ThenByDescending(d => d.DateAdded).ThenBy(d => d.Id).SelectMany(DocumentsAndAds).GroupBy(d => d.Category).Select(g => new Category(g.Key, g)); }
+            get {
+                return documentService.Documents
+                    .OrderBy(d => d.Category)
+                    .ThenByDescending(d => d.DateAdded)
+                    .ThenBy(d => d.Id)
+                    .SelectMany(DocumentsAndAds)
+                    .GroupBy(d => d.Category)
+                    .Select(g => new Category(g.Key, g));
+            }
         }
 
         public IEnumerable<IDocument> DocumentsAndAds(Document document, int index)
