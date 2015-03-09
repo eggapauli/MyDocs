@@ -291,4 +291,7 @@
   <data name="Search_Year.Text" xml:space="preserve">
     <value>Jahr:</value>
   </data>
+  <data name="exportError" xml:space="preserve">
+    <value>Beim Exportieren der Dokumente ist ein Fehler aufgetreten.</value>
+  </data>
 </root>

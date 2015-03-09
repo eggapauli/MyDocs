@@ -7,6 +7,8 @@ using MyDocs.Common.ViewModel;
 using MyDocs.WindowsStore.Pages;
 using MyDocs.WindowsStore.Service;
 using MyDocs.WindowsStore.Service.Design;
+using MyDocs.WindowsStore.Storage;
+using System;
 
 namespace MyDocs.WindowsStore.ViewModel
 {
@@ -30,7 +32,7 @@ namespace MyDocs.WindowsStore.ViewModel
             Register<ICameraService, CameraService>();
             Register<IFileOpenPickerService, FileOpenPickerService>();
             Register<IFileSavePickerService, FileSavePickerService>();
-            Register<IPdfService, PdfService>();
+            Register<IPageExtractor>(GetPageExtractor);
             Register<ITranslatorService, TranslatorService>();
             Register<ILicenseService, LicenseService>();
             Register<IMainPage, MainPage>();
@@ -51,6 +53,20 @@ namespace MyDocs.WindowsStore.ViewModel
             if (!SimpleIoc.Default.IsRegistered<TInterface>()) {
                 SimpleIoc.Default.Register<TInterface, TClass>();
             }
+        }
+
+        private void Register<TInterface>(Func<TInterface> factory)
+            where TInterface : class
+        {
+            if (!SimpleIoc.Default.IsRegistered<TInterface>()) {
+                SimpleIoc.Default.Register<TInterface>(factory);
+            }
+        }
+
+        private IPageExtractor GetPageExtractor()
+        {
+            return new PageExtractorList(
+                new IPageExtractor[] { new PdfPageExtractor() });
         }
 
         public DocumentViewModel DocumentVM

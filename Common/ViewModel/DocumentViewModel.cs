@@ -14,6 +14,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using MyDocs.Common.Contract.Storage;
+using System.Collections.ObjectModel;
 
 namespace MyDocs.Common.ViewModel
 {
@@ -23,11 +24,8 @@ namespace MyDocs.Common.ViewModel
         private readonly INavigationService navigationService;
         private readonly IUserInterfaceService uiService;
         private readonly ILicenseService licenseService;
-        private readonly IFileSavePickerService fileSavePickerService;
-        private readonly IFileOpenPickerService fileOpenPickerService;
-        private readonly ITranslatorService translatorService;
-        private readonly IPdfService pdfService;
-        private readonly ISettingsService settingsService;
+        private readonly IExportDocumentService exportDocumentService;
+        private readonly IImportDocumentService importDocumentService;
 
         #region Properties
 
@@ -122,21 +120,15 @@ namespace MyDocs.Common.ViewModel
             IUserInterfaceService uiService,
             INavigationService navigationService,
             ILicenseService licenseService,
-            IFileSavePickerService fileSavePickerService,
-            IFileOpenPickerService fileOpenPickerService,
-            ITranslatorService translatorService,
-            IPdfService pdfService,
-            ISettingsService settingsService)
+            IExportDocumentService exportDocumentService,
+            IImportDocumentService importDocumentService)
         {
             this.documentService = documentService;
             this.navigationService = navigationService;
             this.uiService = uiService;
             this.licenseService = licenseService;
-            this.fileSavePickerService = fileSavePickerService;
-            this.fileOpenPickerService = fileOpenPickerService;
-            this.translatorService = translatorService;
-            this.pdfService = pdfService;
-            this.settingsService = settingsService;
+            this.exportDocumentService = exportDocumentService;
+            this.importDocumentService = importDocumentService;
 
             documentService.Documents.CollectionChanged += (s, e) =>
             {
@@ -242,49 +234,28 @@ namespace MyDocs.Common.ViewModel
         private async void ExportDocumentsAsync()
         {
             using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
-                var status = await licenseService.TryGetLicenseAsync("ExportImportDocuments");
-                if (status == LicenseStatus.Unlocked) {
-                    var fileTypes = new Dictionary<string, IList<string>> {
-                        { translatorService.Translate("archive"), new List<string> { ".zip" } }
-                    };
-                    var savedFiles = new HashSet<string>();
-                    var zipFile = await fileSavePickerService.PickSaveFileAsync("MyDocs.zip", fileTypes);
-                    if (zipFile != null) {
-                        using (var zipFileStream = await zipFile.OpenWriteAsync())
-                        using (var archive = new ZipArchive(zipFileStream, ZipArchiveMode.Create)) {
-                            var metaInfoEntry = archive.CreateEntry("Documents.xml");
-                            using (var metaInfoStream = metaInfoEntry.Open()) {
-                                DataContractSerializer serializer = new DataContractSerializer(typeof(IEnumerable<Serializable.Document>), "Documents", "http://mydocs.eggapauli");
-                                var serializedDocuments = documentService.Documents.Select(d =>
-                                {
-                                    var files = d.Photos.Select(p => String.Format("{0}{1}", p.Title, Path.GetExtension(p.File.Name))).Distinct();
-                                    return new Serializable.Document(d.Id, d.Category, d.Tags, d.DateAdded, d.Lifespan, d.HasLimitedLifespan, files);
-                                });
-                                serializer.WriteObject(metaInfoStream, serializedDocuments);
-                            }
-
-                            foreach (var document in documentService.Documents) {
-                                foreach (var photo in document.Photos) {
-                                    var fileName = String.Format("{0}{1}", photo.Title, Path.GetExtension(photo.File.Name));
-                                    var path = Path.Combine(document.GetHumanReadableDescription(), fileName);
-                                    if (savedFiles.Add(path)) {
-                                        var entry = archive.CreateEntry(path);
-                                        using (var photoReader = await photo.File.OpenReadAsync())
-                                        using (var entryStream = entry.Open()) {
-                                            await photoReader.CopyToAsync(entryStream);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        await uiService.ShowNotificationAsync("exportFinished");
+                string error = null;
+                try {
+                    await licenseService.Unlock("ExportImportDocuments");
+                    await exportDocumentService.ExportDocuments(new ReadOnlyCollection<Document>(documentService.Documents));
+                }
+                catch (LicenseStatusException e) {
+                    if (e.LicenseStatus == LicenseStatus.Locked) {
+                        error = "exportLocked";
+                    }
+                    else if (e.LicenseStatus == LicenseStatus.Error) {
+                        error = "exportUnlockError";
                     }
                 }
-                else if (status == LicenseStatus.Locked) {
-                    await uiService.ShowErrorAsync("exportLocked");
+                catch (Exception) {
+                    // TODO refine errors
+                    error = "exportError";
                 }
-                else if (status == LicenseStatus.Error) {
-                    await uiService.ShowErrorAsync("exportUnlockError");
+                if (error != null) {
+                    await uiService.ShowErrorAsync(error);
+                }
+                else {
+                    await uiService.ShowNotificationAsync("exportFinished");
                 }
             }
         }
@@ -293,82 +264,33 @@ namespace MyDocs.Common.ViewModel
         private async void ImportDocumentsAsync()
         {
             using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
-                var status = await licenseService.TryGetLicenseAsync("ExportImportDocuments");
-                if (status == LicenseStatus.Unlocked) {
-                    var zipFile = await fileOpenPickerService.PickOpenFileAsync(new List<string> { ".zip" });
-                    if (zipFile == null) {
-                        return;
+                string error = null;
+                try {
+                    await licenseService.Unlock("ExportImportDocuments");
+                    await importDocumentService.ImportDocuments();
+                }
+                catch (LicenseStatusException e) {
+                    if (e.LicenseStatus == LicenseStatus.Locked) {
+                        error = "importLocked";
                     }
-                    bool error = false;
-                    try {
-                        using (var zipFileStream = await zipFile.OpenReadAsync())
-                        using (var archive = new ZipArchive(zipFileStream, ZipArchiveMode.Read)) {
-                            var metaInfoEntry = archive.GetEntry("Documents.xml");
-                            if (metaInfoEntry == null) {
-                                await uiService.ShowErrorAsync("documentDescriptionFileNotFound");
-                                return;
-                            }
-                            using (var metaInfoStream = metaInfoEntry.Open()) {
-                                DataContractSerializer serializer = new DataContractSerializer(typeof(IEnumerable<Serializable.Document>), "Documents", "http://mydocs.eggapauli");
-                                var serializedDocuments = (IEnumerable<Serializable.Document>)serializer.ReadObject(metaInfoStream);
-                                foreach (var serializedDocument in serializedDocuments) {
-                                    var document = await DeserializeDocumentAsync(archive, serializedDocument);
-                                    await documentService.SaveDocumentAsync(document);
-                                }
-                            }
-                        }
-                        await uiService.ShowNotificationAsync("importFinished");
-                    }
-                    catch (Exception ex) {
-                        // TODO see which exceptions could occur (when Documents.xml is invalid, photos not found, etc.)
-                        error = true;
-                    }
-                    if (error) {
-                        await uiService.ShowNotificationAsync("importError");
+                    else if (e.LicenseStatus == LicenseStatus.Error) {
+                        error = "importUnlockError";
                     }
                 }
-                else if (status == LicenseStatus.Locked) {
-                    await uiService.ShowErrorAsync("importLocked");
+                catch (ImportManifestNotFoundException) {
+                    error = "documentDescriptionFileNotFound";
                 }
-                else if (status == LicenseStatus.Error) {
-                    await uiService.ShowErrorAsync("importUnlockError");
+                catch (Exception) {
+                    // TODO refine errors
+                    error = "importError";
+                }
+                if (error != null) {
+                    await uiService.ShowErrorAsync(error);
+                }
+                else {
+                    await uiService.ShowNotificationAsync("importFinished");
                 }
             }
-        }
-
-        private async Task<Document> DeserializeDocumentAsync(ZipArchive archive, Serializable.Document document)
-        {
-            var photos = new List<Photo>();
-            foreach (var fileName in document.Files) {
-                photos.Add(await DeserializePhotosAsync(archive, document, fileName));
-            }
-            return new Document(document.Id, document.Category, document.DateAdded, document.Lifespan, document.HasLimitedLifespan, document.Tags, photos);
-        }
-
-        private async Task<Photo> DeserializePhotosAsync(ZipArchive archive, Serializable.Document document, string fileName)
-        {
-            // Folders must be separated by "/", not by "\\"
-            //var path = Path.Combine(document.GetHumanReadableDescription(), fileName);
-            var path = document.GetHumanReadableDescription() + "/" + fileName;
-            var dirEntry = archive.GetEntry(document.GetHumanReadableDescription());
-            var entry = archive.GetEntry(path);
-            if (entry == null) {
-                // TODO refine
-                throw new Exception("Entry no found.");
-            }
-            var photoFileName = String.Format("{0}{1}", Path.GetRandomFileName(), Path.GetExtension(fileName));
-            var photoFile = await settingsService.PhotoFolder.CreateFileAsync(photoFileName);
-            using (var entryStream = entry.Open())
-            using (var photoWriter = await photoFile.OpenWriteAsync()) {
-                await entryStream.CopyToAsync(photoWriter);
-            }
-
-            var title = Path.GetFileNameWithoutExtension(fileName);
-            IEnumerable<IFile> pages = null;
-            if (Path.GetExtension(photoFile.Name).Equals(".pdf", StringComparison.CurrentCultureIgnoreCase)) {
-                pages = await pdfService.ExtractPages(photoFile);
-            }
-            return new Photo(title, photoFile, pages);
         }
 
         #endregion

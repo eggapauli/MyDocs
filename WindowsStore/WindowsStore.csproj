@@ -125,10 +125,12 @@
     <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="Service\ApplicationDataContainerDocumentStorage.cs" />
     <Compile Include="Service\CameraService.cs" />
+    <Compile Include="Service\ExportDocumentService.cs" />
     <Compile Include="Service\FileSavePickerService.cs" />
+    <Compile Include="Service\ImportDocumentService.cs" />
     <Compile Include="Service\LicenseService.cs" />
     <Compile Include="Service\ModernUIService.cs" />
-    <Compile Include="Service\PdfService.cs" />
+    <Compile Include="Service\PdfPageExtractor.cs" />
     <Compile Include="Service\SettingsService.cs" />
     <Compile Include="Common\StorageExtension.cs" />
     <Compile Include="Pages\EditDocumentPage.xaml.cs">

@@ -9,6 +9,6 @@ namespace MyDocs.Common.Contract.Service
 {
     public interface ILicenseService
     {
-        Task<LicenseStatus> TryGetLicenseAsync(string featureName);
+        Task Unlock(string featureName);
     }
 }

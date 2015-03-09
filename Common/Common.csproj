@@ -40,10 +40,13 @@
     <Compile Include="Contract\Page\ISearchPage.cs" />
     <Compile Include="Contract\Page\IShowDocumentPage.cs" />
     <Compile Include="Contract\Service\ICameraService.cs" />
+    <Compile Include="Contract\Service\IExportDocumentService.cs" />
     <Compile Include="Contract\Service\IFileOpenPickerService.cs" />
     <Compile Include="Contract\Service\IFileSavePickerService.cs" />
     <Compile Include="Contract\Service\II18NService.cs" />
+    <Compile Include="Contract\Service\IImportDocumentService.cs" />
     <Compile Include="Contract\Service\ILicenseService.cs" />
+    <Compile Include="Contract\Service\IPageExtractor.cs" />
     <Compile Include="Contract\Service\IPdfService.cs" />
     <Compile Include="Contract\Service\IPersistDocuments.cs" />
     <Compile Include="Contract\Service\IUserInterfaceService.cs" />

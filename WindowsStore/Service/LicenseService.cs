@@ -12,21 +12,24 @@ namespace MyDocs.WindowsStore.Service
 {
     public class LicenseService : ILicenseService
     {
-        public async Task<LicenseStatus> TryGetLicenseAsync(string featureName)
+        public async Task Unlock(string featureName)
         {
             if (Global.LicenseInformation.ProductLicenses[featureName].IsActive) {
-                return LicenseStatus.Unlocked;
+                return;
             }
 
+            PurchaseResults result;
+            var errorMessage = string.Format("Feature {0} couldn't be unlocked.", featureName);
             try {
-                var result = await Global.RequestProductPurchaseAsync(featureName);
-                
-                return (result.Status == ProductPurchaseStatus.AlreadyPurchased)
-                    || (result.Status == ProductPurchaseStatus.Succeeded) ? LicenseStatus.Unlocked : LicenseStatus.Locked;
-                
+                result = await Global.RequestProductPurchaseAsync(featureName);
             }
-            catch (Exception) {
-                return LicenseStatus.Error;
+            catch (Exception e) {
+                throw new LicenseStatusException(errorMessage, LicenseStatus.Error, e);
+            }
+
+            if (result.Status != ProductPurchaseStatus.AlreadyPurchased &&
+                result.Status != ProductPurchaseStatus.Succeeded) {
+                    throw new LicenseStatusException(errorMessage, LicenseStatus.Locked);
             }
         }
     }
