@@ -12,7 +12,7 @@ namespace MyDocs.WindowsStore.Service
     {
         public async Task<Photo> CapturePhotoAsync()
         {
-            CameraCaptureUI camera = new CameraCaptureUI();
+            var camera = new CameraCaptureUI();
             var file = await camera.CaptureFileAsync(CameraCaptureUIMode.Photo);
             if (file == null) {
                 return null;
