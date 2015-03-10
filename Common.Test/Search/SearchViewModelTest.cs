@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Common.Test.Search
+namespace MyDocs.Common.Test.Search
 {
     [TestClass]
     public class SearchViewModelTest
