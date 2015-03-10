@@ -18,14 +18,16 @@ namespace MyDocs.WindowsStore.Service
         private IPersistDocuments documentStorage;
         private INavigationService navigationService;
 
-        public ObservableCollection<Document> Documents { get; private set; }
+        private readonly ObservableCollection<Document> documents = new ObservableCollection<Document>();
+        public ObservableCollection<Document> Documents
+        {
+            get { return documents; }
+        }
 
         public DocumentService(IPersistDocuments documentStorage, INavigationService navigationService)
         {
             this.documentStorage = documentStorage;
             this.navigationService = navigationService;
-
-            Documents = new ObservableCollection<Document>();
 
             documentStorage.Init();
         }
