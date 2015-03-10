@@ -43,7 +43,7 @@
     <Compile Include="Contract\Service\IExportDocumentService.cs" />
     <Compile Include="Contract\Service\IFileOpenPickerService.cs" />
     <Compile Include="Contract\Service\IFileSavePickerService.cs" />
-    <Compile Include="Contract\Service\II18NService.cs" />
+    <Compile Include="Contract\Service\ITranslatorService.cs" />
     <Compile Include="Contract\Service\IImportDocumentService.cs" />
     <Compile Include="Contract\Service\ILicenseService.cs" />
     <Compile Include="Contract\Service\IPageExtractor.cs" />
