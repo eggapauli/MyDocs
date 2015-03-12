@@ -25,16 +25,20 @@ namespace MyDocs.WindowsStore.ViewModel
                 Register<IDocumentService, DocumentService>();
             }
 
-            Register<IPersistDocuments, ApplicationDataContainerDocumentStorage>();
+            Register<IDocumentDb, ApplicationDataContainerDocumentStorage>();
             Register<INavigationService, NavigationService>();
             Register<ISettingsService, SettingsService>();
             Register<IUserInterfaceService, ModernUIService>();
             Register<ICameraService, CameraService>();
+            Register<IImportDocumentService, ImportDocumentService>();
             Register<IFileOpenPickerService, FileOpenPickerService>();
+            Register<IExportDocumentService, ExportDocumentService>();
             Register<IFileSavePickerService, FileSavePickerService>();
             Register<IPageExtractor>(GetPageExtractor);
             Register<ITranslatorService, TranslatorService>();
             Register<ILicenseService, LicenseService>();
+            Register<IPageExtractor, PdfPageExtractor>();
+
             Register<IMainPage, MainPage>();
             Register<IEditDocumentPage, EditDocumentPage>();
             Register<IShowDocumentPage, ShowDocumentPage>();

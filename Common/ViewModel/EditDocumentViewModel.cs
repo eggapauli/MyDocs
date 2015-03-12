@@ -21,7 +21,7 @@ namespace MyDocs.Common.ViewModel
         private readonly ICameraService cameraService;
         private readonly IFileOpenPickerService filePicker;
         private readonly ISettingsService settingsService;
-        private readonly IPdfService pdfService;
+        private readonly IPageExtractor pdfService;
 
         #region Properties
 
@@ -165,7 +165,7 @@ namespace MyDocs.Common.ViewModel
             ICameraService cameraService,
             IFileOpenPickerService filePicker,
             ISettingsService settingsService,
-            IPdfService pdfService)
+            IPageExtractor pdfService)
         {
             this.documentService = documentService;
             this.navigator = navigator;
@@ -185,9 +185,9 @@ namespace MyDocs.Common.ViewModel
         private void CreateDesignTimeData()
         {
             if (IsInDesignMode) {
-                documentService.LoadDocumentsAsync().ContinueWith(t =>
+                documentService.LoadAsync().ContinueWith(t =>
                 {
-                    EditingDocument = documentService.Documents.First();
+                    EditingDocument = t.Result.SelectMany(c => c.Documents).First();
                 }, TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
@@ -195,7 +195,7 @@ namespace MyDocs.Common.ViewModel
         public async Task LoadAsync()
         {
             using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
-                await documentService.LoadDocumentsAsync();
+                await documentService.LoadAsync();
             }
         }
 

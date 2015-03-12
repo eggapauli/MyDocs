@@ -9,6 +9,6 @@ namespace MyDocs.Common.Contract.Service
 {
     public interface IExportDocumentService
     {
-        Task ExportDocuments(IReadOnlyCollection<Document> documents);
+        Task ExportDocuments();
     }
 }

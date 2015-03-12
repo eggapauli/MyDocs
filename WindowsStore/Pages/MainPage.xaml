@@ -101,13 +101,25 @@
         </DataTemplate>-->
 
         <DataTemplate x:Key="CategoryTemplate">
-            <Grid HorizontalAlignment="Left" Width="250" Height="250">
+            <Grid HorizontalAlignment="Left"
+                  Width="250"
+                  Height="250">
                 <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
-                    <controls:FilePreview File="{Binding Group.TitlePhoto}" FileSize="Small" ImageStretch="UniformToFill" />
+                    <controls:FilePreview File="{Binding Group.TitlePhoto}"
+                                          FileSize="Small"
+                                          ImageStretch="UniformToFill" />
                 </Border>
-                <StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
-                    <TextBlock Text="{Binding Group.Name}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextBlockStyle}" Margin="15,0,15,20"/>
-                    <TextBlock Text="{Binding Group.CountDocuments, Converter={StaticResource TranslationConverter}, ConverterParameter='countDocumentsFormat'}" Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}" Style="{StaticResource CaptionTextBlockStyle}" TextWrapping="NoWrap" Margin="15,0,15,10" />
+                <StackPanel VerticalAlignment="Bottom"
+                            Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
+                    <TextBlock Text="{Binding Group.Name}"
+                               Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}"
+                               Style="{StaticResource TitleTextBlockStyle}"
+                               Margin="15,0,15,20" />
+                    <TextBlock Text="{Binding Group.CountDocuments, Converter={StaticResource TranslationConverter}, ConverterParameter='countDocumentsFormat'}"
+                               Foreground="{StaticResource ListViewItemOverlaySecondaryForegroundThemeBrush}"
+                               Style="{StaticResource CaptionTextBlockStyle}"
+                               TextWrapping="NoWrap"
+                               Margin="15,0,15,10" />
                 </StackPanel>
             </Grid>
         </DataTemplate>

@@ -4,6 +4,7 @@ using MyDocs.Common.Model;
 using MyDocs.WindowsStore.Storage;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,28 +14,20 @@ namespace MyDocs.WindowsStore.Service.Design
 {
     public class DesignDocumentService : IDocumentService
     {
-        private Random random = new Random();
-        
-        public ObservableCollection<Document> Documents { get; set; }
+        private readonly Random random = new Random();
 
-        public DesignDocumentService()
+        public async Task<ImmutableList<Category>> LoadAsync()
         {
-            Documents = new ObservableCollection<Document>();
-        }
-
-        public async Task LoadDocumentsAsync()
-        {
-            IList<IFile> photos;
+            var photos = new List<IFile>();
             try {
-                StorageFolder folder = await ApplicationData.Current.LocalFolder.GetFolderAsync("design");
-                photos = (await folder.GetFilesAsync()).Select<StorageFile, IFile>(f => new WindowsStoreFile(f)).ToList();
+                var folder = await ApplicationData.Current.LocalFolder.GetFolderAsync("design");
+                photos.AddRange((await folder.GetFilesAsync()).Select<StorageFile, IFile>(f => new WindowsStoreFile(f)));
             }
-            catch (Exception) {
-                photos = null;
-            }
-            foreach (var document in CreateDocuments(photos)) {
-                Documents.Add(document);
-            }
+            catch {}
+            return CreateDocuments(photos)
+                .GroupBy(d => d.Category)
+                .Select(g => new Category(g.Key, g))
+                .ToImmutableList();
         }
 
         public IEnumerable<string> GetCategoryNames()
@@ -77,6 +70,11 @@ namespace MyDocs.WindowsStore.Service.Design
             }
         }
 
+        public Task DeleteCategoryAsync(string categoryName)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task RenameCategoryAsync(string oldName, string newName)
         {
             throw new NotImplementedException();
@@ -101,5 +99,7 @@ namespace MyDocs.WindowsStore.Service.Design
         {
             throw new NotImplementedException();
         }
+
+        public event EventHandler Changed;
     }
 }

@@ -15,16 +15,18 @@ namespace MyDocs.WindowsStore.Service
 {
     public class ExportDocumentService : IExportDocumentService
     {
+        private readonly IDocumentDb documentDb;
         private readonly ITranslatorService translatorService;
         private readonly IFileSavePickerService fileSavePickerService;
 
-        public ExportDocumentService(ITranslatorService translatorService, IFileSavePickerService fileSavePickerService)
+        public ExportDocumentService(IDocumentDb documentDb, ITranslatorService translatorService, IFileSavePickerService fileSavePickerService)
         {
+            this.documentDb = documentDb;
             this.translatorService = translatorService;
             this.fileSavePickerService = fileSavePickerService;
         }
 
-        public async Task ExportDocuments(IReadOnlyCollection<Document> documents)
+        public async Task ExportDocuments()
         {
             var fileTypes = new Dictionary<string, IList<string>> {
                 { translatorService.Translate("archive"), new List<string> { ".zip" } }
@@ -34,6 +36,8 @@ namespace MyDocs.WindowsStore.Service
             if (zipFile == null) {
                 return;
             }
+
+            var documents = await documentDb.GetAllDocumentsAsync();
 
             using (var zipFileStream = await zipFile.OpenWriteAsync())
             using (var archive = new ZipArchive(zipFileStream, ZipArchiveMode.Create)) {

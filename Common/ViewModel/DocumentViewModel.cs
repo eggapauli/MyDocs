@@ -29,6 +29,7 @@ namespace MyDocs.Common.ViewModel
 
         #region Properties
 
+        private IList<Category> categories;
         private Document selectedDocument;
         private string newCategoryName;
         private bool inCategoryEditMode = false;
@@ -42,33 +43,18 @@ namespace MyDocs.Common.ViewModel
             set { Set(ref inZoomedInView, value); }
         }
 
-        public IEnumerable<Category> Categories
+        public IList<Category> Categories
         {
-            get {
-                return documentService.Documents
-                    .OrderBy(d => d.Category)
-                    .ThenByDescending(d => d.DateAdded)
-                    .ThenBy(d => d.Id)
-                    .SelectMany(DocumentsAndAds)
-                    .GroupBy(d => d.Category)
-                    .Select(g => new Category(g.Key, g));
-            }
-        }
-
-        public IEnumerable<IDocument> DocumentsAndAds(Document document, int index)
-        {
-            if (index > 0 && index % 5 == 0) {
-                yield return new AdDocument(document.Category);
-            }
-            yield return document;
+            get { return categories; }
+            set { Set(ref categories, value); }
         }
 
         public bool CategoriesEmpty
         {
-            get { return !IsBusy && documentService.Documents.Count == 0; }
+            get { return !IsBusy && categories.Count == 0; }
         }
 
-        public IDocument SelectedDocument
+        public Document SelectedDocument
         {
             get { return selectedDocument; }
             set
@@ -138,8 +124,10 @@ namespace MyDocs.Common.ViewModel
             this.exportDocumentService = exportDocumentService;
             this.importDocumentService = importDocumentService;
 
-            documentService.Documents.CollectionChanged += (s, e) =>
+            documentService.Changed += (s, e) =>
             {
+                // TODO check `e` and update collection
+
                 RaisePropertyChanged(() => Categories);
                 RaisePropertyChanged(() => CategoriesEmpty);
             };
@@ -152,9 +140,11 @@ namespace MyDocs.Common.ViewModel
         private void CreateDesignTimeData()
         {
             if (IsInDesignMode) {
-                documentService.LoadDocumentsAsync().ContinueWith(t =>
+                documentService.LoadAsync().ContinueWith(t =>
                 {
-                    SelectedDocument = documentService.Documents.First(d => d.Tags.Count > 2);
+                    SelectedDocument = t.Result
+                        .SelectMany(c => c.Documents)
+                        .First(d => d.Tags.Count > 2);
                 }, TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
@@ -162,7 +152,7 @@ namespace MyDocs.Common.ViewModel
         public async Task LoadAsync(Guid? selectedDocumentId = null)
         {
             using (new TemporaryState(() => IsLoading = true, () => IsLoading = false)) {
-                await documentService.LoadDocumentsAsync();
+                Categories = await documentService.LoadAsync();
                 if (selectedDocumentId.HasValue) {
                     SelectedDocument = await documentService.GetDocumentById(selectedDocumentId.Value);
                 }
@@ -231,9 +221,7 @@ namespace MyDocs.Common.ViewModel
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
             using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
-                foreach (var document in documentService.Documents.Where(d => d.Category == category.Name).ToList()) {
-                    await documentService.DeleteDocumentAsync(document);
-                }
+                await documentService.DeleteCategoryAsync(category.Name);
             }
         }
 
@@ -243,7 +231,7 @@ namespace MyDocs.Common.ViewModel
                 string error = null;
                 try {
                     await licenseService.Unlock("ExportImportDocuments");
-                    await exportDocumentService.ExportDocuments(new ReadOnlyCollection<Document>(documentService.Documents));
+                    await exportDocumentService.ExportDocuments();
                 }
                 catch (LicenseStatusException e) {
                     if (e.LicenseStatus == LicenseStatus.Locked) {

@@ -13,7 +13,7 @@ using Windows.Storage;
 
 namespace MyDocs.WindowsStore.Service
 {
-    public class ApplicationDataContainerDocumentStorage : IPersistDocuments
+    public class ApplicationDataContainerDocumentStorage : IDocumentDb
     {
         private static readonly string containerName = "docs";
 
@@ -52,6 +52,18 @@ namespace MyDocs.WindowsStore.Service
                 .Select(item => item.ConvertToDocumentAsync());
 
             return await Task.WhenAll(convertTasks);
+        }
+
+        public async Task<IEnumerable<Document>> GetDocuments(string categoryName)
+        {
+            var documents = await GetAllDocumentsAsync();
+            return documents.Where(d => d.Category == categoryName);
+        }
+
+        public async Task<Document> GetDocument(Guid id)
+        {
+            var documents = await GetAllDocumentsAsync();
+            return documents.SingleOrDefault(d => d.Id == id);
         }
 
         public IEnumerable<string> GetDistinctCategories()

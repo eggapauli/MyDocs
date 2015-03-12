@@ -170,9 +170,10 @@ namespace MyDocs.Common.ViewModel
         {
             var searchWords = QueryText.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(w => w.Trim());
 
-            await documentService.LoadDocumentsAsync();
+            await documentService.LoadAsync();
 
-            var docs = (from document in documentService.Documents
+            var docs = (from category in await documentService.LoadAsync()
+                        from document in category.Documents
                         where searchWords.All(word =>
                             document.Tags.Any(t =>
                                 t.IndexOf(word, StringComparison.CurrentCultureIgnoreCase) >= 0
