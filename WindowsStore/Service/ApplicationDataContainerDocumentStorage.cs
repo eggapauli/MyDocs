@@ -49,12 +49,9 @@ namespace MyDocs.WindowsStore.Service
         public async Task<IEnumerable<Document>> GetAllDocumentsAsync()
         {
             var convertTasks = docsDataContainer.Values.Values.Cast<ApplicationDataCompositeValue>()
-                .Select(item => item.ConvertToDocumentAsync())
-                .ToList();
+                .Select(item => item.ConvertToDocumentAsync());
 
-            await Task.WhenAll(convertTasks);
-
-            return convertTasks.Select(t => t.Result);
+            return await Task.WhenAll(convertTasks);
         }
 
         public IEnumerable<string> GetDistinctCategories()
