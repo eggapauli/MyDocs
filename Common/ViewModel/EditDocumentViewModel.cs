@@ -260,7 +260,7 @@ namespace MyDocs.Common.ViewModel
                 bool error = false;
                 foreach (var file in files) {
                     if (Path.GetExtension(file.Name).Equals(".pdf", StringComparison.CurrentCultureIgnoreCase)) {
-                        var copy = await file.CopyAsync(settingsService.TempFolder, Path.GetRandomFileName() + Path.GetExtension(file.Name));
+                        var copy = await file.CopyAsync(settingsService.TempFolder, Guid.NewGuid().ToString() + Path.GetExtension(file.Name));
 
                         try {
                             var pages = await pdfService.ExtractPages(copy);

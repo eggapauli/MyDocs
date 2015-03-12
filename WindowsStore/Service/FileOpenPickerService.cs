@@ -34,7 +34,7 @@ namespace MyDocs.WindowsStore.Service
 
             var copies = new List<IFile>();
             foreach (var file in files) {
-                var fileName = Path.GetRandomFileName() + Path.GetExtension(file.Name);
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.Name);
                 var copy = await file.CopyAsync(ApplicationData.Current.TemporaryFolder, fileName);
                 copies.Add(new WindowsStoreFile(copy));
             }

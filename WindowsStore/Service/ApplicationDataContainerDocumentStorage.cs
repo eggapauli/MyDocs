@@ -76,7 +76,7 @@ namespace MyDocs.WindowsStore.Service
         public async Task SaveAsync(Document document)
         {
             foreach (var file in document.Photos.SelectMany(p => p.Files).Where(f => f.IsInFolder(tempFolder))) {
-                string name = Path.GetRandomFileName() + Path.GetExtension(file.Path);
+                string name = Guid.NewGuid().ToString() + Path.GetExtension(file.Path);
                 await file.MoveAsync(settingsService.PhotoFolder, name);
             }
 
