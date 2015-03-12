@@ -20,7 +20,7 @@ namespace MyDocs.WindowsStore.Service
         private readonly ISettingsService settingsService;
         private readonly IFolder tempFolder = new WindowsStoreFolder(ApplicationData.Current.TemporaryFolder);
 
-        private IApplicationDataContainer docsDataContainer;
+        private readonly IApplicationDataContainer docsDataContainer;
 
         public ApplicationDataContainerDocumentStorage(ISettingsService settingsService)
         {
