@@ -7,7 +7,7 @@ namespace MyDocs.Common.Model
     public class Category : ObservableObject
     {
         private string name;
-        private IEnumerable<IDocument> documents;
+        private IEnumerable<Document> documents;
 
         public string Name
         {
@@ -15,7 +15,7 @@ namespace MyDocs.Common.Model
             set { Set(ref name, value); }
         }
 
-        public IEnumerable<IDocument> Documents
+        public IEnumerable<Document> Documents
         {
             get { return documents; }
             private set { Set(ref documents, value); }
@@ -31,7 +31,7 @@ namespace MyDocs.Common.Model
             get { return Documents.OfType<Document>().First().TitlePhoto; }
         }
 
-        public Category(string name, IEnumerable<IDocument> documents = null)
+        public Category(string name, IEnumerable<Document> documents = null)
         {
             Name = name;
             Documents = documents;

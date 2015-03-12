@@ -61,10 +61,8 @@
     <Compile Include="Contract\Storage\IFolder.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Messages\CloseFlyoutsMessage.cs" />
-    <Compile Include="Model\AdDocument.cs" />
     <Compile Include="Model\Category.cs" />
     <Compile Include="Model\Document.cs" />
-    <Compile Include="Model\IDocument.cs" />
     <Compile Include="Model\LicenseStatus.cs" />
     <Compile Include="Model\Photo.cs" />
     <Compile Include="Model\Serializable\Document.cs" />

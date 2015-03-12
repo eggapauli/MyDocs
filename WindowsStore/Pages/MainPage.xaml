@@ -112,48 +112,6 @@
             </Grid>
         </DataTemplate>
 
-        <DataTemplate x:Key="AdTemplateFinance250x250">
-            <UI:AdControl
-                Visibility="{Binding DataContext.InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=pageRoot}"
-                ApplicationId="13b9c6b5-4d40-4077-bf6c-118dcb076e40"
-                AdUnitId="126826"
-                HorizontalAlignment="Left"
-                Height="250"
-                Margin="0,0,0,0"
-                VerticalAlignment="Top"
-                Width="250"/>
-        </DataTemplate>
-
-        <!--<DataTemplate x:Key="AdTemplateShopping250x250">
-            <UI:AdControl
-                Visibility="{Binding DataContext.InZoomedInView, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=pageRoot}"
-                ApplicationId="13b9c6b5-4d40-4077-bf6c-118dcb076e40"
-                AdUnitId="126933"
-                HorizontalAlignment="Left"
-                Height="250"
-                Margin="0,0,0,0"
-                VerticalAlignment="Top"
-                Width="250"
-                IsPerformanceScrollingEnabled="True"/>
-        </DataTemplate>-->
-
-        <!--<DataTemplate x:Key="AdTemplate292x60">
-            <UI:AdControl
-                Visibility="{Binding DataContext.InZoomedOutView, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=pageRoot}"
-                ApplicationId="13b9c6b5-4d40-4077-bf6c-118dcb076e40"
-                AdUnitId="126881"
-                HorizontalAlignment="Left"
-                Height="60"
-                Margin="0,0,0,0"
-                VerticalAlignment="Top"
-                Width="292"
-                IsPerformanceScrollingEnabled="True"/>
-        </DataTemplate>-->
-
-        <common:DocumentTemplateSelector x:Key="DefaultDocumentTemplateSelector"
-                                         AdTemplate="{StaticResource AdTemplateFinance250x250}"
-                                         DocumentTemplate="{StaticResource DocumentTemplate}" />
-
         <DataTemplate x:Key="DefaultGroupStyleHeaderTemplate">
             <Grid x:Name="groupHeader" Width="250">
                 <Grid.RowDefinitions>
@@ -252,7 +210,7 @@
                               TabIndex="1"
                               Padding="116,0,116,20"
                               ItemsSource="{Binding Source={StaticResource groupedDocumentsViewSource}}"
-                              ItemTemplateSelector="{StaticResource DefaultDocumentTemplateSelector}"
+                              ItemTemplate="{StaticResource DocumentTemplate}"
                               IsItemClickEnabled="True"
                               ItemClick="OnDocumentClick"
                               SelectionMode="Single"
@@ -293,7 +251,7 @@
                               Margin="10,0,0,0"
                               Padding="10,0,0,60"
                               ItemsSource="{Binding Source={StaticResource groupedDocumentsViewSource}}"
-                              ItemTemplateSelector="{StaticResource DefaultDocumentTemplateSelector}"
+                              ItemTemplate="{StaticResource DocumentTemplate}"
                               IsItemClickEnabled="True"
                               ItemClick="OnDocumentClick"
                               SelectionMode="Single"

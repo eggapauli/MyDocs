@@ -12,7 +12,7 @@ namespace MyDocs.Common.Model
     #pragma warning disable 0659 // GetHashCode not needed, because documents are not stored in dictionaries
 
     [DebuggerDisplay("{Id} - {Category}")]
-    public class Document : ObservableObject, IDocument
+    public class Document : ObservableObject
     {
         private Guid id;
         private string category;
