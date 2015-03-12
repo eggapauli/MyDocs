@@ -25,10 +25,6 @@ namespace MyDocs.WindowsStore.Service
         public ApplicationDataContainerDocumentStorage(ISettingsService settingsService)
         {
             this.settingsService = settingsService;
-        }
-
-        public void Init()
-        {
             docsDataContainer = settingsService.SettingsContainer.CreateContainer(containerName);
         }
 

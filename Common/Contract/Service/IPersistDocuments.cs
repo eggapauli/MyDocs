@@ -9,8 +9,6 @@ namespace MyDocs.Common.Contract.Service
 {
     public interface IPersistDocuments
     {
-        void Init();
-
         Task RemoveAllDocumentsAsync();
 
         Task<IEnumerable<Document>> GetAllDocumentsAsync();

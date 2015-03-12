@@ -28,8 +28,6 @@ namespace MyDocs.WindowsStore.Service
         {
             this.documentStorage = documentStorage;
             this.navigationService = navigationService;
-
-            documentStorage.Init();
         }
 
         private async Task ClearAllData()
