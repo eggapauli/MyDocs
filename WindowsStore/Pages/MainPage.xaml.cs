@@ -31,7 +31,7 @@ namespace MyDocs.WindowsStore.Pages
             get { return (DocumentViewModel)DataContext; }
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
@@ -44,7 +44,9 @@ namespace MyDocs.WindowsStore.Pages
 
             RefreshLayout();
 
-            MigrationHelper.Migrate();
+            using (ViewModel.SetBusy()) {
+                await MigrationHelper.Migrate();
+            }
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
