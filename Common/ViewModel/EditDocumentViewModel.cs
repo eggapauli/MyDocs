@@ -194,7 +194,7 @@ namespace MyDocs.Common.ViewModel
 
         public async Task LoadAsync()
         {
-            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+            using (SetBusy()) {
                 await documentService.LoadAsync();
             }
         }
@@ -227,7 +227,7 @@ namespace MyDocs.Common.ViewModel
         {
             EditingDocument.Category = ShowNewCategoryInput ? NewCategoryName : UseCategoryName;
 
-            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+            using (SetBusy()) {
                 await documentService.SaveDocumentAsync(EditingDocument);
 
                 // Delete removed photos
@@ -256,8 +256,8 @@ namespace MyDocs.Common.ViewModel
         {
             var files = await filePicker.PickMultipleFilesAsync();
 
-            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
-                bool error = false;
+            using (SetBusy()) {
+                var error = false;
                 foreach (var file in files) {
                     if (Path.GetExtension(file.Name).Equals(".pdf", StringComparison.CurrentCultureIgnoreCase)) {
                         var copy = await file.CopyAsync(settingsService.TempFolder, Guid.NewGuid().ToString() + Path.GetExtension(file.Name));
@@ -287,5 +287,10 @@ namespace MyDocs.Common.ViewModel
         }
 
         #endregion
+
+        private IDisposable SetBusy()
+        {
+            return new TemporaryState(() => IsBusy = true, () => IsBusy = false);
+        }
     }
 }

@@ -201,7 +201,7 @@ namespace MyDocs.Common.ViewModel
         {
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
-            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+            using (SetBusy()) {
                 await documentService.DeleteDocumentAsync(selectedDocument);
             }
         }
@@ -210,7 +210,7 @@ namespace MyDocs.Common.ViewModel
         {
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
-            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+            using (SetBusy()) {
                 await documentService.RenameCategoryAsync(category.Name, newCategoryName);
             }
             NewCategoryName = null;
@@ -220,14 +220,14 @@ namespace MyDocs.Common.ViewModel
         {
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
-            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+            using (SetBusy()) {
                 await documentService.DeleteCategoryAsync(category.Name);
             }
         }
 
         private async void ExportDocumentsAsync()
         {
-            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+            using (SetBusy()) {
                 string error = null;
                 try {
                     await licenseService.Unlock("ExportImportDocuments");
@@ -257,7 +257,7 @@ namespace MyDocs.Common.ViewModel
         // TODO set options for import (overwrite existing documents, delete documents before importing, ...)
         private async void ImportDocumentsAsync()
         {
-            using (new TemporaryState(() => IsBusy = true, () => IsBusy = false)) {
+            using (SetBusy()) {
                 string error = null;
                 try {
                     await licenseService.Unlock("ExportImportDocuments");
@@ -285,6 +285,11 @@ namespace MyDocs.Common.ViewModel
                     await uiService.ShowNotificationAsync("importFinished");
                 }
             }
+        }
+
+        public IDisposable SetBusy()
+        {
+            return new TemporaryState(() => IsBusy = true, () => IsBusy = false);
         }
 
         #endregion
