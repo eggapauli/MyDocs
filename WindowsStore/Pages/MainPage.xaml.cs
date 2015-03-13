@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -42,6 +43,8 @@ namespace MyDocs.WindowsStore.Pages
             Messenger.Default.Register<CloseFlyoutsMessage>(this, m => CloseFlyouts());
 
             RefreshLayout();
+
+            MigrationHelper.Migrate();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
