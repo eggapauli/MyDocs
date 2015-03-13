@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -40,6 +41,12 @@ namespace MyDocs.Common.Model.Serializable
             Lifespan = lifespan;
             HasLimitedLifespan = hasLimitedLifespan;
             Files = files;
+        }
+
+        public static Document FromModel(Model.Document d)
+        {
+            var files = d.Photos.Select(p => p.File.Name);
+            return new Serializable.Document(d.Id, d.Category, d.Tags, d.DateAdded, d.Lifespan, d.HasLimitedLifespan, files);
         }
     }
 }

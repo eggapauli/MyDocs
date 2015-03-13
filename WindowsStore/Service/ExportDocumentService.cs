@@ -44,10 +44,7 @@ namespace MyDocs.WindowsStore.Service
                 var metaInfoEntry = archive.CreateEntry("Documents.xml");
                 using (var metaInfoStream = metaInfoEntry.Open()) {
                     var serializer = new DataContractSerializer(typeof(IEnumerable<Serializable.Document>)/*, "Documents", "http://mydocs.eggapauli"*/);
-                    var serializedDocuments = documents.Select(d => {
-                        var files = d.Photos.Select(p => p.Title + Path.GetExtension(p.File.Name)).Distinct();
-                        return new Serializable.Document(d.Id, d.Category, d.Tags, d.DateAdded, d.Lifespan, d.HasLimitedLifespan, files);
-                    });
+                    var serializedDocuments = documents.Select(Serializable.Document.FromModel);
                     serializer.WriteObject(metaInfoStream, serializedDocuments);
                 }
 
