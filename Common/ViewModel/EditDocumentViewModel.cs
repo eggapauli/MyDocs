@@ -114,8 +114,7 @@ namespace MyDocs.Common.ViewModel
             set
             {
                 EditingDocument = null;
-                documentService.GetDocumentById(value).ContinueWith(t =>
-                {
+                documentService.GetDocumentById(value).ContinueWith(t => {
                     if (t.IsFaulted) {
                         EditingDocument = new Document();
                         uiService.ShowErrorAsync("documentNotFound");
@@ -185,8 +184,7 @@ namespace MyDocs.Common.ViewModel
         private void CreateDesignTimeData()
         {
             if (IsInDesignMode) {
-                documentService.LoadAsync().ContinueWith(t =>
-                {
+                documentService.LoadAsync().ContinueWith(t => {
                     EditingDocument = t.Result.SelectMany(c => c.Documents).First();
                 }, TaskScheduler.FromCurrentSynchronizationContext());
             }
