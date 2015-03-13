@@ -18,7 +18,7 @@ namespace MyDocs.Common.Contract.Service
 
     public class PageExtractorList : IPageExtractor
     {
-        private readonly List<IPageExtractor> extractors;
+        private readonly IList<IPageExtractor> extractors;
 
         public PageExtractorList(IEnumerable<IPageExtractor> extractors)
         {
