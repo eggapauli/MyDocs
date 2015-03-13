@@ -82,13 +82,8 @@ namespace MyDocs.WindowsStore.Service
                     select yearAdded).Distinct();
         }
 
-        public async Task SaveAsync(Document document)
+        public void Save(Document document)
         {
-            foreach (var file in document.Photos.SelectMany(p => p.Files).Where(f => f.IsInFolder(tempFolder))) {
-                string name = Guid.NewGuid().ToString() + Path.GetExtension(file.Path);
-                await file.MoveAsync(settingsService.PhotoFolder, name);
-            }
-
             docsDataContainer.Values[document.Id.ToString()] = document.ConvertToStoredDocument();
         }
 

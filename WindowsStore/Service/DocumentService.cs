@@ -128,7 +128,8 @@ namespace MyDocs.WindowsStore.Service
 
         public async Task SaveDocumentAsync(Document document)
         {
-            await documentDb.SaveAsync(document);
+            documentDb.Save(document);
+            await Task.Yield();
 
             // TODO raise event
             //var existingDocument = Documents.SingleOrDefault(d => d.Id == document.Id);

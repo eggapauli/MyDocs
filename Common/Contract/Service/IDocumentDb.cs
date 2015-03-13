@@ -19,7 +19,7 @@ namespace MyDocs.Common.Contract.Service
 
         IEnumerable<int> GetDistinctDocumentYears();
 
-        Task SaveAsync(Document document);
+        void Save(Document document);
 
         void Remove(string documentId);
 
