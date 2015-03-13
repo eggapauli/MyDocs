@@ -16,13 +16,6 @@ namespace MyDocs.WindowsStore.Service
 {
     public class FileOpenPickerService : IFileOpenPickerService
     {
-        private IUserInterfaceService uiService;
-
-        public FileOpenPickerService(IUserInterfaceService uiService)
-        {
-            this.uiService = uiService;
-        }
-
         public async Task<IEnumerable<IFile>> PickFilesForDocumentAsync(Document document)
         {
             var filePicker = new FileOpenPicker();
