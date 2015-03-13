@@ -42,7 +42,7 @@ namespace MyDocs.WindowsStore.Service
                     throw new ImportManifestNotFoundException();
                 }
                 using (var metaInfoStream = metaInfoEntry.Open()) {
-                    var serializer = new DataContractSerializer(typeof(IEnumerable<Serializable.Document>), "Documents", "http://mydocs.eggapauli");
+                    var serializer = new DataContractSerializer(typeof(IEnumerable<Serializable.Document>)/*, "Documents", "http://mydocs.eggapauli"*/);
                     var serializedDocuments = (IEnumerable<Serializable.Document>)serializer.ReadObject(metaInfoStream);
                     foreach (var serializedDocument in serializedDocuments) {
                         var document = await DeserializeDocumentAsync(archive, serializedDocument);
