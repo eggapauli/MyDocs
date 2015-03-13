@@ -99,9 +99,9 @@ namespace MyDocs.WindowsStore.Service
 
         public async Task RemovePhotosAsync(IEnumerable<Photo> photos)
         {
-            foreach (var file in photos.SelectMany(p => p.Files).Where(f => !f.IsInFolder(tempFolder))) {
-                await file.MoveAsync(tempFolder);
-            }
+            var tasks = photos.SelectMany(p => p.Files)
+                .Select(file => file.DeleteAsync());
+            await Task.WhenAll(tasks);
         }
     }
 }
