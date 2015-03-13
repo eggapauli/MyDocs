@@ -254,24 +254,20 @@ namespace MyDocs.Common.ViewModel
 
         private async void AddPhotoFromFileAsync()
         {
-            var files = await filePicker.PickMultipleFilesAsync();
+            var files = await filePicker.PickFilesForDocumentAsync(EditingDocument);
 
             using (SetBusy()) {
                 var error = false;
                 foreach (var file in files) {
-                    if (Path.GetExtension(file.Name).Equals(".pdf", StringComparison.CurrentCultureIgnoreCase)) {
-                        var copy = await file.CopyAsync(settingsService.TempFolder, Guid.NewGuid().ToString() + Path.GetExtension(file.Name));
-
-                        try {
-                            var pages = await pdfService.ExtractPages(copy);
-                            EditingDocument.Photos.Add(new Photo(copy.DisplayName, copy, pages));
-                        }
-                        catch (Exception) {
-                            error = true;
-                        }
+                    try {
+                        var pages =
+                            pageExtractor.SupportedExtensions.Contains(Path.GetExtension(file.Name)) ?
+                            await pageExtractor.ExtractPages(file, EditingDocument) :
+                            null;
+                        EditingDocument.Photos.Add(new Photo(file.DisplayName, file, pages));
                     }
-                    else {
-                        EditingDocument.Photos.Add(new Photo(file.DisplayName, file));
+                    catch (Exception) {
+                        error = true;
                     }
                 }
 

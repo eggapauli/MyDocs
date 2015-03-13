@@ -1,5 +1,6 @@
 ﻿using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Contract.Storage;
+using MyDocs.Common.Model;
 using MyDocs.WindowsStore.Storage;
 using System;
 using System.Collections.Generic;
@@ -19,21 +20,22 @@ namespace MyDocs.WindowsStore.Service
             get { yield return ".pdf"; }
         }
 
-        public async Task<IEnumerable<IFile>> ExtractPages(IFile file)
+        public async Task<IEnumerable<IFile>> ExtractPages(IFile file, Document document)
         {
             // TODO ask the user for a password if the file is password-protected
             var doc = await PdfDocument.LoadFromFileAsync(((WindowsStoreFile)file).File);
 
+            var folder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(document.Id.ToString(), CreationCollisionOption.OpenIfExists);
             var extractTasks = Enumerable.Range(0, (int)doc.PageCount)
-                .Select(i => ExtractPage(doc, i));
+                .Select(i => ExtractPage(doc, file.Name, i, folder));
             var images = await Task.WhenAll(extractTasks);
             return images.Select(image => new WindowsStoreFile(image));
         }
 
-        private async Task<StorageFile> ExtractPage(PdfDocument doc, int pageNumber)
+        private async Task<StorageFile> ExtractPage(PdfDocument doc, string fileName, int pageNumber, StorageFolder folder)
         {
-            var image = await ApplicationData.Current.TemporaryFolder
-                .CreateFileAsync(Guid.NewGuid().ToString() + ".jpg", CreationCollisionOption.GenerateUniqueName);
+            var pageFileName = Path.ChangeExtension(fileName, ".jpg");
+            var image = await folder.CreateFileAsync(pageFileName, CreationCollisionOption.GenerateUniqueName);
             using (var page = doc.GetPage((uint)pageNumber))
             using (var stream = await image.OpenAsync(FileAccessMode.ReadWrite)) {
                 await page.RenderToStreamAsync(stream);

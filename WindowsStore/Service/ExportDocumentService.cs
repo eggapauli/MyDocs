@@ -53,8 +53,7 @@ namespace MyDocs.WindowsStore.Service
 
                 foreach (var document in documents) {
                     foreach (var photo in document.Photos) {
-                        var fileName = photo.Title + Path.GetExtension(photo.File.Name);
-                        var path = Path.Combine(document.GetHumanReadableDescription(), fileName);
+                        var path = Path.Combine(document.GetHumanReadableDescription(), photo.File.Name);
                         if (savedFiles.Add(path)) {
                             var entry = archive.CreateEntry(path);
                             using (var photoReader = await photo.File.OpenReadAsync())

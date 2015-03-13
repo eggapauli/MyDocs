@@ -54,14 +54,14 @@ namespace MyDocs.WindowsStore.Service
 
         private async Task<Document> DeserializeDocumentAsync(ZipArchive archive, Serializable.Document document)
         {
-            var photos = new List<Photo>();
+            var doc = new Document(document.Id, document.Category, document.DateAdded, document.Lifespan, document.HasLimitedLifespan, document.Tags);
             foreach (var fileName in document.Files) {
-                photos.Add(await DeserializePhotosAsync(archive, document, fileName));
+                doc.Photos.Add(await DeserializePhotosAsync(archive, doc, fileName));
             }
-            return new Document(document.Id, document.Category, document.DateAdded, document.Lifespan, document.HasLimitedLifespan, document.Tags, photos);
+            return doc;
         }
 
-        private async Task<Photo> DeserializePhotosAsync(ZipArchive archive, Serializable.Document document, string fileName)
+        private async Task<Photo> DeserializePhotosAsync(ZipArchive archive, Document document, string fileName)
         {
             // Folders must be separated by "/", not by "\\"
             //var path = Path.Combine(document.GetHumanReadableDescription(), fileName);
@@ -72,18 +72,18 @@ namespace MyDocs.WindowsStore.Service
                 // TODO refine
                 throw new Exception("Entry no found.");
             }
-            var photoFileName = Guid.NewGuid().ToString() + Path.GetExtension(fileName);
             // TODO inject more specific service for extracting files
-            var photoFile = await settingsService.PhotoFolder.CreateFileAsync(photoFileName);
+            var photoFile = await settingsService.PhotoFolder.CreateFileAsync(fileName);
             using (var entryStream = entry.Open())
             using (var photoWriter = await photoFile.OpenWriteAsync()) {
                 await entryStream.CopyToAsync(photoWriter);
             }
 
+            // TODO strip name collision part out
             var title = Path.GetFileNameWithoutExtension(fileName);
             var pages =
                 pageExtractor.SupportedExtensions.Contains(Path.GetExtension(fileName)) ?
-                await pageExtractor.ExtractPages(photoFile) :
+                await pageExtractor.ExtractPages(photoFile, document) :
                 null;
             return new Photo(title, photoFile, pages);
         }

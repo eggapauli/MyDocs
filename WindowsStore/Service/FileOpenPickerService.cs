@@ -23,24 +23,19 @@ namespace MyDocs.WindowsStore.Service
             this.uiService = uiService;
         }
 
-        public async Task<IEnumerable<IFile>> PickMultipleFilesAsync()
+        public async Task<IEnumerable<IFile>> PickFilesForDocumentAsync(Document document)
         {
-            FileOpenPicker filePicker = new FileOpenPicker();
+            var filePicker = new FileOpenPicker();
             filePicker.FileTypeFilter.Add("*");
             filePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
             filePicker.ViewMode = PickerViewMode.List;
 
             var files = await filePicker.PickMultipleFilesAsync();
-
-            var copies = new List<IFile>();
-            foreach (var file in files) {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.Name);
-                var copy = await file.CopyAsync(ApplicationData.Current.TemporaryFolder, fileName);
-                copies.Add(new WindowsStoreFile(copy));
-            }
-            return copies;
+            var folder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(document.Id.ToString(), CreationCollisionOption.OpenIfExists);
+            var tasks = files.Select(file => file.CopyAsync(folder, file.Name, NameCollisionOption.GenerateUniqueName).AsTask());
+            var copies = await Task.WhenAll(tasks);
+            return copies.Select(file => new WindowsStoreFile(file));
         }
-
 
         public async Task<IFile> PickOpenFileAsync(IEnumerable<string> fileTypes)
         {

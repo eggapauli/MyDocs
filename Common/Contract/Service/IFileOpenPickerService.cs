@@ -7,7 +7,7 @@ namespace MyDocs.Common.Contract.Service
 {
     public interface IFileOpenPickerService
     {
-        Task<IEnumerable<IFile>> PickMultipleFilesAsync();
+        Task<IEnumerable<IFile>> PickFilesForDocumentAsync(Document document);
 
         Task<IFile> PickOpenFileAsync(IEnumerable<string> fileTypes);
     }
