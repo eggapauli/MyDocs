@@ -21,7 +21,7 @@ namespace MyDocs.Common.ViewModel
         private readonly ICameraService cameraService;
         private readonly IFileOpenPickerService filePicker;
         private readonly ISettingsService settingsService;
-        private readonly IPageExtractor pdfService;
+        private readonly IPageExtractor pageExtractor;
 
         #region Properties
 
@@ -165,7 +165,7 @@ namespace MyDocs.Common.ViewModel
             ICameraService cameraService,
             IFileOpenPickerService filePicker,
             ISettingsService settingsService,
-            IPageExtractor pdfService)
+            IPageExtractor pageExtractor)
         {
             this.documentService = documentService;
             this.navigator = navigator;
@@ -173,7 +173,7 @@ namespace MyDocs.Common.ViewModel
             this.cameraService = cameraService;
             this.filePicker = filePicker;
             this.settingsService = settingsService;
-            this.pdfService = pdfService;
+            this.pageExtractor = pageExtractor;
 
             CreateCommands();
             CreateDesignTimeData();
