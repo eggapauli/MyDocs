@@ -15,6 +15,7 @@ using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using MyDocs.Common.Contract.Storage;
 using System.Collections.ObjectModel;
+using System.Collections.Immutable;
 
 namespace MyDocs.Common.ViewModel
 {
@@ -29,7 +30,7 @@ namespace MyDocs.Common.ViewModel
 
         #region Properties
 
-        private IList<Category> categories;
+        private IImmutableList<Category> categories;
         private Document selectedDocument;
         private string newCategoryName;
         private bool inCategoryEditMode = false;
@@ -43,7 +44,7 @@ namespace MyDocs.Common.ViewModel
             set { Set(ref inZoomedInView, value); }
         }
 
-        public IList<Category> Categories
+        public IImmutableList<Category> Categories
         {
             get { return categories; }
             set { Set(ref categories, value); }

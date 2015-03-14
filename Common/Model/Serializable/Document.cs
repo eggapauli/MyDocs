@@ -45,7 +45,7 @@ namespace MyDocs.Common.Model.Serializable
 
         public static Document FromModel(Model.Document d)
         {
-            var files = d.Photos.Select(p => p.File.Name);
+            var files = d.SubDocuments.Select(p => p.File.Name);
             return new Serializable.Document(d.Id, d.Category, d.Tags, d.DateAdded, d.Lifespan, d.HasLimitedLifespan, files);
         }
     }

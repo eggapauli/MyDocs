@@ -47,7 +47,7 @@ namespace MyDocs.WindowsStore.Pages
             var waiter = args.Request.GetDeferral();
 
             try {
-                var files = document.Photos.Select(p => p.File);
+                var files = document.SubDocuments.Select(p => p.File);
                 data.SetStorageItems(files.Select(f => ((WindowsStoreFile)f).File));
             }
             finally {

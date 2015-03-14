@@ -2,6 +2,7 @@
 using MyDocs.Common.Contract.Storage;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -9,15 +10,15 @@ using System.Runtime.Serialization;
 
 namespace MyDocs.Common.Model
 {
-    #pragma warning disable 0659 // GetHashCode not needed, because documents are not stored in dictionaries
+#pragma warning disable 0659 // GetHashCode not needed, because documents are not stored in dictionaries
 
     [DebuggerDisplay("{Id} - {Category}")]
-    public class Document : ObservableObject
+    public class Document : ObservableObject, IEquatable<Document>
     {
         private Guid id;
         private string category;
-        private ObservableCollection<Photo> photos;
-        private ObservableCollection<string> tags;
+        private IImmutableList<SubDocument> subDocuments;
+        private IImmutableList<string> tags;
         private DateTime dateAdded;
         private TimeSpan lifespan;
         private bool hasLimitedLifespan;
@@ -34,35 +35,25 @@ namespace MyDocs.Common.Model
             set { Set(ref category, value); }
         }
 
-        public ObservableCollection<Photo> Photos
+        public IImmutableList<SubDocument> SubDocuments
         {
-            get { return photos; }
-            private set { Set(ref photos, value); }
-        }
-
-        public IEnumerable<Photo> Previews
-        {
-            get
-            {
-                foreach (var photo in photos) {
-                    if (photo.Previews.Any()) {
-                        foreach (var preview in photo.Previews) {
-                            yield return new Photo(photo.Title, preview);
-                        }
-                    }
-                    else {
-                        yield return new Photo(photo.Title, photo.File);
-                    }
-                }
-            }
+            get { return subDocuments; }
+            private set { Set(ref subDocuments, value); }
         }
 
         public Photo TitlePhoto
         {
-            get { return Photos.FirstOrDefault(); }
+            get
+            {
+                var subDocument = SubDocuments.FirstOrDefault();
+                if (subDocument != null) {
+                    return subDocument.Photos.FirstOrDefault();
+                }
+                return null;
+            }
         }
 
-        public ObservableCollection<string> Tags
+        public IImmutableList<string> Tags
         {
             get { return tags; }
             set
@@ -99,11 +90,11 @@ namespace MyDocs.Common.Model
 
         public string TagsString
         {
-            get { return String.Join(", ", Tags); }
+            get { return string.Join(", ", Tags); }
             set
             {
-                string[] tags = value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                Tags = new ObservableCollection<string>(tags.Select(tag => tag.Trim()));
+                var tags = value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                Tags = tags.Select(tag => tag.Trim()).ToImmutableList();
             }
         }
 
@@ -119,14 +110,18 @@ namespace MyDocs.Common.Model
         }
 
         public Document()
-        {
-            Id = Guid.NewGuid();
-            DateAdded = DateTime.Today.AddDays(1);
-            Lifespan = DateTime.Today.AddYears(2).Subtract(DateTime.Today);
-            HasLimitedLifespan = true;
-            Tags = new ObservableCollection<string>();
-            Photos = new ObservableCollection<Photo>();
-        }
+            : this(
+                Guid.NewGuid(),
+                null,
+                DateTime.Today.AddDays(1),
+                DateTime.Today.AddYears(2).Subtract(DateTime.Today),
+                true,
+                Enumerable.Empty<string>())
+        { }
+
+        public Document(Guid id, string category, DateTime dateAdded, TimeSpan lifespan, bool hasLimitedLifespan, IEnumerable<string> tags)
+            : this(id, category, dateAdded, lifespan, hasLimitedLifespan, tags, Enumerable.Empty<SubDocument>())
+        { }
 
         public Document(
             Guid id,
@@ -135,36 +130,47 @@ namespace MyDocs.Common.Model
             TimeSpan lifespan,
             bool hasLimitedLifespan,
             IEnumerable<string> tags,
-            IEnumerable<Photo> photos = null)
+            IEnumerable<SubDocument> subDocuments)
         {
             Id = id;
             Category = category;
             DateAdded = dateAdded;
             Lifespan = lifespan;
             HasLimitedLifespan = hasLimitedLifespan;
-            Tags = tags as ObservableCollection<string> ?? new ObservableCollection<string>(tags);
+            Tags = tags.ToImmutableList();
+            SubDocuments = subDocuments.ToImmutableList();
+        }
 
-            if (photos != null) {
-                Photos = photos as ObservableCollection<Photo> ?? new ObservableCollection<Photo>(photos);
-            }
-            else {
-                Photos = new ObservableCollection<Photo>();
+        public void AddSubDocument(SubDocument doc)
+        {
+            SubDocuments = SubDocuments.Add(doc);
+        }
+
+        public void RemovePhoto(Photo photo)
+        {
+            var subDocument = SubDocuments.Single(doc => doc.Photos.Contains(photo));
+            subDocument.RemovePhoto(photo);
+            if (subDocument.Photos.Count == 0) {
+                SubDocuments = SubDocuments.Remove(subDocument);
             }
         }
 
         public override bool Equals(object obj)
         {
-            var other = obj as Document;
+            return Equals(obj as Document);
+        }
+
+        public bool Equals(Document other)
+        {
             if (other == null) {
                 return false;
             }
-
-            return this.Id.Equals(other.Id);
+            return Id.Equals(other.Id);
         }
 
         public Document Clone()
         {
-            return new Document(id, category, dateAdded, lifespan, hasLimitedLifespan, tags, new ObservableCollection<Photo>(photos));
+            return new Document(id, category, dateAdded, lifespan, hasLimitedLifespan, tags, subDocuments);
         }
     }
 }

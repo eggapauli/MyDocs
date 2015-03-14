@@ -13,7 +13,7 @@ namespace MyDocs.Common.Contract.Service
     {
         IEnumerable<string> SupportedExtensions { get; }
 
-        Task<IEnumerable<IFile>> ExtractPages(IFile file, Document document);
+        Task<IEnumerable<Photo>> ExtractPages(IFile file, Document document);
     }
 
     public class PageExtractorList : IPageExtractor
@@ -30,7 +30,7 @@ namespace MyDocs.Common.Contract.Service
             get { return extractors.SelectMany(e => e.SupportedExtensions); }
         }
 
-        public async Task<IEnumerable<IFile>> ExtractPages(IFile file, Document document)
+        public async Task<IEnumerable<Photo>> ExtractPages(IFile file, Document document)
         {
             var extension = Path.GetExtension(file.Name);
             return await extractors

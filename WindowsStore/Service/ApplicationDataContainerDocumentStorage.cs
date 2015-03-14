@@ -92,9 +92,18 @@ namespace MyDocs.WindowsStore.Service
             docsDataContainer.Values.Remove(documentId);
         }
 
-        public async Task RemovePhotosAsync(IEnumerable<Photo> photos)
+        public async Task RemoveDocument(Document document)
         {
-            var tasks = photos.SelectMany(p => p.Files)
+            try {
+                var folder = await ApplicationData.Current.LocalFolder.GetFolderAsync(document.Id.ToString());
+                await folder.DeleteAsync();
+            }
+            catch (FileNotFoundException) { }
+        }
+
+        public async Task RemovePhotos(IEnumerable<Photo> photos)
+        {
+            var tasks = photos.Select(p => p.File)
                 .Select(file => file.DeleteAsync());
             await Task.WhenAll(tasks);
         }

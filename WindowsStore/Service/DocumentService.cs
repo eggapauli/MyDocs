@@ -40,7 +40,7 @@ namespace MyDocs.WindowsStore.Service
             }
         }
 
-        public async Task<ImmutableList<Category>> LoadAsync()
+        public async Task<IImmutableList<Category>> LoadAsync()
         {
             // TODO create CachedDocumentService
             //if (Documents.Count > 0) {
@@ -141,18 +141,18 @@ namespace MyDocs.WindowsStore.Service
 
         public async Task DeleteDocumentAsync(Document document)
         {
-            await RemovePhotosAsync(document.Photos);
-
             documentDb.Remove(document.Id.ToString());
+            await documentDb.RemoveDocument(document);
             // TODO raise event
             //Documents.Remove(document);
         }
 
+        public event EventHandler Changed;
+
+
         public async Task RemovePhotosAsync(IEnumerable<Photo> photos)
         {
-            await documentDb.RemovePhotosAsync(photos);
+            await documentDb.RemovePhotos(photos);
         }
-
-        public event EventHandler Changed;
     }
 }

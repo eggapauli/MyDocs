@@ -20,7 +20,7 @@ namespace MyDocs.WindowsStore.Service
             get { yield return ".pdf"; }
         }
 
-        public async Task<IEnumerable<IFile>> ExtractPages(IFile file, Document document)
+        public async Task<IEnumerable<Photo>> ExtractPages(IFile file, Document document)
         {
             // TODO ask the user for a password if the file is password-protected
             var doc = await PdfDocument.LoadFromFileAsync(((WindowsStoreFile)file).File);
@@ -29,7 +29,7 @@ namespace MyDocs.WindowsStore.Service
             var extractTasks = Enumerable.Range(0, (int)doc.PageCount)
                 .Select(i => ExtractPage(doc, file.Name, i, folder));
             var images = await Task.WhenAll(extractTasks);
-            return images.Select(image => new WindowsStoreFile(image));
+            return images.Select(image => new Photo(new WindowsStoreFile(image)));
         }
 
         private async Task<StorageFile> ExtractPage(PdfDocument doc, string fileName, int pageNumber, StorageFolder folder)

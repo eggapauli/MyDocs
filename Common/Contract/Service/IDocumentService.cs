@@ -13,7 +13,7 @@ namespace MyDocs.Common.Contract.Service
     {
         event EventHandler Changed;
 
-        Task<ImmutableList<Category>> LoadAsync();
+        Task<IImmutableList<Category>> LoadAsync();
         IEnumerable<string> GetCategoryNames();
         IEnumerable<int> GetDistinctDocumentYears();
 

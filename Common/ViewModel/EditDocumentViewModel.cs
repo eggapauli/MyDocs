@@ -97,7 +97,6 @@ namespace MyDocs.Common.ViewModel
                         NewCategoryName = editingDocument.Category;
                         UseCategoryName = editingDocument.Category;
                         editingDocument.PropertyChanged += EditingDocumentChangedHandler;
-                        editingDocument.Photos.CollectionChanged += EditingDocumentPhotoCollectionChanged;
                     }
                     else {
                         editingDocument = null;
@@ -128,14 +127,10 @@ namespace MyDocs.Common.ViewModel
 
         private void EditingDocumentChangedHandler(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "Tags" || e.PropertyName == "Category") {
+            // TODO make strongly typed
+            if (e.PropertyName == "Tags" || e.PropertyName == "Category" || e.PropertyName == "SubDocuments") {
                 SaveDocumentCommand.RaiseCanExecuteChanged();
             }
-        }
-
-        private void EditingDocumentPhotoCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            SaveDocumentCommand.RaiseCanExecuteChanged();
         }
 
         public Photo SelectedPhoto
@@ -216,7 +211,7 @@ namespace MyDocs.Common.ViewModel
                 && EditingDocument.Tags.Any()
                 && (ShowNewCategoryInput && !String.IsNullOrWhiteSpace(NewCategoryName)
                     || ShowUseCategoryInput && !String.IsNullOrWhiteSpace(UseCategoryName))
-                && EditingDocument.Photos.Count > 0);
+                && EditingDocument.SubDocuments.Count > 0);
             ShowNewCategoryCommand = new RelayCommand(() => { ShowNewCategoryInput = true; });
             ShowUseCategoryCommand = new RelayCommand(() => { ShowNewCategoryInput = false; });
         }
@@ -230,7 +225,9 @@ namespace MyDocs.Common.ViewModel
 
                 // Delete removed photos
                 if (originalDocument != null) {
-                    var deletedPhotos = originalDocument.Photos.Where(p => !EditingDocument.Photos.Contains(p));
+                    var oldPhotos = originalDocument.SubDocuments.SelectMany(d => d.Photos);
+                    var newPhotos = EditingDocument.SubDocuments.SelectMany(d => d.Photos);
+                    var deletedPhotos = oldPhotos.Where(p => !newPhotos.Contains(p));
                     await documentService.RemovePhotosAsync(deletedPhotos);
                 }
             }
@@ -246,7 +243,7 @@ namespace MyDocs.Common.ViewModel
         {
             var photo = await cameraService.CapturePhotoAsync();
             if (photo != null) {
-                EditingDocument.Photos.Add(photo);
+                EditingDocument.AddSubDocument(new SubDocument(photo.File, new[] { photo }));
             }
         }
 
@@ -262,7 +259,7 @@ namespace MyDocs.Common.ViewModel
                             pageExtractor.SupportedExtensions.Contains(Path.GetExtension(file.Name)) ?
                             await pageExtractor.ExtractPages(file, EditingDocument) :
                             null;
-                        EditingDocument.Photos.Add(new Photo(file.DisplayName, file, pages));
+                        EditingDocument.AddSubDocument(new SubDocument(file, pages));
                     }
                     catch (Exception) {
                         error = true;
@@ -277,7 +274,7 @@ namespace MyDocs.Common.ViewModel
 
         private void RemovePhoto()
         {
-            EditingDocument.Photos.Remove(SelectedPhoto);
+            EditingDocument.RemovePhoto(SelectedPhoto);
         }
 
         #endregion

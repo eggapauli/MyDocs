@@ -85,7 +85,7 @@ namespace MyDocs.Common.Test.Search
         private IDocumentService MakeDocumentService(IEnumerable<Category> categories)
         {
             var documentService = A.Fake<IDocumentService>();
-            A.CallTo(() => documentService.LoadAsync()).Returns(Task.FromResult(categories.ToImmutableList()));
+            A.CallTo(() => documentService.LoadAsync()).Returns(Task.FromResult<IImmutableList<Category>>(categories.ToImmutableList()));
             A.CallTo(() => documentService.GetCategoryNames()).Returns(categories.Select(c => c.Name));
             var years = categories
                 .SelectMany(c => c.Documents)

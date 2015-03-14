@@ -16,7 +16,7 @@ namespace MyDocs.WindowsStore.Service.Design
     {
         private readonly Random random = new Random();
 
-        public async Task<ImmutableList<Category>> LoadAsync()
+        public async Task<IImmutableList<Category>> LoadAsync()
         {
             var photos = new List<IFile>();
             try {
@@ -51,12 +51,12 @@ namespace MyDocs.WindowsStore.Service.Design
                         TimeSpan.FromDays(30),
                         true,
                         Enumerable.Range(i, i + 1 + 2 * j).Select(idx => "Tag" + (idx + 1)),
-                        GetRandomPhotos(photos));
+                        GetRandomSubDocuments(photos));
                 }
             }
         }
 
-        private IEnumerable<Photo> GetRandomPhotos(IList<IFile> photos)
+        private IEnumerable<SubDocument> GetRandomSubDocuments(IList<IFile> photos)
         {
             if (photos == null) {
                 yield break;
@@ -64,7 +64,7 @@ namespace MyDocs.WindowsStore.Service.Design
             int count = random.Next(1, 4);
             while (count > 0 && photos.Count > 0) {
                 int idx = random.Next(photos.Count);
-                yield return new Photo(photos[idx].Name, photos[idx]);
+                yield return new SubDocument(photos[idx], new[] { new Photo (photos[idx]) });
                 photos.RemoveAt(idx);
                 count--;
             }

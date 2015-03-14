@@ -49,7 +49,7 @@ namespace MyDocs.WindowsStore.Service
                 }
 
                 foreach (var document in documents) {
-                    foreach (var photo in document.Photos) {
+                    foreach (var photo in document.SubDocuments) {
                         var path = Path.Combine(document.GetHumanReadableDescription(), photo.File.Name);
                         if (savedFiles.Add(path)) {
                             var entry = archive.CreateEntry(path);

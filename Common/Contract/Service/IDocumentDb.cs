@@ -1,4 +1,5 @@
-﻿using MyDocs.Common.Model;
+﻿using MyDocs.Common.Contract.Storage;
+using MyDocs.Common.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +24,8 @@ namespace MyDocs.Common.Contract.Service
 
         void Remove(string documentId);
 
-        Task RemovePhotosAsync(IEnumerable<Photo> photos);
+        Task RemoveDocument(Document document);
 
-
+        Task RemovePhotos(IEnumerable<Photo> photos);
     }
 }

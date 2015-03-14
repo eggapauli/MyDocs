@@ -56,12 +56,12 @@ namespace MyDocs.WindowsStore.Service
         {
             var doc = new Document(document.Id, document.Category, document.DateAdded, document.Lifespan, document.HasLimitedLifespan, document.Tags);
             foreach (var fileName in document.Files) {
-                doc.Photos.Add(await DeserializePhotosAsync(archive, doc, fileName));
+                doc.AddSubDocument(await DeserializePhotosAsync(archive, doc, fileName));
             }
             return doc;
         }
 
-        private async Task<Photo> DeserializePhotosAsync(ZipArchive archive, Document document, string fileName)
+        private async Task<SubDocument> DeserializePhotosAsync(ZipArchive archive, Document document, string fileName)
         {
             // Folders must be separated by "/", not by "\\"
             //var path = Path.Combine(document.GetHumanReadableDescription(), fileName);
@@ -80,12 +80,11 @@ namespace MyDocs.WindowsStore.Service
             }
 
             // TODO strip name collision part out
-            var title = Path.GetFileNameWithoutExtension(fileName);
             var pages =
                 pageExtractor.SupportedExtensions.Contains(Path.GetExtension(fileName)) ?
                 await pageExtractor.ExtractPages(photoFile, document) :
                 null;
-            return new Photo(title, photoFile, pages);
+            return new SubDocument(photoFile, pages);
         }
     }
 }
