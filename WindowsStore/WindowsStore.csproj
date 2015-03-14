@@ -226,6 +226,10 @@
       <Project>{6666ff12-6c2c-4aed-a1dd-f1e1f08445f8}</Project>
       <Name>Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LexDbDal\LexDbDal.csproj">
+      <Project>{b5bdcd3d-31ea-44c6-8812-3ef0314f29f6}</Project>
+      <Name>LexDbDal</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GalaSoft.MvvmLight, Version=5.1.1.35049, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
@@ -239,9 +243,6 @@
     <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.1.1.35051, Culture=neutral, PublicKeyToken=7a953f43091b5a17, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MvvmLightLibs.5.1.1.0\lib\windows81\GalaSoft.MvvmLight.Platform.dll</HintPath>
-    </Reference>
-    <Reference Include="Lex.Db">
-      <HintPath>..\packages\Lex.Db.1.2.1.0\lib\netcore451\Lex.Db.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

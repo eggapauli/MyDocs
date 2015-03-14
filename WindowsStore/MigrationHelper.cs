@@ -1,4 +1,5 @@
-﻿using MyDocs.Common.Model;
+﻿using LexDbDal;
+using MyDocs.Common.Model;
 using MyDocs.WindowsStore.Service;
 using System;
 using System.Collections.Generic;
@@ -48,15 +49,7 @@ namespace MyDocs.WindowsStore
             var builtInDb = new ApplicationDataContainerDocumentStorage(new SettingsService());
             var documents = await builtInDb.GetAllDocumentsAsync();
 
-            using (var db = new Lex.Db.DbInstance("mydocs.lex.db")) {
-                db.Map<Document>()
-                    .Automap(x => x.Id, true)
-                    .WithIndex("Category", x => x.Category)
-                    .WithIndex("Tags", x => x.Tags);
-                db.Initialize();
-                db.Purge();
-                db.Save(documents);
-            }
+            await new LexDocumentDb().Setup(documents);
         }
     }
 }
