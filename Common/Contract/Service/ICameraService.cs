@@ -6,6 +6,6 @@ namespace MyDocs.Common.Contract.Service
 {
     public interface ICameraService
     {
-        Task<Photo> CapturePhotoAsync();
+        Task<Photo> GetPhotoForDocumentAsync(Document document);
     }
 }

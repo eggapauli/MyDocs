@@ -241,7 +241,7 @@ namespace MyDocs.Common.ViewModel
 
         private async void AddPhotoFromCameraAsync()
         {
-            var photo = await cameraService.CapturePhotoAsync();
+            var photo = await cameraService.GetPhotoForDocumentAsync(EditingDocument);
             if (photo != null) {
                 EditingDocument.AddSubDocument(new SubDocument(photo.File, new[] { photo }));
             }
