@@ -61,7 +61,7 @@ namespace MyDocs.Common.ViewModel
             get { return selectedDocument; }
             set
             {
-                if (Set(ref selectedDocument, value as Document)) {
+                if (Set(ref selectedDocument, value)) {
                     RaisePropertyChanged(() => HasSelectedDocument);
 
                     DeleteDocumentCommand.RaiseCanExecuteChanged();
