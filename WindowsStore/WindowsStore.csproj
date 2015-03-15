@@ -14,7 +14,7 @@
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>WindowsStore_StoreKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
-    <PackageCertificateThumbprint>997D0576494F85E4135AB9AB38D2B301335CB238</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>752939997C5A8A58B975CA489A7B736A351ABA96</PackageCertificateThumbprint>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
@@ -22,7 +22,7 @@
     <AppxPackageDir>C:\Users\Johannes\Desktop\</AppxPackageDir>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
-    <NuGetPackageImportStamp>d781a3d8</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>596d147f</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
