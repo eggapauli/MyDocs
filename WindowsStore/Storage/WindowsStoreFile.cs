@@ -25,7 +25,7 @@ namespace MyDocs.WindowsStore.Storage
 
         public string GetRelativePath()
         {
-            string folderPath = String.Empty;
+            string folderPath;
             if (IsInFolder(new WindowsStoreFolder(ApplicationData.Current.LocalFolder))) {
                 folderPath = ApplicationData.Current.LocalFolder.Path;
             }
@@ -34,6 +34,9 @@ namespace MyDocs.WindowsStore.Storage
             }
             else if (IsInFolder(new WindowsStoreFolder(ApplicationData.Current.RoamingFolder))) {
                 folderPath = ApplicationData.Current.RoamingFolder.Path;
+            }
+            else {
+                throw new NotSupportedException("Unknown file location.");
             }
             return File.Path.Substring(folderPath.Length + 1);
         }
