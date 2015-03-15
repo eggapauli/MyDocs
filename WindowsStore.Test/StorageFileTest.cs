@@ -69,6 +69,15 @@ namespace WindowsStore.Test
                 Debug.WriteLine("Key: {0}, Value: {1}", property.Key, value);
             }
         }
+
+        [TestMethod]
+        public async Task ShouldCreateFileWithSlashes()
+        {
+            var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(@"testfolder\test.pdf", CreationCollisionOption.ReplaceExisting);
+            var testFolder = await file.GetParentAsync();
+            Assert.AreEqual("testfolder", testFolder.Name);
+            var localFolder = await testFolder.GetParentAsync();
+            Assert.AreEqual(ApplicationData.Current.LocalFolder.Name, localFolder.Name);
         }
     }
 }
