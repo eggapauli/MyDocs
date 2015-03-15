@@ -25,6 +25,16 @@ namespace WindowsStore.Test
             await CreateAndGetFile(ApplicationData.Current.TemporaryFolder, "temp");
         }
 
+        private async Task CreateAndGetFile(StorageFolder folder, string path)
+        {
+            const string fileName = "test.pdf";
+            var file = await folder.CreateFileAsync(fileName);
+            await StorageFileHelper.DoWithTempFile(file, async () => {
+                var uri = new Uri(string.Format("ms-appdata:///{0}/{1}", path, fileName));
+                await StorageFile.GetFileFromApplicationUriAsync(uri);
+            });
+        }
+
         [TestMethod]
         public async Task ShouldThrowWhenFolderDoesntExist()
         {
@@ -48,23 +58,7 @@ namespace WindowsStore.Test
             Assert.IsFalse(folders.Any(f => f.Name == folderName));
         }
 
-        private async Task CreateAndGetFile(StorageFolder folder, string path)
         {
-            var file = await folder.CreateFileAsync("test.pdf");
-            ExceptionDispatchInfo exInfo = null;
-            try {
-                var uri = new Uri(string.Format("ms-appdata:///{0}/test.pdf", path));
-                await StorageFile.GetFileFromApplicationUriAsync(uri);
-            }
-            catch (Exception e) {
-                exInfo = ExceptionDispatchInfo.Capture(e);
-            }
-
-            await file.DeleteAsync();
-
-            if (exInfo != null) {
-                exInfo.Throw();
-            }
         }
     }
 }
