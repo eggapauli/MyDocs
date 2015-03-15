@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
@@ -58,7 +59,19 @@ namespace WindowsStore.Test
             Assert.IsFalse(folders.Any(f => f.Name == folderName));
         }
 
+        [TestMethod]
+        public async Task ShouldGetBasicProperties()
         {
+            const string fileName = "test.pdf";
+            var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(fileName);
+            await StorageFileHelper.DoWithTempFile(file, async () => {
+                var basicProperties = await file.GetBasicPropertiesAsync();
+                var properties = await basicProperties.RetrievePropertiesAsync(new string[0]);
+                foreach (var property in properties) {
+                    var value = property.Value != null ? property.Value.ToString() : "<null>";
+                    Debug.WriteLine("Key: {0}, Value: {1}", property.Key, value);
+                }
+            });
         }
     }
 }
