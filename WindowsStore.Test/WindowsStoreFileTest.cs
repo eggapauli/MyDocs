@@ -24,7 +24,7 @@ namespace WindowsStore.Test
             [TestMethod]
             public async Task ShouldReturnCorrectMsAppDataUriForLocalSubfolder()
             {
-                var folder = await ApplicationData.Current.LocalFolder.CreateFolderAsync("testfolder");
+                var folder = await ApplicationData.Current.LocalFolder.CreateFolderAsync("testfolder", CreationCollisionOption.ReplaceExisting);
                 await CreateFileAndTestUri(folder);
             }
 
@@ -44,11 +44,9 @@ namespace WindowsStore.Test
 
             private static async Task CreateFileAndTestUri(StorageFolder folder)
             {
-                var storageFile = await folder.CreateFileAsync("test.pdf");
-                await StorageFileHelper.DoWithTempFile(storageFile, async () => {
-                    var file = new WindowsStoreFile(storageFile);
-                    await StorageFile.GetFileFromApplicationUriAsync(file.GetUri());
-                });
+                var storageFile = await folder.CreateFileAsync("test.pdf", CreationCollisionOption.ReplaceExisting);
+                var file = new WindowsStoreFile(storageFile);
+                await StorageFile.GetFileFromApplicationUriAsync(file.GetUri());
             }
         }
     }
