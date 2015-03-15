@@ -168,8 +168,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="MyDocs_StoreKey.pfx" />
-    <None Include="MyDocs_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="WindowsStore_StoreKey.pfx" />
     <None Include="WindowsStore_TemporaryKey.pfx" />
