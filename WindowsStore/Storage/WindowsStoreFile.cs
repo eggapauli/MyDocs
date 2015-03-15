@@ -38,6 +38,12 @@ namespace MyDocs.WindowsStore.Storage
             return File.Path.Substring(folderPath.Length + 1);
         }
 
+        public Uri GetUri()
+        {
+            // TODO implement
+            throw new NotImplementedException();
+        }
+
         public bool IsInFolder(IFolder folder)
         {
             return System.IO.Path.GetDirectoryName(File.Path).StartsWith(folder.Path);

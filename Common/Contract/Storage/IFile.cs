@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace MyDocs.Common.Contract.Storage
@@ -9,6 +10,7 @@ namespace MyDocs.Common.Contract.Storage
         string DisplayName { get; }
         string Path { get; }
         string GetRelativePath();
+        Uri GetUri();
         bool IsInFolder(IFolder folder);
         Task<IBitmapImage> GetResizedBitmapImageAsync(FileSize fileSize = FileSize.Small);
         Task MoveAsync(IFolder folder);
