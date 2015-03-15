@@ -40,8 +40,20 @@ namespace MyDocs.WindowsStore.Storage
 
         public Uri GetUri()
         {
-            // TODO implement
-            throw new NotImplementedException();
+            string folderPath;
+            if (IsInFolder(new WindowsStoreFolder(ApplicationData.Current.LocalFolder))) {
+                folderPath = "local";
+            }
+            else if (IsInFolder(new WindowsStoreFolder(ApplicationData.Current.TemporaryFolder))) {
+                folderPath = "temp";
+            }
+            else if (IsInFolder(new WindowsStoreFolder(ApplicationData.Current.RoamingFolder))) {
+                folderPath = "roaming";
+            }
+            else {
+                throw new NotSupportedException("Unknown file location.");
+            }
+            return new Uri(string.Format("ms-appdata:///{0}/{1}", folderPath, GetRelativePath()));
         }
 
         public bool IsInFolder(IFolder folder)

@@ -118,6 +118,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StorageFileHelper.cs" />
     <Compile Include="StorageFileTest.cs" />
+    <Compile Include="WindowsStoreFileTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -141,6 +142,16 @@
     <Content Include="Images\UnitTestStoreLogo.scale-100.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{6666ff12-6c2c-4aed-a1dd-f1e1f08445f8}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WindowsStore\WindowsStore.csproj">
+      <Project>{cc54f3ce-79c3-4613-a766-3e31d6660370}</Project>
+      <Name>WindowsStore</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
