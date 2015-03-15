@@ -9,6 +9,7 @@ using MyDocs.WindowsStore.Service;
 using MyDocs.WindowsStore.Service.Design;
 using MyDocs.WindowsStore.Storage;
 using System;
+using System.Collections.Generic;
 
 namespace MyDocs.WindowsStore.ViewModel
 {
@@ -34,10 +35,9 @@ namespace MyDocs.WindowsStore.ViewModel
             Register<IFileOpenPickerService, FileOpenPickerService>();
             Register<IExportDocumentService, ExportDocumentService>();
             Register<IFileSavePickerService, FileSavePickerService>();
-            Register<IPageExtractor>(GetPageExtractor);
+            Register<IPageExtractor>(() => new PageExtractorList(GetPageExtractors()));
             Register<ITranslatorService, TranslatorService>();
             Register<ILicenseService, LicenseService>();
-            Register<IPageExtractor, PdfPageExtractor>();
 
             Register<IMainPage, MainPage>();
             Register<IEditDocumentPage, EditDocumentPage>();
@@ -67,10 +67,10 @@ namespace MyDocs.WindowsStore.ViewModel
             }
         }
 
-        private IPageExtractor GetPageExtractor()
+        private IEnumerable<IPageExtractor> GetPageExtractors()
         {
-            return new PageExtractorList(
-                new IPageExtractor[] { new PdfPageExtractor() });
+            yield return new PdfPageExtractor();
+            yield return new ImagePageExtractor();
         }
 
         public DocumentViewModel DocumentVM

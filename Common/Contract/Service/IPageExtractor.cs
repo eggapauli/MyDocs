@@ -16,6 +16,27 @@ namespace MyDocs.Common.Contract.Service
         Task<IEnumerable<Photo>> ExtractPages(IFile file, Document document);
     }
 
+    public class ImagePageExtractor : IPageExtractor
+    {
+
+        public IEnumerable<string> SupportedExtensions
+        {
+            get
+            {
+                yield return ".bmp";
+                yield return ".gif";
+                yield return ".jpeg";
+                yield return ".jpg";
+                yield return ".png";
+            }
+        }
+
+        public Task<IEnumerable<Photo>> ExtractPages(IFile file, Document document)
+        {
+            return Task.FromResult<IEnumerable<Photo>>(new[] { new Photo(file) });
+        }
+    }
+
     public class PageExtractorList : IPageExtractor
     {
         private readonly IList<IPageExtractor> extractors;
