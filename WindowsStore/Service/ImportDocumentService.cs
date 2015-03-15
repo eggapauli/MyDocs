@@ -1,7 +1,7 @@
 ﻿using MyDocs.Common;
 using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Contract.Storage;
-using MyDocs.Common.Model;
+using Logic = MyDocs.Common.Model.Logic;
 using Serializable = MyDocs.Common.Model.Serializable;
 using System;
 using System.Collections.Generic;
@@ -11,6 +11,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using MyDocs.Common.Model.Logic;
 
 namespace MyDocs.WindowsStore.Service
 {
@@ -52,16 +53,19 @@ namespace MyDocs.WindowsStore.Service
             }
         }
 
-        private async Task<Document> DeserializeDocumentAsync(ZipArchive archive, Serializable.Document document)
+        private async Task<Logic.Document> DeserializeDocumentAsync(ZipArchive archive, Serializable.Document document)
         {
-            var doc = new Document(document.Id, document.Category, document.DateAdded, document.Lifespan, document.HasLimitedLifespan, document.Tags);
+            // TODO it smells that we create subdocuments based on a document and then return a different document
+            var doc = new Logic.Document(document.Id, document.Category, document.DateAdded, document.Lifespan, document.HasLimitedLifespan, document.Tags);
+            var subDocuments = new List<SubDocument>();
             foreach (var fileName in document.Files) {
-                doc.AddSubDocument(await DeserializePhotosAsync(archive, doc, fileName));
+                subDocuments.Add(await DeserializePhotosAsync(archive, doc, fileName));
             }
-            return doc;
+            // TODO use https://github.com/AArnott/ImmutableObjectGraph ?
+            return new Document(doc.Id, doc.Category, doc.DateAdded, doc.Lifespan, doc.HasLimitedLifespan, doc.Tags, subDocuments);
         }
 
-        private async Task<SubDocument> DeserializePhotosAsync(ZipArchive archive, Document document, string fileName)
+        private async Task<Logic.SubDocument> DeserializePhotosAsync(ZipArchive archive, Logic.Document document, string fileName)
         {
             // Folders must be separated by "/", not by "\\"
             //var path = Path.Combine(document.GetHumanReadableDescription(), fileName);
@@ -84,7 +88,7 @@ namespace MyDocs.WindowsStore.Service
                 pageExtractor.SupportedExtensions.Contains(Path.GetExtension(fileName)) ?
                 await pageExtractor.ExtractPages(photoFile, document) :
                 null;
-            return new SubDocument(photoFile, pages);
+            return new Logic.SubDocument(photoFile, pages);
         }
     }
 }

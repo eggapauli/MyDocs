@@ -1,7 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Ioc;
 using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Contract.Service;
-using MyDocs.Common.Model;
+using MyDocs.Common.Model.View;
 using MyDocs.Common.ViewModel;
 using MyDocs.WindowsStore.Common;
 using System;
@@ -27,7 +27,7 @@ namespace MyDocs.WindowsStore.Pages
             if (args.PageState != null && args.PageState.ContainsKey("Id")) {
                 args.PageState.ConvertToDocumentAsync().ContinueWith(t =>
                 {
-                    ViewModel.EditingDocument = t.Result;
+                    ViewModel.EditingDocument = Document.FromLogic(t.Result);
                     ViewModel.ShowNewCategoryInput = (bool)args.PageState["ShowNewCategoryInput"];
                     ViewModel.UseCategoryName = (string)args.PageState["UseCategoryName"];
                     ViewModel.NewCategoryName = (string)args.PageState["NewCategoryName"];
@@ -44,7 +44,7 @@ namespace MyDocs.WindowsStore.Pages
         protected override void SaveState(object sender, SaveStateEventArgs args)
         {
             if (ViewModel.EditingDocument != null) {
-                ViewModel.EditingDocument.ConvertToRestorableDocument(args.PageState);
+                ViewModel.EditingDocument.ToLogic().ConvertToRestorableDocument(args.PageState);
             }
             args.PageState["ShowNewCategoryInput"] = ViewModel.ShowNewCategoryInput;
             args.PageState["UseCategoryName"] = ViewModel.UseCategoryName;

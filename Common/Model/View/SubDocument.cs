@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyDocs.Common.Model
+namespace MyDocs.Common.Model.View
 {
     public class SubDocument : ObservableObject
     {
@@ -42,6 +42,16 @@ namespace MyDocs.Common.Model
         public void RemovePhoto(Photo photo)
         {
             Photos = Photos.Remove(photo);
+        }
+
+        public Logic.SubDocument ToLogic()
+        {
+            return new Logic.SubDocument(Title, File, Photos.Select(p => p.ToLogic()));
+        }
+
+        public static SubDocument FromLogic(Logic.SubDocument subDocument)
+        {
+            return new SubDocument(subDocument.File, subDocument.Photos.Select(Photo.FromLogic));
         }
     }
 }

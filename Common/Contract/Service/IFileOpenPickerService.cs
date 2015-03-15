@@ -1,5 +1,5 @@
 ﻿using MyDocs.Common.Contract.Storage;
-using MyDocs.Common.Model;
+using MyDocs.Common.Model.View;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

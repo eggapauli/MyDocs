@@ -1,11 +1,12 @@
 ﻿using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Contract.Storage;
-using MyDocs.Common.Model;
+using MyDocs.Common.Model.Logic;
 using MyDocs.WindowsStore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -16,7 +17,7 @@ namespace MyDocs.WindowsStore.Service.Design
     {
         private readonly Random random = new Random();
 
-        public async Task<IImmutableList<Category>> LoadAsync()
+        public async Task<IImmutableList<Document>> LoadAsync()
         {
             var photos = new List<IFile>();
             try {
@@ -24,10 +25,7 @@ namespace MyDocs.WindowsStore.Service.Design
                 photos.AddRange((await folder.GetFilesAsync()).Select<StorageFile, IFile>(f => new WindowsStoreFile(f)));
             }
             catch {}
-            return CreateDocuments(photos)
-                .GroupBy(d => d.Category)
-                .Select(g => new Category(g.Key, g))
-                .ToImmutableList();
+            return CreateDocuments(photos).ToImmutableList();
         }
 
         public IEnumerable<string> GetCategoryNames()

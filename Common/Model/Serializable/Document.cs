@@ -36,17 +36,17 @@ namespace MyDocs.Common.Model.Serializable
         {
             Id = id;
             Category = category;
-            Tags = tags;
+            Tags = tags.ToList();
             DateAdded = dateAdded;
             Lifespan = lifespan;
             HasLimitedLifespan = hasLimitedLifespan;
-            Files = files;
+            Files = files.ToList();
         }
 
-        public static Document FromModel(Model.Document d)
+        public static Document FromModel(Logic.Document d)
         {
-            var files = d.SubDocuments.Select(p => p.File.Name);
-            return new Serializable.Document(d.Id, d.Category, d.Tags, d.DateAdded, d.Lifespan, d.HasLimitedLifespan, files);
+            var files = d.SubDocuments.Select(p => p.File);
+            return new Serializable.Document(d.Id, d.Category, d.Tags, d.DateAdded, d.Lifespan, d.HasLimitedLifespan, files.Select(f => f.GetRelativePath()));
         }
     }
 }

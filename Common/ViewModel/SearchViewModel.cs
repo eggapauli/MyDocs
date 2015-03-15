@@ -2,7 +2,7 @@
 using GalaSoft.MvvmLight.Command;
 using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Contract.Service;
-using MyDocs.Common.Model;
+using MyDocs.Common.Model.View;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -172,15 +172,14 @@ namespace MyDocs.Common.ViewModel
 
             await documentService.LoadAsync();
 
-            var docs = (from category in await documentService.LoadAsync()
-                        from document in category.Documents
+            var docs = (from document in await documentService.LoadAsync()
                         where searchWords.All(word =>
                             document.Tags.Any(t =>
                                 t.IndexOf(word, StringComparison.CurrentCultureIgnoreCase) >= 0
                             )
                         )
                         where !FilterYear.Item1.HasValue || document.DateAdded.Year == FilterYear.Item1.Value
-                        select document).ToList();
+                        select Document.FromLogic(document)).ToList();
             foreach (var filter in Filters) {
                 filter.Apply(docs);
             }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Logic = MyDocs.Common.Model.Logic;
 
 namespace LexDbDal
 {
@@ -18,6 +19,11 @@ namespace LexDbDal
             Title = title;
             File = file;
             Photos = photos.ToList();
+        }
+
+        public static SubDocument FromLogic(Logic.SubDocument subDocument)
+        {
+            return new SubDocument(subDocument.Title, subDocument.File.GetUri(), subDocument.Photos.Select(p => p.File.GetUri()));
         }
     }
 }

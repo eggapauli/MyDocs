@@ -2,7 +2,7 @@
 using GalaSoft.MvvmLight.Command;
 using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Contract.Service;
-using MyDocs.Common.Model;
+using MyDocs.Common.Model.View;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -112,6 +112,7 @@ namespace MyDocs.Common.ViewModel
         {
             set
             {
+                // TODO this is just ugly
                 EditingDocument = null;
                 documentService.GetDocumentById(value).ContinueWith(t => {
                     if (t.IsFaulted) {
@@ -119,7 +120,7 @@ namespace MyDocs.Common.ViewModel
                         uiService.ShowErrorAsync("documentNotFound");
                     }
                     else {
-                        EditingDocument = t.Result;
+                        EditingDocument = Document.FromLogic(t.Result);
                     }
                 }, TaskScheduler.FromCurrentSynchronizationContext());
             }
@@ -180,7 +181,7 @@ namespace MyDocs.Common.ViewModel
         {
             if (IsInDesignMode) {
                 documentService.LoadAsync().ContinueWith(t => {
-                    EditingDocument = t.Result.SelectMany(c => c.Documents).First();
+                    EditingDocument = Document.FromLogic(t.Result.First());
                 }, TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
@@ -221,14 +222,14 @@ namespace MyDocs.Common.ViewModel
             EditingDocument.Category = ShowNewCategoryInput ? NewCategoryName : UseCategoryName;
 
             using (SetBusy()) {
-                await documentService.SaveDocumentAsync(EditingDocument);
+                await documentService.SaveDocumentAsync(EditingDocument.ToLogic());
 
                 // Delete removed photos
                 if (originalDocument != null) {
                     var oldPhotos = originalDocument.SubDocuments.SelectMany(d => d.Photos);
                     var newPhotos = EditingDocument.SubDocuments.SelectMany(d => d.Photos);
                     var deletedPhotos = oldPhotos.Where(p => !newPhotos.Contains(p));
-                    await documentService.RemovePhotosAsync(deletedPhotos);
+                    await documentService.RemovePhotosAsync(deletedPhotos.Select(p => p.ToLogic()));
                 }
             }
 
@@ -257,9 +258,9 @@ namespace MyDocs.Common.ViewModel
                     try {
                         var pages =
                             pageExtractor.SupportedExtensions.Contains(Path.GetExtension(file.Name)) ?
-                            await pageExtractor.ExtractPages(file, EditingDocument) :
+                            await pageExtractor.ExtractPages(file, EditingDocument.ToLogic()) :
                             null;
-                        EditingDocument.AddSubDocument(new SubDocument(file, pages));
+                        EditingDocument.AddSubDocument(new SubDocument(file, pages.Select(Photo.FromLogic)));
                     }
                     catch (Exception) {
                         error = true;

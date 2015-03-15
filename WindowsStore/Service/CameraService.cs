@@ -1,6 +1,6 @@
 ﻿using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Contract.Storage;
-using MyDocs.Common.Model;
+using MyDocs.Common.Model.View;
 using MyDocs.WindowsStore.Storage;
 using System;
 using System.Threading.Tasks;

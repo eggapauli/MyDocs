@@ -3,7 +3,7 @@ using GalaSoft.MvvmLight.Command;
 using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Messages;
-using MyDocs.Common.Model;
+using View = MyDocs.Common.Model.View;
 using Serializable = MyDocs.Common.Model.Serializable;
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using MyDocs.Common.Contract.Storage;
 using System.Collections.ObjectModel;
 using System.Collections.Immutable;
+using MyDocs.Common.Model;
 
 namespace MyDocs.Common.ViewModel
 {
@@ -30,8 +31,8 @@ namespace MyDocs.Common.ViewModel
 
         #region Properties
 
-        private IImmutableList<Category> categories;
-        private Document selectedDocument;
+        private IImmutableList<View.Category> categories;
+        private View.Document selectedDocument;
         private string newCategoryName;
         private bool inCategoryEditMode = false;
         private bool inZoomedInView = true;
@@ -44,7 +45,7 @@ namespace MyDocs.Common.ViewModel
             set { Set(ref inZoomedInView, value); }
         }
 
-        public IImmutableList<Category> Categories
+        public IImmutableList<View.Category> Categories
         {
             get { return categories; }
             set { Set(ref categories, value); }
@@ -55,7 +56,7 @@ namespace MyDocs.Common.ViewModel
             get { return !IsBusy && categories.Count == 0; }
         }
 
-        public Document SelectedDocument
+        public View.Document SelectedDocument
         {
             get { return selectedDocument; }
             set
@@ -143,9 +144,9 @@ namespace MyDocs.Common.ViewModel
             if (IsInDesignMode) {
                 documentService.LoadAsync().ContinueWith(t =>
                 {
-                    SelectedDocument = t.Result
-                        .SelectMany(c => c.Documents)
+                    var doc = t.Result
                         .First(d => d.Tags.Count > 2);
+                    SelectedDocument = View.Document.FromLogic(doc);
                 }, TaskScheduler.FromCurrentSynchronizationContext());
             }
         }
@@ -153,9 +154,14 @@ namespace MyDocs.Common.ViewModel
         public async Task LoadAsync(Guid? selectedDocumentId = null)
         {
             using (new TemporaryState(() => IsLoading = true, () => IsLoading = false)) {
-                Categories = await documentService.LoadAsync();
+                var documents = await documentService.LoadAsync();
+                Categories = documents
+                    .GroupBy(d => d.Category)
+                    .Select(g => new View.Category(g.Key, g.Select(View.Document.FromLogic)))
+                    .ToImmutableList();
                 if (selectedDocumentId.HasValue) {
-                    SelectedDocument = await documentService.GetDocumentById(selectedDocumentId.Value);
+                    var doc = await documentService.GetDocumentById(selectedDocumentId.Value);
+                    SelectedDocument = View.Document.FromLogic(doc);
                 }
             }
         }
@@ -165,9 +171,9 @@ namespace MyDocs.Common.ViewModel
         public RelayCommand AddDocumentCommand { get; private set; }
         public RelayCommand EditDocumentCommand { get; private set; }
         public RelayCommand DeleteDocumentCommand { get; private set; }
-        public RelayCommand<Document> ShowDocumentCommand { get; private set; }
-        public RelayCommand<Category> RenameCategoryCommand { get; private set; }
-        public RelayCommand<Category> DeleteCategoryCommand { get; private set; }
+        public RelayCommand<View.Document> ShowDocumentCommand { get; private set; }
+        public RelayCommand<View.Category> RenameCategoryCommand { get; private set; }
+        public RelayCommand<View.Category> DeleteCategoryCommand { get; private set; }
         public RelayCommand NavigateToSearchPageCommand { get; private set; }
         public RelayCommand ExportDocumentsCommand { get; private set; }
         public RelayCommand ImportDocumentsCommand { get; private set; }
@@ -177,10 +183,10 @@ namespace MyDocs.Common.ViewModel
             AddDocumentCommand = new RelayCommand(AddDocument);
             EditDocumentCommand = new RelayCommand(EditDocument, () => SelectedDocument != null);
             DeleteDocumentCommand = new RelayCommand(DeleteDocumentAsync, () => SelectedDocument != null);
-            ShowDocumentCommand = new RelayCommand<Document>(doc => navigationService.Navigate<IShowDocumentPage>(doc.Id), doc => doc != null);
+            ShowDocumentCommand = new RelayCommand<View.Document>(doc => navigationService.Navigate<IShowDocumentPage>(doc.Id), doc => doc != null);
 
-            RenameCategoryCommand = new RelayCommand<Category>(RenameCategoryAsync, _ => !String.IsNullOrWhiteSpace(newCategoryName));
-            DeleteCategoryCommand = new RelayCommand<Category>(DeleteCategoryAsync);
+            RenameCategoryCommand = new RelayCommand<View.Category>(RenameCategoryAsync, _ => !String.IsNullOrWhiteSpace(newCategoryName));
+            DeleteCategoryCommand = new RelayCommand<View.Category>(DeleteCategoryAsync);
 
             NavigateToSearchPageCommand = new RelayCommand(() => navigationService.Navigate<ISearchPage>());
 
@@ -203,11 +209,11 @@ namespace MyDocs.Common.ViewModel
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
             using (SetBusy()) {
-                await documentService.DeleteDocumentAsync(selectedDocument);
+                await documentService.DeleteDocumentAsync(selectedDocument.ToLogic());
             }
         }
 
-        private async void RenameCategoryAsync(Category category)
+        private async void RenameCategoryAsync(View.Category category)
         {
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
@@ -217,7 +223,7 @@ namespace MyDocs.Common.ViewModel
             NewCategoryName = null;
         }
 
-        private async void DeleteCategoryAsync(Category category)
+        private async void DeleteCategoryAsync(View.Category category)
         {
             MessengerInstance.Send(new CloseFlyoutsMessage());
 

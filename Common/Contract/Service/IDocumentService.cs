@@ -1,5 +1,5 @@
 ﻿using MyDocs.Common.Contract.Storage;
-using MyDocs.Common.Model;
+using MyDocs.Common.Model.Logic;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -13,7 +13,7 @@ namespace MyDocs.Common.Contract.Service
     {
         event EventHandler Changed;
 
-        Task<IImmutableList<Category>> LoadAsync();
+        Task<IImmutableList<Document>> LoadAsync();
         IEnumerable<string> GetCategoryNames();
         IEnumerable<int> GetDistinctDocumentYears();
 

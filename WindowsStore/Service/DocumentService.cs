@@ -1,6 +1,6 @@
 ﻿using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Contract.Storage;
-using MyDocs.Common.Model;
+using MyDocs.Common.Model.Logic;
 using MyDocs.WindowsStore.Common;
 using MyDocs.WindowsStore.Storage;
 using System;
@@ -33,14 +33,14 @@ namespace MyDocs.WindowsStore.Service
         private async Task InsertTestData()
         {
             var service = new MyDocs.WindowsStore.Service.Design.DesignDocumentService();
-            var testCategories = await service.LoadAsync();
+            var testDocuments = await service.LoadAsync();
 
-            foreach (var document in testCategories.SelectMany(c => c.Documents)) {
+            foreach (var document in testDocuments) {
                 await SaveDocumentAsync(document);
             }
         }
 
-        public async Task<IImmutableList<Category>> LoadAsync()
+        public async Task<IImmutableList<Document>> LoadAsync()
         {
             // TODO create CachedDocumentService
             //if (Documents.Count > 0) {
@@ -55,9 +55,7 @@ namespace MyDocs.WindowsStore.Service
             //categories.Clear();
 
             var documents = await documentDb.GetAllDocumentsAsync();
-            return documents.GroupBy(d => d.Category)
-                .Select(g => new Category(g.Key, g))
-                .ToImmutableList();
+            return documents.ToImmutableList();
 
             // TODO create CleanDocumentService
             //await RemoveOutdatedDocuments();
@@ -116,8 +114,9 @@ namespace MyDocs.WindowsStore.Service
 
         private IEnumerable<Task> SetDocumentsCategory(IEnumerable<Document> documents, string categoryName) {
             foreach (var document in documents) {
-                document.Category = categoryName;
-                yield return SaveDocumentAsync(document);
+                // TODO use https://github.com/AArnott/ImmutableObjectGraph ?
+                var doc = new Document(document.Id, categoryName, document.DateAdded, document.Lifespan, document.HasLimitedLifespan, document.Tags);
+                yield return SaveDocumentAsync(doc);
             }
         }
 

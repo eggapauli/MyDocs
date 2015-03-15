@@ -1,4 +1,4 @@
-﻿using MyDocs.Common.Model;
+﻿using Logic = MyDocs.Common.Model.Logic;
 using Serializable = MyDocs.Common.Model.Serializable;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace MyDocs.Common
 {
     public static class Extensions
     {
-        public static string GetHumanReadableDescription(this Document document)
+        public static string GetHumanReadableDescription(this Logic.Document document)
         {
             return GetHumanReadableDescription(document.Id, document.Tags);
         }

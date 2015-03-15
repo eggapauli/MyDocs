@@ -1,5 +1,5 @@
 ﻿using MyDocs.Common.Contract.Storage;
-using MyDocs.Common.Model;
+using MyDocs.Common.Model.Logic;
 using System;
 using System.Collections.Generic;
 using System.Linq;

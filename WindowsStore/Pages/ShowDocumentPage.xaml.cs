@@ -1,5 +1,5 @@
 ﻿using MyDocs.Common.Contract.Page;
-using MyDocs.Common.Model;
+using MyDocs.Common.Model.View;
 using MyDocs.Common.ViewModel;
 using MyDocs.WindowsStore.Common;
 using MyDocs.WindowsStore.Storage;

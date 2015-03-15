@@ -1,6 +1,6 @@
 ﻿using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Contract.Storage;
-using MyDocs.Common.Model;
+using MyDocs.Common.Model.Logic;
 using MyDocs.WindowsStore.Common;
 using MyDocs.WindowsStore.Storage;
 using System;
@@ -103,8 +103,7 @@ namespace MyDocs.WindowsStore.Service
 
         public async Task RemovePhotos(IEnumerable<Photo> photos)
         {
-            var tasks = photos.Select(p => p.File)
-                .Select(file => file.DeleteAsync());
+            var tasks = photos.Select(p => p.File.DeleteAsync());
             await Task.WhenAll(tasks);
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Lex.Db;
 using MyDocs.Common.Contract.Service;
-using Model = MyDocs.Common.Model;
+using MyDocs.Common.Contract.Storage;
+using Logic = MyDocs.Common.Model.Logic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,11 @@ namespace LexDbDal
 {
     public class LexDocumentDb : IDocumentDb
     {
-        public async Task Setup(IEnumerable<Model.Document> documents)
+        public async Task Setup(IEnumerable<Logic.Document> documents)
         {
             using (var db = OpenDatabase()) {
                 await db.PurgeAsync();
-                db.Save(documents.Select(Convert));
+                db.Save(documents.Select(Document.FromLogic));
             }
         }
 
@@ -24,17 +25,17 @@ namespace LexDbDal
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Model.Document>> GetAllDocumentsAsync()
+        public Task<IEnumerable<Logic.Document>> GetAllDocumentsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Model.Document>> GetDocuments(string categoryName)
+        public Task<IEnumerable<Logic.Document>> GetDocuments(string categoryName)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Model.Document> GetDocument(Guid id)
+        public Task<Logic.Document> GetDocument(Guid id)
         {
             throw new NotImplementedException();
         }
@@ -49,7 +50,7 @@ namespace LexDbDal
             throw new NotImplementedException();
         }
 
-        public void Save(Model.Document document)
+        public void Save(Logic.Document document)
         {
             throw new NotImplementedException();
         }
@@ -59,12 +60,12 @@ namespace LexDbDal
             throw new NotImplementedException();
         }
 
-        public Task RemoveDocument(Model.Document document)
+        public Task RemoveDocument(Logic.Document document)
         {
             throw new NotImplementedException();
         }
 
-        public Task RemovePhotos(IEnumerable<Model.Photo> photos)
+        public Task RemovePhotos(IEnumerable<Logic.Photo> photos)
         {
             throw new NotImplementedException();
         }
@@ -80,12 +81,6 @@ namespace LexDbDal
             //db.Purge();
             //db.Save(documents);
             return db;
-        }
-
-        private Document Convert(Model.Document document)
-        {
-            var subDocuments = document.SubDocuments.Select(sd => new SubDocument(sd.Title, sd.File.GetUri(), sd.Photos.Select(p => p.File.GetUri())));
-            return new Document(document.Id, document.Category, subDocuments, document.Tags, document.DateAdded, document.Lifespan, document.HasLimitedLifespan);
         }
     }
 }

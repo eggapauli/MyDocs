@@ -12,7 +12,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using MyDocs.Common.Model;
+using MyDocs.Common.Model.View;
 using Windows.UI.Xaml.Media.Imaging;
 using MyDocs.Common;
 using Windows.Storage;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Logic = MyDocs.Common.Model.Logic;
 
 namespace LexDbDal
 {
@@ -24,7 +25,7 @@ namespace LexDbDal
 
         public Document() { }
 
-        public Document(Guid id, string category, IEnumerable<SubDocument> subDocuments, IEnumerable<string> tags, DateTime dateAdded, TimeSpan lifespan, bool hasLimitedLifespan)
+        public Document(Guid id, string category, DateTime dateAdded, TimeSpan lifespan, bool hasLimitedLifespan, IEnumerable<string> tags, IEnumerable<SubDocument> subDocuments)
         {
             Id = id;
             Category = category;
@@ -35,5 +36,9 @@ namespace LexDbDal
             HasLimitedLifespan = hasLimitedLifespan;
         }
 
+        public static Document FromLogic(Logic.Document document)
+        {
+            return new Document(document.Id, document.Category, document.DateAdded, document.Lifespan, document.HasLimitedLifespan, document.Tags, document.SubDocuments.Select(SubDocument.FromLogic));
+        }
     }
 }
