@@ -29,7 +29,13 @@
         </Style>
         
         <DataTemplate x:Key="PhotoTemplate">
-            <controls:FilePreview File="{Binding}" FileSize="Small" Width="250" Height="250" />
+            <ItemsControl ItemsSource="{Binding Photos}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <controls:FilePreview File="{Binding}" FileSize="Small" Width="250" Height="250" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </DataTemplate>
     </Page.Resources>
 
@@ -117,14 +123,14 @@
                 <ProgressBar Grid.Row="1" IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <GridView Grid.Row="2"
                           x:Name="photoGridView"
-                          ItemsSource="{Binding EditingDocument.Photos}"
+                          ItemsSource="{Binding EditingDocument.SubDocuments}"
                           ItemTemplate="{Binding Source={StaticResource PhotoTemplate}}"
                           SelectionMode="Single"
                           SelectedItem="{Binding SelectedPhoto, Mode=TwoWay}"
                           Margin="30 0 0 0"/>
                 <ListView Grid.Row="2"
                           x:Name="photoListView"
-                          ItemsSource="{Binding EditingDocument.Photos}"
+                          ItemsSource="{Binding EditingDocument.SubDocuments}"
                           ItemTemplate="{Binding Source={StaticResource PhotoTemplate}}"
                           SelectionMode="Single"
                           SelectedItem="{Binding SelectedPhoto, Mode=TwoWay}"
