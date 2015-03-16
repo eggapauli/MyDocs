@@ -14,8 +14,8 @@ namespace MyDocs.Common.Contract.Service
         event EventHandler Changed;
 
         Task<IImmutableList<Document>> LoadAsync();
-        IEnumerable<string> GetCategoryNames();
-        IEnumerable<int> GetDistinctDocumentYears();
+        Task<IEnumerable<string>> GetCategoryNames();
+        Task<IEnumerable<int>> GetDistinctDocumentYears();
 
         Task RenameCategoryAsync(string oldName, string newName);
         Task DeleteCategoryAsync(string categoryName);

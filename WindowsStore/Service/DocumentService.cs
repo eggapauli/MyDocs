@@ -27,7 +27,7 @@ namespace MyDocs.WindowsStore.Service
 
         private async Task ClearAllData()
         {
-            await documentDb.RemoveAllDocumentsAsync();
+            await documentDb.ClearAllData();
         }
 
         private async Task InsertTestData()
@@ -86,12 +86,12 @@ namespace MyDocs.WindowsStore.Service
         //    }
         //}
 
-        public IEnumerable<string> GetCategoryNames()
+        public Task<IEnumerable<string>> GetCategoryNames()
         {
             return documentDb.GetDistinctCategories();
         }
 
-        public IEnumerable<int> GetDistinctDocumentYears()
+        public Task<IEnumerable<int>> GetDistinctDocumentYears()
         {
             return documentDb.GetDistinctDocumentYears();
         }
@@ -127,8 +127,7 @@ namespace MyDocs.WindowsStore.Service
 
         public async Task SaveDocumentAsync(Document document)
         {
-            documentDb.Save(document);
-            await Task.Yield();
+            await documentDb.Save(document);
 
             // TODO raise event
             //var existingDocument = Documents.SingleOrDefault(d => d.Id == document.Id);
@@ -140,7 +139,7 @@ namespace MyDocs.WindowsStore.Service
 
         public async Task DeleteDocumentAsync(Document document)
         {
-            documentDb.Remove(document.Id.ToString());
+            await documentDb.Remove(document.Id);
             await documentDb.RemoveDocument(document);
             // TODO raise event
             //Documents.Remove(document);

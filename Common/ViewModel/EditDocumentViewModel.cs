@@ -25,6 +25,7 @@ namespace MyDocs.Common.ViewModel
 
         #region Properties
 
+        private IEnumerable<string> categoryNames = Enumerable.Empty<string>();
         private bool showNewCategoryInput;
         private string useCategoryName;
         private string newCategoryName;
@@ -35,7 +36,8 @@ namespace MyDocs.Common.ViewModel
 
         public IEnumerable<string> CategoryNames
         {
-            get { return documentService.GetCategoryNames(); }
+            get { return categoryNames; }
+            private set { Set(ref categoryNames, value); }
         }
 
         public bool ShowNewCategoryInput
@@ -173,7 +175,16 @@ namespace MyDocs.Common.ViewModel
             CreateCommands();
             CreateDesignTimeData();
 
-            ShowUseCategoryInput = documentService.GetCategoryNames().Any();
+            // TODO observe changes
+            documentService.GetCategoryNames().ContinueWith(t => {
+                CategoryNames = t.Result;
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+
+            PropertyChanged += (s, e) => {
+                if (e.PropertyName == "CategoryNames") {
+                    ShowUseCategoryInput = CategoryNames.Any();
+                }
+            };
         }
 
         [Conditional("DEBUG")]

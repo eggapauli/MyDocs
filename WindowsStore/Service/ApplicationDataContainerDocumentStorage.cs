@@ -28,7 +28,7 @@ namespace MyDocs.WindowsStore.Service
             docsDataContainer = settingsService.SettingsContainer.CreateContainer(containerName);
         }
 
-        public async Task RemoveAllDocumentsAsync()
+        public async Task ClearAllData()
         {
             docsDataContainer.Values.Clear();
 
@@ -66,30 +66,34 @@ namespace MyDocs.WindowsStore.Service
             return documents.SingleOrDefault(d => d.Id == id);
         }
 
-        public IEnumerable<string> GetDistinctCategories()
+        public async Task<IEnumerable<string>> GetDistinctCategories()
         {
+            await Task.Yield();
             return (from item in docsDataContainer.Values.Values.Cast<ApplicationDataCompositeValue>()
                     let categoryName = (string)(item["Category"])
                     orderby categoryName
                     select categoryName).Distinct();
         }
 
-        public IEnumerable<int> GetDistinctDocumentYears()
+        public async Task<IEnumerable<int>> GetDistinctDocumentYears()
         {
+            await Task.Yield();
             return (from item in docsDataContainer.Values.Values.Cast<ApplicationDataCompositeValue>()
                     let yearAdded = ((DateTimeOffset)(item["DateAdded"])).Year
                     orderby yearAdded
                     select yearAdded).Distinct();
         }
 
-        public void Save(Document document)
+        public async Task Save(Document document)
         {
             docsDataContainer.Values[document.Id.ToString()] = document.ConvertToStoredDocument();
+            await Task.Yield();
         }
 
-        public void Remove(string documentId)
+        public async Task Remove(Guid documentId)
         {
-            docsDataContainer.Values.Remove(documentId);
+            docsDataContainer.Values.Remove(documentId.ToString());
+            await Task.Yield();
         }
 
         public async Task RemoveDocument(Document document)

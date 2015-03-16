@@ -18,16 +18,19 @@ namespace MyDocs.Common.ViewModel
         private INavigationService navigationService;
         private ITranslatorService translatorService;
 
+        private readonly Tuple<int?, string> allYears = Tuple.Create<int?, string>(null, "All");
+        private IEnumerable<string> categoryNames = Enumerable.Empty<string>();
         private string queryText;
         private Tuple<int?, string> filterYear;
-        private List<int> filterYears;
+        private IEnumerable<int> filterYears = Enumerable.Empty<int>();
         private List<Filter> filters;
         private bool isInDefaultLayout;
         private Filter allFilter;
 
         public IEnumerable<string> CategoryNames
         {
-            get { return documentService.GetCategoryNames(); }
+            get { return categoryNames; }
+            set { Set(ref categoryNames, value); }
         }
 
         public string QueryText
@@ -47,13 +50,12 @@ namespace MyDocs.Common.ViewModel
             }
         }
 
-        private Tuple<int?, string> allYears = Tuple.Create<int?, string>(null, "All");
         public IEnumerable<Tuple<int?, string>> FilterYears
         {
             get
             {
                 yield return allYears;
-                foreach (var year in documentService.GetDistinctDocumentYears()) {
+                foreach (var year in filterYears) {
                     yield return Tuple.Create<int?, string>(year, year.ToString());
                 }
             }
@@ -123,6 +125,17 @@ namespace MyDocs.Common.ViewModel
                 }
             };
 
+            // TODO observe changes
+            documentService.GetCategoryNames()
+                .ContinueWith(t => CategoryNames = t.Result, TaskScheduler.FromCurrentSynchronizationContext());
+
+            // TODO observe changes
+            documentService.GetDistinctDocumentYears()
+                .ContinueWith(t => {
+                    filterYears = t.Result;
+                    RaisePropertyChanged(() => FilterYears);
+                }, TaskScheduler.FromCurrentSynchronizationContext());
+
             CreateCommands();
             CreateDesignTimeData();
         }
@@ -155,7 +168,8 @@ namespace MyDocs.Common.ViewModel
         public void LoadFilters()
         {
             filters.Clear();
-            var newFilters = documentService.GetCategoryNames()
+            // TODO observe changes
+            var newFilters = CategoryNames
                 .Select(categoryName =>
                     new SearchViewModel.Filter(categoryName, d => d.Category == categoryName));
             filters.AddRange(newFilters);

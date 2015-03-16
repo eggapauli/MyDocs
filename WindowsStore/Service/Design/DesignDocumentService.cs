@@ -28,14 +28,14 @@ namespace MyDocs.WindowsStore.Service.Design
             return CreateDocuments(photos).ToImmutableList();
         }
 
-        public IEnumerable<string> GetCategoryNames()
+        public Task<IEnumerable<string>> GetCategoryNames()
         {
-            return Enumerable.Range(1, 5).Select(i => "Category " + i);
+            return Task.FromResult(Enumerable.Range(1, 5).Select(i => "Category " + i));
         }
 
-        public IEnumerable<int> GetDistinctDocumentYears()
+        public Task<IEnumerable<int>> GetDistinctDocumentYears()
         {
-            yield return DateTime.Today.Year;
+            return Task.FromResult<IEnumerable<int>>(new[] { DateTime.Today.Year });
         }
 
         private IEnumerable<Document> CreateDocuments(IList<IFile> photos)

@@ -31,7 +31,7 @@ namespace MyDocs.Common.ViewModel
 
         #region Properties
 
-        private IImmutableList<View.Category> categories;
+        private IImmutableList<View.Category> categories = ImmutableList<View.Category>.Empty;
         private View.Document selectedDocument;
         private string newCategoryName;
         private bool inCategoryEditMode = false;
