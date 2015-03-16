@@ -62,7 +62,8 @@ namespace MyDocs.WindowsStore.Controls
             if (photo != null) {
                 using (new TemporaryState(() => self.Loading.IsActive = true, () => self.Loading.IsActive = false)) {
                     self.Preview.Source = (BitmapImage)(await photo.File.GetResizedBitmapImageAsync(self.FileSize)).Image;
-                    await System.Threading.Tasks.Task.Delay(500); // image is not shown immediately
+                    // Image is not shown immediately, so wait a bit before inactivating loading
+                    await System.Threading.Tasks.Task.Delay(500);
                 }
             }
         }
