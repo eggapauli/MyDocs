@@ -104,12 +104,14 @@ namespace MyDocs.WindowsStore.Storage
 
         public async Task<IFile> CopyAsync(IFolder folder, string name)
         {
-            return await File.CopyAsync(((WindowsStoreFolder)folder).Folder, name).AsTask().ContinueWith(t => new WindowsStoreFile(t.Result));
+            var copy = await File.CopyAsync(((WindowsStoreFolder)folder).Folder, name);
+            return new WindowsStoreFile(copy);
         }
 
         public async Task<IFile> CopyAsync(IFolder folder)
         {
-            return await File.CopyAsync(((WindowsStoreFolder)folder).Folder).AsTask().ContinueWith(t => new WindowsStoreFile(t.Result));
+            var copy = await File.CopyAsync(((WindowsStoreFolder)folder).Folder);
+            return new WindowsStoreFile(copy);
         }
 
         public async Task DeleteAsync()
