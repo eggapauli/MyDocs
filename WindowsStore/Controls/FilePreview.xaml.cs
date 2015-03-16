@@ -57,11 +57,11 @@ namespace MyDocs.WindowsStore.Controls
         private static async void FilePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var self = (FilePreview)d;
-            var subDocument = (SubDocument)e.NewValue;
+            var photo = (Photo)e.NewValue;
 
-            if (subDocument != null) {
+            if (photo != null) {
                 using (new TemporaryState(() => self.Loading.IsActive = true, () => self.Loading.IsActive = false)) {
-                    self.Preview.Source = (BitmapImage)(await subDocument.Photos.First().File.GetResizedBitmapImageAsync(self.FileSize)).Image;
+                    self.Preview.Source = (BitmapImage)(await photo.File.GetResizedBitmapImageAsync(self.FileSize)).Image;
                     await System.Threading.Tasks.Task.Delay(500); // image is not shown immediately
                 }
             }
