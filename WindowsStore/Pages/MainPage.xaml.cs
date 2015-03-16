@@ -31,7 +31,7 @@ namespace MyDocs.WindowsStore.Pages
             get { return (DocumentViewModel)DataContext; }
         }
 
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
@@ -43,10 +43,6 @@ namespace MyDocs.WindowsStore.Pages
             Messenger.Default.Register<CloseFlyoutsMessage>(this, m => CloseFlyouts());
 
             RefreshLayout();
-
-            using (ViewModel.SetBusy()) {
-                await MigrationHelper.Migrate();
-            }
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -77,16 +73,17 @@ namespace MyDocs.WindowsStore.Pages
                    select button.Flyout;
         }
 
-        protected override void LoadState(object sender, LoadStateEventArgs args)
+        protected override async void LoadState(object sender, LoadStateEventArgs args)
         {
-            ViewModel.LoadAsync((Guid?)args.NavigationParameter).ContinueWith(t =>
-            {
-                if (groupedDocumentsViewSource.View != null) {
-                    var collectionGroups = groupedDocumentsViewSource.View.CollectionGroups;
-                    ((ListViewBase)this.semanticZoom.ZoomedOutView).ItemsSource = collectionGroups;
-                    ((ListViewBase)this.semanticZoomTight.ZoomedOutView).ItemsSource = collectionGroups;
-                }
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+            using (ViewModel.SetBusy()) {
+                await MigrationHelper.Migrate();
+            }
+            await ViewModel.LoadAsync((Guid?)args.NavigationParameter);
+            if (groupedDocumentsViewSource.View != null) {
+                var collectionGroups = groupedDocumentsViewSource.View.CollectionGroups;
+                ((ListViewBase)this.semanticZoom.ZoomedOutView).ItemsSource = collectionGroups;
+                ((ListViewBase)this.semanticZoomTight.ZoomedOutView).ItemsSource = collectionGroups;
+            }
         }
 
         private void WindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
