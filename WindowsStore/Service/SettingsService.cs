@@ -14,14 +14,23 @@ namespace MyDocs.WindowsStore.Service
         private IFolder roamingFolder = new WindowsStoreFolder(ApplicationData.Current.RoamingFolder);
         private IFolder tempFolder = new WindowsStoreFolder(ApplicationData.Current.TemporaryFolder);
 
-        private IApplicationDataContainer roamingSettings = new WindowsStoreApplicationDataContainer(ApplicationData.Current.RoamingSettings);
-        private IApplicationDataContainer localSettings = new WindowsStoreApplicationDataContainer(ApplicationData.Current.LocalSettings);
+        private ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
+        private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
 
-        public IFolder PhotoFolder { get { return IsSyncEnabled ? roamingFolder : localFolder; } }
+        public IFolder PhotoFolder
+        {
+            get { return IsSyncEnabled ? roamingFolder : localFolder; }
+        }
 
-        public IFolder TempFolder { get { return tempFolder; } }
+        public IFolder TempFolder
+        {
+            get { return tempFolder; }
+        }
 
-        public IApplicationDataContainer SettingsContainer { get { return IsSyncEnabled ? roamingSettings : localSettings; } }
+        public ApplicationDataContainer SettingsContainer
+        {
+            get { return IsSyncEnabled ? roamingSettings : localSettings; }
+        }
 
         public bool IsSyncEnabled
         {

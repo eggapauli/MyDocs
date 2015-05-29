@@ -20,12 +20,12 @@ namespace MyDocs.WindowsStore.Service
         private readonly ISettingsService settingsService;
         private readonly IFolder tempFolder = new WindowsStoreFolder(ApplicationData.Current.TemporaryFolder);
 
-        private readonly IApplicationDataContainer docsDataContainer;
+        private readonly ApplicationDataContainer docsDataContainer;
 
         public ApplicationDataContainerDocumentStorage(ISettingsService settingsService)
         {
             this.settingsService = settingsService;
-            docsDataContainer = settingsService.SettingsContainer.CreateContainer(containerName);
+            docsDataContainer = settingsService.SettingsContainer.CreateContainer(containerName, ApplicationDataCreateDisposition.Always);
         }
 
         public async Task ClearAllData()

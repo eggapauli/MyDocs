@@ -159,7 +159,6 @@
       <DependentUpon>ShowDocumentPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Service\WindowsStoreFileConverter.cs" />
-    <Compile Include="Storage\WindowsStoreApplicationDataContainer.cs" />
     <Compile Include="Storage\WindowsStoreFolder.cs" />
     <Compile Include="Storage\WindowsStoreBitmapImage.cs" />
     <Compile Include="Storage\WindowsStoreFile.cs" />

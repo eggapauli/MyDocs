@@ -1,4 +1,5 @@
 ﻿using MyDocs.Common.Contract.Storage;
+using Windows.Storage;
 
 namespace MyDocs.Common.Contract.Service
 {
@@ -6,7 +7,7 @@ namespace MyDocs.Common.Contract.Service
     {
         IFolder PhotoFolder { get; }
         IFolder TempFolder { get; }
-        IApplicationDataContainer SettingsContainer { get; }
+        ApplicationDataContainer SettingsContainer { get; }
         bool IsSyncEnabled { get; set; }
     }
 }
