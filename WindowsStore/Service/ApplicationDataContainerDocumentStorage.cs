@@ -104,11 +104,5 @@ namespace MyDocs.WindowsStore.Service
             }
             catch (FileNotFoundException) { }
         }
-
-        public async Task RemovePhotos(IEnumerable<Photo> photos)
-        {
-            var tasks = photos.Select(p => p.File.DeleteAsync());
-            await Task.WhenAll(tasks);
-        }
     }
 }

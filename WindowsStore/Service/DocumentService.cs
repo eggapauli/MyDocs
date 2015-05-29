@@ -150,7 +150,8 @@ namespace MyDocs.WindowsStore.Service
 
         public async Task RemovePhotosAsync(IEnumerable<Photo> photos)
         {
-            await documentDb.RemovePhotos(photos);
+            var tasks = photos.Select(p => p.File.DeleteAsync());
+            await Task.WhenAll(tasks);
         }
     }
 }

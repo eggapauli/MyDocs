@@ -26,6 +26,5 @@ namespace MyDocs.Common.Contract.Service
 
         Task RemoveDocument(Document document);
 
-        Task RemovePhotos(IEnumerable<Photo> photos);
     }
 }
