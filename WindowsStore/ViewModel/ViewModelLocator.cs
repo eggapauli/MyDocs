@@ -7,7 +7,6 @@ using MyDocs.Common.ViewModel;
 using MyDocs.WindowsStore.Pages;
 using MyDocs.WindowsStore.Service;
 using MyDocs.WindowsStore.Service.Design;
-using MyDocs.WindowsStore.Storage;
 using System;
 using System.Collections.Generic;
 
@@ -39,9 +38,11 @@ namespace MyDocs.WindowsStore.ViewModel
             Register<ILicenseService, LicenseService>();
             Register<IFileConverter, WindowsStoreFileConverter>();
 
-            Register<ApplicationDataContainerDocumentStorage>(
-                () => new ApplicationDataContainerDocumentStorage(ServiceLocator.Current.GetInstance<ISettingsService>()));
+            Register(() => new ApplicationDataContainerDocumentStorage(ServiceLocator.Current.GetInstance<ISettingsService>()));
             
+            var jsonDocumentDb = new JsonNetDal.JsonDocumentDb(ServiceLocator.Current.GetInstance<IFileConverter>());
+            Register(() => jsonDocumentDb);
+            Register<IDocumentDb>(() => jsonDocumentDb);
 
             Register<IMainPage, MainPage>();
             Register<IEditDocumentPage, EditDocumentPage>();

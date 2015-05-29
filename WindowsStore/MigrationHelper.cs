@@ -1,10 +1,6 @@
-using Microsoft.Practices.ServiceLocation;
-using MyDocs.Common.Model;
+﻿using Microsoft.Practices.ServiceLocation;
 using MyDocs.WindowsStore.Service;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
@@ -39,15 +35,17 @@ namespace MyDocs.WindowsStore
         public static async Task Migrate()
         {
             if (MigrateFromVersion == null) {
+                await MigrateFromBuiltInDbToJsonDb();
             }
             MigrateFromVersion = CurrentVersion;
         }
 
-        private static async Task MigrateFromBuiltInDbToLexDb()
+        private static async Task MigrateFromBuiltInDbToJsonDb()
         {
             var builtInDb = ServiceLocator.Current.GetInstance<ApplicationDataContainerDocumentStorage>();
             var documents = await builtInDb.GetAllDocumentsAsync();
 
+            await ServiceLocator.Current.GetInstance<JsonNetDal.JsonDocumentDb>().Setup(documents);
         }
     }
 }

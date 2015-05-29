@@ -225,6 +225,9 @@
       <Project>{6666ff12-6c2c-4aed-a1dd-f1e1f08445f8}</Project>
       <Name>Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\JsonNetDal\JsonNetDal.csproj">
+      <Project>{a453331d-bb00-4f41-9d86-3c865ad662d1}</Project>
+      <Name>JsonNetDal</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
