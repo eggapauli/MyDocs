@@ -268,7 +268,7 @@ namespace MyDocs.Common.ViewModel
                 foreach (var file in files) {
                     try {
                         var pages =
-                            pageExtractor.SupportedExtensions.Contains(Path.GetExtension(file.Name)) ?
+                            pageExtractor.SupportsExtension(Path.GetExtension(file.Name)) ?
                             await pageExtractor.ExtractPages(file, EditingDocument.ToLogic()) :
                             null;
                         EditingDocument.AddSubDocument(new SubDocument(file, pages.Select(Photo.FromLogic)));

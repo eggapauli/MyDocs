@@ -85,7 +85,7 @@ namespace MyDocs.WindowsStore.Service
 
             // TODO strip name collision part out
             var pages =
-                pageExtractor.SupportedExtensions.Contains(Path.GetExtension(fileName)) ?
+                pageExtractor.SupportsExtension(Path.GetExtension(fileName)) ?
                 await pageExtractor.ExtractPages(photoFile, document) :
                 null;
             return new Logic.SubDocument(photoFile, pages);

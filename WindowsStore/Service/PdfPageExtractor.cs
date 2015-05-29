@@ -15,9 +15,9 @@ namespace MyDocs.WindowsStore.Service
 {
     public class PdfPageExtractor : IPageExtractor
     {
-        public IEnumerable<string> SupportedExtensions
+        public bool SupportsExtension(string extension)
         {
-            get { yield return ".pdf"; }
+            return new[] { ".pdf" }.Contains(extension, StringComparer.OrdinalIgnoreCase);
         }
 
         public async Task<IEnumerable<Photo>> ExtractPages(IFile file, Document document)

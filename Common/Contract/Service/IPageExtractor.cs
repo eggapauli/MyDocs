@@ -11,24 +11,16 @@ namespace MyDocs.Common.Contract.Service
 {
     public interface IPageExtractor
     {
-        IEnumerable<string> SupportedExtensions { get; }
+        bool SupportsExtension(string extension);
 
         Task<IEnumerable<Photo>> ExtractPages(IFile file, Document document);
     }
 
     public class ImagePageExtractor : IPageExtractor
     {
-
-        public IEnumerable<string> SupportedExtensions
+        public bool SupportsExtension(string extension)
         {
-            get
-            {
-                yield return ".bmp";
-                yield return ".gif";
-                yield return ".jpeg";
-                yield return ".jpg";
-                yield return ".png";
-            }
+            return new[] { ".bmp", ".gif", ".jpeg", ".jpg", ".png" }.Contains(extension, StringComparer.OrdinalIgnoreCase);
         }
 
         public Task<IEnumerable<Photo>> ExtractPages(IFile file, Document document)
@@ -46,16 +38,16 @@ namespace MyDocs.Common.Contract.Service
             this.extractors = extractors.ToList();
         }
 
-        public IEnumerable<string> SupportedExtensions
+        public bool SupportsExtension(string extension)
         {
-            get { return extractors.SelectMany(e => e.SupportedExtensions); }
+            return extractors.Any(e => e.SupportsExtension(extension));
         }
 
         public async Task<IEnumerable<Photo>> ExtractPages(IFile file, Document document)
         {
             var extension = Path.GetExtension(file.Name);
             return await extractors
-                .Single(e => e.SupportedExtensions.Contains(extension))
+                .Single(e => e.SupportsExtension(extension))
                 .ExtractPages(file, document);
         }
     }
