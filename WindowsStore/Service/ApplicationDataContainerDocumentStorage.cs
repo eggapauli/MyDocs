@@ -93,13 +93,9 @@ namespace MyDocs.WindowsStore.Service
         public async Task Remove(Guid documentId)
         {
             docsDataContainer.Values.Remove(documentId.ToString());
-            await Task.Yield();
-        }
-
-        public async Task RemoveDocument(Document document)
-        {
-            try {
-                var folder = await ApplicationData.Current.LocalFolder.GetFolderAsync(document.Id.ToString());
+            try
+            {
+                var folder = await ApplicationData.Current.LocalFolder.GetFolderAsync(documentId.ToString());
                 await folder.DeleteAsync();
             }
             catch (FileNotFoundException) { }

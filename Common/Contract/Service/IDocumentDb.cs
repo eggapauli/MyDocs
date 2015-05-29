@@ -24,7 +24,6 @@ namespace MyDocs.Common.Contract.Service
 
         Task Remove(Guid documentId);
 
-        Task RemoveDocument(Document document);
 
     }
 }

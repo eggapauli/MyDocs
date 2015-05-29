@@ -140,7 +140,6 @@ namespace MyDocs.WindowsStore.Service
         public async Task DeleteDocumentAsync(Document document)
         {
             await documentDb.Remove(document.Id);
-            await documentDb.RemoveDocument(document);
             // TODO raise event
             //Documents.Remove(document);
         }
