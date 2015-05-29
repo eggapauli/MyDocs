@@ -1,7 +1,5 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
-using Lex.Db;
-using LexDbDal;
 using Microsoft.Practices.ServiceLocation;
 using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Contract.Service;
@@ -44,11 +42,6 @@ namespace MyDocs.WindowsStore.ViewModel
             Register<ApplicationDataContainerDocumentStorage>(
                 () => new ApplicationDataContainerDocumentStorage(ServiceLocator.Current.GetInstance<ISettingsService>()));
             
-            var lexDocumentDb = new LexDocumentDb(
-                () => new DbInstance("mydocs.lex.db"),
-                ServiceLocator.Current.GetInstance<IFileConverter>());
-            Register<LexDocumentDb>(() => lexDocumentDb);
-            Register<IDocumentDb>(() => lexDocumentDb);
 
             Register<IMainPage, MainPage>();
             Register<IEditDocumentPage, EditDocumentPage>();

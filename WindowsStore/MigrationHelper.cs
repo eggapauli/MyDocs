@@ -1,4 +1,3 @@
-﻿using LexDbDal;
 using Microsoft.Practices.ServiceLocation;
 using MyDocs.Common.Model;
 using MyDocs.WindowsStore.Service;
@@ -40,7 +39,6 @@ namespace MyDocs.WindowsStore
         public static async Task Migrate()
         {
             if (MigrateFromVersion == null) {
-                await MigrateFromBuiltInDbToLexDb();
             }
             MigrateFromVersion = CurrentVersion;
         }
@@ -50,7 +48,6 @@ namespace MyDocs.WindowsStore
             var builtInDb = ServiceLocator.Current.GetInstance<ApplicationDataContainerDocumentStorage>();
             var documents = await builtInDb.GetAllDocumentsAsync();
 
-            await ServiceLocator.Current.GetInstance<LexDocumentDb>().Setup(documents);
         }
     }
 }
