@@ -1,15 +1,12 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyDocs.Common.ViewModel;
-using FakeItEasy;
 using MyDocs.Common.Contract.Service;
 using System.Collections.Generic;
 using MyDocs.Common.Model.Logic;
 using View = MyDocs.Common.Model.View;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Immutable;
 
 namespace MyDocs.Common.Test.Search
 {
@@ -83,22 +80,12 @@ namespace MyDocs.Common.Test.Search
 
         private IDocumentService MakeDocumentService(IEnumerable<Document> documents)
         {
-            var documentService = A.Fake<IDocumentService>();
-            A.CallTo(() => documentService.LoadAsync()).Returns(Task.FromResult<IImmutableList<Document>>(documents.ToImmutableList()));
-            A.CallTo(() => documentService.GetCategoryNames()).Returns(documents.Select(d => d.Category).Distinct());
-            var years = documents
-                .Select(d => d.DateAdded.Year)
-                .Distinct()
-                .OrderBy(year => year);
-            A.CallTo(() => documentService.GetDistinctDocumentYears()).Returns(years);
-            return documentService;
+            return new DummyDocumentService(documents);
         }
 
         private SearchViewModel MakeSut(IDocumentService documentService)
         {
-            var navigationService = A.Fake<INavigationService>();
-            var translatorService = A.Fake<ITranslatorService>();
-            var sut = new SearchViewModel(documentService, navigationService, translatorService);
+            var sut = new SearchViewModel(documentService, new DummyNavigationService(), new DummyTranslatorService());
             sut.LoadFilters();
             return sut;
         }

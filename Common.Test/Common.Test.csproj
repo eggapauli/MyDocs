@@ -78,6 +78,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="DummyDocumentService.cs" />
+    <Compile Include="DummyNavigationService.cs" />
+    <Compile Include="DummyTranslatorService.cs" />
     <Compile Include="Search\SearchViewModelTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

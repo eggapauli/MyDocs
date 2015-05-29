@@ -5,7 +5,6 @@ using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Model.View;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -114,30 +113,34 @@ namespace MyDocs.Common.ViewModel
             filterYears = new List<int>();
             allFilter = new Filter(translatorService.Translate("all"), _ => true, active: true);
 
-            this.PropertyChanged += async (s, e) => {
+            this.PropertyChanged += async (s, e) =>
+            {
                 var propertyNames = new[] { "FilterYear" };
-                foreach (var name in propertyNames) {
+                foreach (var name in propertyNames)
+                {
                     VerifyPropertyName(name);
                 }
 
-                if (propertyNames.Contains(e.PropertyName)) {
+                if (propertyNames.Contains(e.PropertyName))
+                {
                     await RefreshResults();
                 }
             };
 
-            // TODO observe changes
-            documentService.GetCategoryNames()
-                .ContinueWith(t => CategoryNames = t.Result, TaskScheduler.FromCurrentSynchronizationContext());
-
-            // TODO observe changes
-            documentService.GetDistinctDocumentYears()
-                .ContinueWith(t => {
-                    filterYears = t.Result;
-                    RaisePropertyChanged(() => FilterYears);
-                }, TaskScheduler.FromCurrentSynchronizationContext());
+            SetData();
 
             CreateCommands();
             CreateDesignTimeData();
+        }
+
+        private async void SetData()
+        {
+            // TODO observe changes
+            CategoryNames = await documentService.GetCategoryNames();
+
+            // TODO observe changes
+            filterYears = await documentService.GetDistinctDocumentYears();
+            RaisePropertyChanged(() => FilterYears);
         }
 
         #region Commands
