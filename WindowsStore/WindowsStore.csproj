@@ -158,7 +158,6 @@
     <Compile Include="Pages\ShowDocumentPage.xaml.cs">
       <DependentUpon>ShowDocumentPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Service\WindowsStoreFileConverter.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
   </ItemGroup>
   <ItemGroup>

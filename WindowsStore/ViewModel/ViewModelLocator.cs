@@ -36,11 +36,10 @@ namespace MyDocs.WindowsStore.ViewModel
             Register<IPageExtractor>(() => new PageExtractorList(GetPageExtractors()));
             Register<ITranslatorService, TranslatorService>();
             Register<ILicenseService, LicenseService>();
-            Register<IFileConverter, WindowsStoreFileConverter>();
 
             Register(() => new ApplicationDataContainerDocumentStorage(ServiceLocator.Current.GetInstance<ISettingsService>()));
             
-            var jsonDocumentDb = new JsonNetDal.JsonDocumentDb(ServiceLocator.Current.GetInstance<IFileConverter>());
+            var jsonDocumentDb = new JsonNetDal.JsonDocumentDb();
             Register(() => jsonDocumentDb);
             Register<IDocumentDb>(() => jsonDocumentDb);
 

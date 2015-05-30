@@ -42,9 +42,9 @@ namespace JsonNetDal
             return new Document(document.Id, document.Category, document.DateAdded, document.Lifespan, document.HasLimitedLifespan, document.Tags, document.SubDocuments.Select(SubDocument.FromLogic));
         }
 
-        public async Task<Logic.Document> ToLogic(IFileConverter fileConverter)
+        public async Task<Logic.Document> ToLogic()
         {
-            var subDocuments = await Task.WhenAll(SubDocuments.Select(sd => sd.ToLogic(fileConverter)));
+            var subDocuments = await Task.WhenAll(SubDocuments.Select(sd => sd.ToLogic()));
             return new Logic.Document(Id, Category, DateAdded, Lifespan, HasLimitedLifespan, Tags, subDocuments);
         }
     }

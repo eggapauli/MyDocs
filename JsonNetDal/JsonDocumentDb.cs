@@ -13,17 +13,11 @@ namespace JsonNetDal
 {
     public class JsonDocumentDb : IDocumentDb
     {
-        private readonly IFileConverter fileConverter;
         private readonly JsonSerializerSettings serializerSettings = new JsonSerializerSettings
         {
             Formatting = Formatting.None,
             Culture = CultureInfo.InvariantCulture
         };
-
-        public JsonDocumentDb(IFileConverter fileConverter)
-        {
-            this.fileConverter = fileConverter;
-        }
 
         public async Task Setup(IEnumerable<Logic.Document> documents)
         {
@@ -43,7 +37,7 @@ namespace JsonNetDal
         public async Task<IEnumerable<Logic.Document>> GetAllDocumentsAsync()
         {
             var dbDocs = await ReadDocuments();
-            return await Task.WhenAll(dbDocs.Select(d => d.ToLogic(fileConverter)));
+            return await Task.WhenAll(dbDocs.Select(d => d.ToLogic()));
         }
 
         public async Task<IEnumerable<Logic.Document>> GetDocuments(string categoryName)
@@ -60,7 +54,7 @@ namespace JsonNetDal
             {
                 throw new DocumentNotFoundException();
             }
-            return await doc.ToLogic(fileConverter);
+            return await doc.ToLogic();
         }
 
         public async Task<IEnumerable<string>> GetDistinctCategories()

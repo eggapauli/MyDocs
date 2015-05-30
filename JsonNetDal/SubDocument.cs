@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Storage;
 using Logic = MyDocs.Common.Model.Logic;
 
 namespace JsonNetDal
@@ -32,10 +33,15 @@ namespace JsonNetDal
             return new SubDocument(subDocument.Title, subDocument.File.GetUri().AbsoluteUri, subDocument.Photos.Select(p => p.File.GetUri().AbsoluteUri));
         }
 
-        public async Task<Logic.SubDocument> ToLogic(IFileConverter fileConverter)
+        public async Task<Logic.SubDocument> ToLogic()
         {
-            var file = await fileConverter.ToFile(new Uri(File));
-            var photos = await Task.WhenAll(Photos.Select(p => new Uri(p)).Select(fileConverter.ToFile));
+            var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri(File));
+            var photoTasks =
+                Photos
+                .Select(p => new Uri(p))
+                .Select(StorageFile.GetFileFromApplicationUriAsync)
+                .Select(x => x.AsTask());
+            var photos = await Task.WhenAll(photoTasks);
             return new Logic.SubDocument(file, photos.Select(p => new Logic.Photo(p)));
         }
     }
