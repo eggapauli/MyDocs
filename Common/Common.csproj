@@ -55,9 +55,8 @@
     <Compile Include="Contract\Service\INavigationService.cs" />
     <Compile Include="Contract\Service\ISettingsService.cs" />
     <Compile Include="Contract\Storage\FileSize.cs" />
-    <Compile Include="Contract\Storage\IFile.cs" />
-    <Compile Include="Contract\Storage\IFolder.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="StorageExtensions.cs" />
     <Compile Include="Messages\CloseFlyoutsMessage.cs" />
     <Compile Include="Model\Logic\Document.cs" />
     <Compile Include="Model\Logic\Photo.cs" />

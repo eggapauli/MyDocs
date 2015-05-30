@@ -1,14 +1,11 @@
-﻿using MyDocs.Common.Contract.Storage;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace MyDocs.Common.Contract.Service
 {
     public interface IFileConverter
     {
-        Task<IFile> ToFile(Uri File);
+        Task<StorageFile> ToFile(Uri File);
     }
 }

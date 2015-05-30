@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace MyDocs.Common.Contract.Service
 {
@@ -13,7 +14,7 @@ namespace MyDocs.Common.Contract.Service
     {
         bool SupportsExtension(string extension);
 
-        Task<IEnumerable<Photo>> ExtractPages(IFile file, Document document);
+        Task<IEnumerable<Photo>> ExtractPages(StorageFile file, Document document);
     }
 
     public class ImagePageExtractor : IPageExtractor
@@ -23,7 +24,7 @@ namespace MyDocs.Common.Contract.Service
             return new[] { ".bmp", ".gif", ".jpeg", ".jpg", ".png" }.Contains(extension, StringComparer.OrdinalIgnoreCase);
         }
 
-        public Task<IEnumerable<Photo>> ExtractPages(IFile file, Document document)
+        public Task<IEnumerable<Photo>> ExtractPages(StorageFile file, Document document)
         {
             return Task.FromResult<IEnumerable<Photo>>(new[] { new Photo(file) });
         }
@@ -43,7 +44,7 @@ namespace MyDocs.Common.Contract.Service
             return extractors.Any(e => e.SupportsExtension(extension));
         }
 
-        public async Task<IEnumerable<Photo>> ExtractPages(IFile file, Document document)
+        public async Task<IEnumerable<Photo>> ExtractPages(StorageFile file, Document document)
         {
             var extension = Path.GetExtension(file.Name);
             return await extractors

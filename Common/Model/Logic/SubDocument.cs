@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Windows.Storage;
 
 namespace MyDocs.Common.Model.Logic
 {
@@ -12,15 +13,15 @@ namespace MyDocs.Common.Model.Logic
     {
         public string Title { get; private set; }
 
-        public IFile File { get; private set; }
+        public IStorageFile File { get; private set; }
 
         public IImmutableList<Photo> Photos { get; private set; }
 
-        public SubDocument(IFile file, IEnumerable<Photo> photos)
+        public SubDocument(IStorageFile file, IEnumerable<Photo> photos)
             : this(Path.GetFileNameWithoutExtension(file.Name), file, photos)
         { }
 
-        public SubDocument(string title, IFile file, IEnumerable<Photo> photos)
+        public SubDocument(string title, IStorageFile file, IEnumerable<Photo> photos)
         {
             Title = title;
             File = file;

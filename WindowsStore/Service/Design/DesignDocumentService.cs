@@ -1,12 +1,8 @@
 ﻿using MyDocs.Common.Contract.Service;
-using MyDocs.Common.Contract.Storage;
 using MyDocs.Common.Model.Logic;
-using MyDocs.WindowsStore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -19,10 +15,10 @@ namespace MyDocs.WindowsStore.Service.Design
 
         public async Task<IImmutableList<Document>> LoadAsync()
         {
-            var photos = new List<IFile>();
+            var photos = new List<StorageFile>();
             try {
                 var folder = await ApplicationData.Current.LocalFolder.GetFolderAsync("design");
-                photos.AddRange((await folder.GetFilesAsync()).Select<StorageFile, IFile>(f => new WindowsStoreFile(f)));
+                photos.AddRange(await folder.GetFilesAsync());
             }
             catch {}
             return CreateDocuments(photos).ToImmutableList();
@@ -38,7 +34,7 @@ namespace MyDocs.WindowsStore.Service.Design
             return Task.FromResult<IEnumerable<int>>(new[] { DateTime.Today.Year });
         }
 
-        private IEnumerable<Document> CreateDocuments(IList<IFile> photos)
+        private IEnumerable<Document> CreateDocuments(IList<StorageFile> photos)
         {
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < i + 2; j++) {
@@ -54,7 +50,7 @@ namespace MyDocs.WindowsStore.Service.Design
             }
         }
 
-        private IEnumerable<SubDocument> GetRandomSubDocuments(IList<IFile> photos)
+        private IEnumerable<SubDocument> GetRandomSubDocuments(IList<StorageFile> photos)
         {
             if (photos == null) {
                 yield break;

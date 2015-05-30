@@ -1,9 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using MyDocs.WindowsStore.Storage;
+using MyDocs.Common;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 
@@ -45,8 +42,7 @@ namespace WindowsStore.Test
             private static async Task CreateFileAndTestUri(StorageFolder folder)
             {
                 var storageFile = await folder.CreateFileAsync("test.pdf", CreationCollisionOption.ReplaceExisting);
-                var file = new WindowsStoreFile(storageFile);
-                await StorageFile.GetFileFromApplicationUriAsync(file.GetUri());
+                await StorageFile.GetFileFromApplicationUriAsync(storageFile.GetUri());
             }
         }
     }

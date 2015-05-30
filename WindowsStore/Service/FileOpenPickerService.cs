@@ -1,22 +1,17 @@
 ﻿using MyDocs.Common.Contract.Service;
-using MyDocs.Common.Contract.Storage;
 using MyDocs.Common.Model.View;
-using MyDocs.WindowsStore.Storage;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.Data.Pdf;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using Windows.Storage.Streams;
 
 namespace MyDocs.WindowsStore.Service
 {
     public class FileOpenPickerService : IFileOpenPickerService
     {
-        public async Task<IEnumerable<IFile>> PickFilesForDocumentAsync(Document document)
+        public async Task<IEnumerable<StorageFile>> PickFilesForDocumentAsync(Document document)
         {
             var filePicker = new FileOpenPicker();
             filePicker.FileTypeFilter.Add("*");
@@ -26,18 +21,16 @@ namespace MyDocs.WindowsStore.Service
             var files = await filePicker.PickMultipleFilesAsync();
             var folder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(document.Id.ToString(), CreationCollisionOption.OpenIfExists);
             var tasks = files.Select(file => file.CopyAsync(folder, file.Name, NameCollisionOption.GenerateUniqueName).AsTask());
-            var copies = await Task.WhenAll(tasks);
-            return copies.Select(file => new WindowsStoreFile(file));
+            return await Task.WhenAll(tasks);
         }
 
-        public async Task<IFile> PickOpenFileAsync(IEnumerable<string> fileTypes)
+        public async Task<StorageFile> PickOpenFileAsync(IEnumerable<string> fileTypes)
         {
             var filePicker = new FileOpenPicker();
             foreach (var fileType in fileTypes) {
                 filePicker.FileTypeFilter.Add(fileType);
             }
-            var file = await filePicker.PickSingleFileAsync();
-            return file != null ? new WindowsStoreFile(file) : null;
+            return await filePicker.PickSingleFileAsync();
         }
     }
 }

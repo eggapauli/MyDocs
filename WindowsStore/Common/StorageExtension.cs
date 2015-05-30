@@ -1,6 +1,5 @@
-﻿using MyDocs.Common.Contract.Storage;
+﻿using MyDocs.Common;
 using MyDocs.Common.Model.Logic;
-using MyDocs.WindowsStore.Storage;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,8 +13,8 @@ namespace MyDocs.WindowsStore.Common
     {
         public static ApplicationDataCompositeValue ConvertToStoredDocument(this Document doc)
         {
-            var tempFolder = new WindowsStoreFolder(ApplicationData.Current.TemporaryFolder);
-            var localFolder = new WindowsStoreFolder(ApplicationData.Current.LocalFolder);
+            var tempFolder = ApplicationData.Current.TemporaryFolder;
+            var localFolder = ApplicationData.Current.LocalFolder;
 
             Func<Document, string[]> getPhotoRelativePaths = d => {
                 if (d.SubDocuments.Count == 0) {
@@ -23,19 +22,19 @@ namespace MyDocs.WindowsStore.Common
                 }
 
                 return d.SubDocuments
-                    .Select(sd => String.Join("|", sd.Photos.Select(p => p.File.GetRelativePath())))
+                    .Select(sd => string.Join("|", sd.Photos.Select(p => p.File.GetRelativePath())))
                     .ToArray();
             };
 
             Func<Uri, string, bool> isInFolder = (uri, folder) => uri.Segments[1] == folder;
 
-            Func<Document, IFolder, string[]> getPhotoIsInFolder = (d, folder) => {
+            Func<Document, IStorageFolder, string[]> getPhotoIsInFolder = (d, folder) => {
                 if (d.SubDocuments.Count == 0) {
                     return null;
                 }
 
                 return doc.SubDocuments
-                    .Select(sd => String.Join("|", sd.Photos.Select(p => p.File.IsInFolder(folder))))
+                    .Select(sd => string.Join("|", sd.Photos.Select(p => p.File.IsInFolder(folder))))
                     .ToArray();
             };
 
@@ -106,9 +105,9 @@ namespace MyDocs.WindowsStore.Common
                                 fileFolder = ApplicationData.Current.RoamingFolder;
                             }
 
-                            ICollection<IFile> previews = null;
+                            ICollection<StorageFile> previews = null;
                             if (photoPreviewNames != null && photoPreviewIsLocal != null && photoPreviewIsTemp != null) {
-                                previews = new List<IFile>();
+                                previews = new List<StorageFile>();
                                 for (var j = 0; j < photoPreviewNames[i].Length; j++) {
                                     IStorageFolder previewFolder;
                                     if (photoPreviewIsLocal[i][j]) {
@@ -120,17 +119,17 @@ namespace MyDocs.WindowsStore.Common
                                     else {
                                         previewFolder = ApplicationData.Current.RoamingFolder;
                                     }
-                                    string previewPath = Path.Combine(previewFolder.Path, photoPreviewNames[i][j]);
-                                    StorageFile previewFile = await StorageFile.GetFileFromPathAsync(previewPath);
-                                    previews.Add(new WindowsStoreFile(previewFile));
+                                    var previewPath = Path.Combine(previewFolder.Path, photoPreviewNames[i][j]);
+                                    var previewFile = await StorageFile.GetFileFromPathAsync(previewPath);
+                                    previews.Add(previewFile);
                                 }
                             }
 
-                            string filePath = Path.Combine(fileFolder.Path, photoFileNames[i]);
-                            StorageFile file = await StorageFile.GetFileFromPathAsync(filePath);
+                            var filePath = Path.Combine(fileFolder.Path, photoFileNames[i]);
+                            var file = await StorageFile.GetFileFromPathAsync(filePath);
                             var title = photoTitles != null ? photoTitles[i] : file.DateCreated.ToString("G");
 
-                            doc.SubDocuments.Add(new SubDocument(title, new WindowsStoreFile(file), previews.Select(p => new Photo(p))));
+                            doc.SubDocuments.Add(new SubDocument(title, file, previews.Select(p => new Photo(p))));
                         }
                         catch (FileNotFoundException) {
                             // should not occur, unless the user manually deleted the file
@@ -140,11 +139,6 @@ namespace MyDocs.WindowsStore.Common
                 }
             }
             return doc;
-        }
-
-        public static bool IsImage(this IStorageItem file)
-        {
-            return new[] { ".bmp", ".gif", ".jpeg", ".jpg", ".png" }.Contains(Path.GetExtension(file.Path), StringComparer.OrdinalIgnoreCase);
         }
     }
 }

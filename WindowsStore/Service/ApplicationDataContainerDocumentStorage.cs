@@ -1,13 +1,10 @@
 ﻿using MyDocs.Common.Contract.Service;
-using MyDocs.Common.Contract.Storage;
 using MyDocs.Common.Model.Logic;
 using MyDocs.WindowsStore.Common;
-using MyDocs.WindowsStore.Storage;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 
@@ -18,7 +15,7 @@ namespace MyDocs.WindowsStore.Service
         private static readonly string containerName = "docs";
 
         private readonly ISettingsService settingsService;
-        private readonly IFolder tempFolder = new WindowsStoreFolder(ApplicationData.Current.TemporaryFolder);
+        private readonly IStorageFolder tempFolder = ApplicationData.Current.TemporaryFolder;
 
         private readonly ApplicationDataContainer docsDataContainer;
 

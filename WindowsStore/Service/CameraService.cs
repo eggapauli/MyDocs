@@ -1,7 +1,5 @@
 ﻿using MyDocs.Common.Contract.Service;
-using MyDocs.Common.Contract.Storage;
 using MyDocs.Common.Model.View;
-using MyDocs.WindowsStore.Storage;
 using System;
 using System.Threading.Tasks;
 using Windows.Media.Capture;
@@ -20,7 +18,7 @@ namespace MyDocs.WindowsStore.Service
             }
             var folder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(document.Id.ToString(), CreationCollisionOption.OpenIfExists);
             await file.MoveAsync(folder, DateTime.Now.ToString("R"), NameCollisionOption.GenerateUniqueName);
-            return new Photo(new WindowsStoreFile(file));
+            return new Photo(file);
         }
     }
 }

@@ -1,19 +1,16 @@
 ﻿using GalaSoft.MvvmLight;
-using MyDocs.Common.Contract.Storage;
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace MyDocs.Common.Model.View
 {
     public class SubDocument : ObservableObject
     {
         private readonly string title;
-        private readonly IFile file;
+        private readonly IStorageFile file;
         private IImmutableList<Photo> photos;
 
         public string Title
@@ -21,7 +18,7 @@ namespace MyDocs.Common.Model.View
             get { return title; }
         }
 
-        public IFile File
+        public IStorageFile File
         {
             get { return file; }
         }
@@ -32,7 +29,7 @@ namespace MyDocs.Common.Model.View
             set { Set(ref photos, value); }
         }
 
-        public SubDocument(IFile file, IEnumerable<Photo> photos)
+        public SubDocument(IStorageFile file, IEnumerable<Photo> photos)
         {
             this.file = file;
             Photos = photos.ToImmutableList();

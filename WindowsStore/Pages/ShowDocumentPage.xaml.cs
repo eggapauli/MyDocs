@@ -2,14 +2,11 @@
 using MyDocs.Common.Model.View;
 using MyDocs.Common.ViewModel;
 using MyDocs.WindowsStore.Common;
-using MyDocs.WindowsStore.Storage;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
 namespace MyDocs.WindowsStore.Pages
@@ -48,7 +45,7 @@ namespace MyDocs.WindowsStore.Pages
 
             try {
                 var files = document.SubDocuments.Select(p => p.File);
-                data.SetStorageItems(files.Select(f => ((WindowsStoreFile)f).File));
+                data.SetStorageItems(files);
             }
             finally {
                 waiter.Complete();

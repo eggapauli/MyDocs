@@ -1,6 +1,4 @@
 ﻿using MyDocs.Common.Contract.Service;
-using MyDocs.Common.Contract.Storage;
-using MyDocs.WindowsStore.Storage;
 using Windows.Storage;
 
 namespace MyDocs.WindowsStore.Service
@@ -10,19 +8,19 @@ namespace MyDocs.WindowsStore.Service
         private enum FolderType { Local, Roaming }
         private static readonly string syncEnabledKey = "isSyncEnabled";
 
-        private IFolder localFolder = new WindowsStoreFolder(ApplicationData.Current.LocalFolder);
-        private IFolder roamingFolder = new WindowsStoreFolder(ApplicationData.Current.RoamingFolder);
-        private IFolder tempFolder = new WindowsStoreFolder(ApplicationData.Current.TemporaryFolder);
+        private IStorageFolder localFolder = ApplicationData.Current.LocalFolder;
+        private IStorageFolder roamingFolder = ApplicationData.Current.RoamingFolder;
+        private IStorageFolder tempFolder = ApplicationData.Current.TemporaryFolder;
 
         private ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
         private ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
 
-        public IFolder PhotoFolder
+        public IStorageFolder PhotoFolder
         {
             get { return IsSyncEnabled ? roamingFolder : localFolder; }
         }
 
-        public IFolder TempFolder
+        public IStorageFolder TempFolder
         {
             get { return tempFolder; }
         }

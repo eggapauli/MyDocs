@@ -36,7 +36,7 @@ namespace MyDocs.WindowsStore.Service
             if (zipFile == null) {
                 return;
             }
-            using (var zipFileStream = await zipFile.OpenReadAsync())
+            using (var zipFileStream = (await zipFile.OpenReadAsync()).AsStream())
             using (var archive = new ZipArchive(zipFileStream, ZipArchiveMode.Read)) {
                 var metaInfoEntry = archive.GetEntry("Documents.xml");
                 if (metaInfoEntry == null) {
@@ -79,7 +79,7 @@ namespace MyDocs.WindowsStore.Service
             // TODO inject more specific service for extracting files
             var photoFile = await settingsService.PhotoFolder.CreateFileAsync(fileName);
             using (var entryStream = entry.Open())
-            using (var photoWriter = await photoFile.OpenWriteAsync()) {
+            using (var photoWriter = await photoFile.OpenStreamForWriteAsync()) {
                 await entryStream.CopyToAsync(photoWriter);
             }
 

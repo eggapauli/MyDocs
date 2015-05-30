@@ -1,14 +1,14 @@
-﻿using MyDocs.Common.Contract.Storage;
-using MyDocs.Common.Model.View;
+﻿using MyDocs.Common.Model.View;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace MyDocs.Common.Contract.Service
 {
     public interface IFileOpenPickerService
     {
-        Task<IEnumerable<IFile>> PickFilesForDocumentAsync(Document document);
+        Task<IEnumerable<StorageFile>> PickFilesForDocumentAsync(Document document);
 
-        Task<IFile> PickOpenFileAsync(IEnumerable<string> fileTypes);
+        Task<StorageFile> PickOpenFileAsync(IEnumerable<string> fileTypes);
     }
 }

@@ -39,7 +39,7 @@ namespace MyDocs.WindowsStore.Service
 
             var documents = await documentDb.GetAllDocumentsAsync();
 
-            using (var zipFileStream = await zipFile.OpenWriteAsync())
+            using (var zipFileStream = await zipFile.OpenStreamForWriteAsync())
             using (var archive = new ZipArchive(zipFileStream, ZipArchiveMode.Create)) {
                 var metaInfoEntry = archive.CreateEntry("Documents.xml");
                 using (var metaInfoStream = metaInfoEntry.Open()) {
@@ -53,7 +53,7 @@ namespace MyDocs.WindowsStore.Service
                         var path = Path.Combine(document.GetHumanReadableDescription(), photo.File.Name);
                         if (savedFiles.Add(path)) {
                             var entry = archive.CreateEntry(path);
-                            using (var photoReader = await photo.File.OpenReadAsync())
+                            using (var photoReader = (await photo.File.OpenReadAsync()).AsStream())
                             using (var entryStream = entry.Open()) {
                                 await photoReader.CopyToAsync(entryStream);
                             }

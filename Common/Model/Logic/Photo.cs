@@ -1,22 +1,17 @@
-﻿using MyDocs.Common.Contract.Storage;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Windows.Storage;
 
 namespace MyDocs.Common.Model.Logic
 {
     public class Photo
     {
-        private readonly IFile file;
+        private readonly StorageFile file;
 
-        public IFile File
+        public StorageFile File
         {
             get { return file; }
         }
 
-        public Photo(IFile file)
+        public Photo(StorageFile file)
         {
             this.file = file;
         }
