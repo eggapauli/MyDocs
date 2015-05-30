@@ -160,7 +160,6 @@
     </Compile>
     <Compile Include="Service\WindowsStoreFileConverter.cs" />
     <Compile Include="Storage\WindowsStoreFolder.cs" />
-    <Compile Include="Storage\WindowsStoreBitmapImage.cs" />
     <Compile Include="Storage\WindowsStoreFile.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
   </ItemGroup>

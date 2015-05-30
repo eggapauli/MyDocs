@@ -55,7 +55,6 @@
     <Compile Include="Contract\Service\INavigationService.cs" />
     <Compile Include="Contract\Service\ISettingsService.cs" />
     <Compile Include="Contract\Storage\FileSize.cs" />
-    <Compile Include="Contract\Storage\IBitmapImage.cs" />
     <Compile Include="Contract\Storage\IFile.cs" />
     <Compile Include="Contract\Storage\IFolder.cs" />
     <Compile Include="Extensions.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace MyDocs.Common.Contract.Storage
 {
@@ -12,7 +13,7 @@ namespace MyDocs.Common.Contract.Storage
         string GetRelativePath();
         Uri GetUri();
         bool IsInFolder(IFolder folder);
-        Task<IBitmapImage> GetResizedBitmapImageAsync(FileSize fileSize = FileSize.Small);
+        Task<BitmapImage> GetResizedBitmapImageAsync(FileSize fileSize = FileSize.Small);
         Task MoveAsync(IFolder folder);
         Task MoveAsync(IFolder folder, string name);
         Task<IFile> CopyAsync(IFolder folder);
