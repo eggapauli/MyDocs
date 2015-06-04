@@ -7,6 +7,8 @@ using MyDocs.Common.Model.Logic;
 using View = MyDocs.Common.Model.View;
 using System.Linq;
 using System.Threading.Tasks;
+using FakeItEasy;
+using System.Collections.Immutable;
 
 namespace MyDocs.Common.Test.Search
 {
@@ -80,12 +82,22 @@ namespace MyDocs.Common.Test.Search
 
         private IDocumentService MakeDocumentService(IEnumerable<Document> documents)
         {
-            return new DummyDocumentService(documents);
+            var documentService = A.Fake<IDocumentService>();
+            A.CallTo(() => documentService.LoadAsync()).Returns(Task.FromResult<IImmutableList<Document>>(documents.ToImmutableList()));
+            A.CallTo(() => documentService.GetCategoryNames()).Returns(documents.Select(d => d.Category).Distinct());
+            var years = documents
+                .Select(d => d.DateAdded.Year)
+                .Distinct()
+                .OrderBy(year => year);
+            A.CallTo(() => documentService.GetDistinctDocumentYears()).Returns(years);
+            return documentService;
         }
 
         private SearchViewModel MakeSut(IDocumentService documentService)
         {
-            var sut = new SearchViewModel(documentService, new DummyNavigationService(), new DummyTranslatorService());
+            var navigationService = A.Fake<INavigationService>();
+            var translatorService = A.Fake<ITranslatorService>();
+            var sut = new SearchViewModel(documentService, navigationService, translatorService);
             sut.LoadFilters();
             return sut;
         }
