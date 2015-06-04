@@ -96,14 +96,7 @@ namespace JsonNetDal
         private async Task WriteDbFile(string content)
         {
             var dbFile = await GetDbFile();
-            using (var stream = await dbFile.OpenAsync(FileAccessMode.ReadWrite))
-            using (var outputStream = stream.GetOutputStreamAt(0))
-            using (var writer = new DataWriter(outputStream))
-            {
-                writer.WriteString(content);
-                //await writer.StoreAsync();
-                //await writer.FlushAsync();
-            }
+            await FileIO.WriteTextAsync(dbFile, content);
         }
 
         private async Task<IEnumerable<Document>> ReadDocuments()
@@ -116,12 +109,7 @@ namespace JsonNetDal
         private async Task<string> ReadDbFile()
         {
             var dbFile = await GetDbFile();
-            using (var stream = await dbFile.OpenAsync(FileAccessMode.Read))
-            using (var inputStream = stream.GetInputStreamAt(0))
-            using (var reader = new DataReader(inputStream))
-            {
-                return reader.ReadString((uint)stream.Size);
-            }
+            return await FileIO.ReadTextAsync(dbFile);
         }
 
         private async Task<IStorageFile> GetDbFile()
