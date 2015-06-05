@@ -210,6 +210,10 @@ namespace MyDocs.Common.ViewModel
 
             using (SetBusy()) {
                 await documentService.DeleteDocumentAsync(selectedDocument.ToLogic());
+                foreach (var category in Categories.Where(c => c.Documents.Contains(selectedDocument))) {
+                    category.Documents = category.Documents.Remove(selectedDocument);
+                }
+                SelectedDocument = null;
             }
         }
 

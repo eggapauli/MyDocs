@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace MyDocs.Common.Model.View
@@ -7,7 +8,7 @@ namespace MyDocs.Common.Model.View
     public class Category : ObservableObject
     {
         private string name;
-        private IEnumerable<Document> documents;
+        private IImmutableList<Document> documents;
 
         public string Name
         {
@@ -15,10 +16,10 @@ namespace MyDocs.Common.Model.View
             set { Set(ref name, value); }
         }
 
-        public IEnumerable<Document> Documents
+        public IImmutableList<Document> Documents
         {
             get { return documents; }
-            private set { Set(ref documents, value); }
+            set { Set(ref documents, value); }
         }
 
         public int CountDocuments
@@ -34,7 +35,7 @@ namespace MyDocs.Common.Model.View
         public Category(string name, IEnumerable<Document> documents = null)
         {
             Name = name;
-            Documents = documents;
+            Documents = documents != null ? documents.ToImmutableList() : ImmutableList<Document>.Empty;
         }
     }
 }
