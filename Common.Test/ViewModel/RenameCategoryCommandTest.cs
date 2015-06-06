@@ -58,5 +58,16 @@ namespace MyDocs.Common.Test.ViewModel
             tcs.SetResult(null);
             sut.IsBusy.Should().BeFalse();
         }
+
+        [TestMethod]
+        public void NewCategoryNameShouldBeResetAfterRenamingCategories()
+        {
+            var documentService = A.Fake<IDocumentService>();
+            var sut = CreateSut(documentService: documentService);
+            sut.NewCategoryName = "New category";
+
+            sut.RenameCategoryCommand.Execute(new Model.View.Category("Old category"));
+            sut.NewCategoryName.Should().BeNullOrEmpty();
+        }
     }
 }
