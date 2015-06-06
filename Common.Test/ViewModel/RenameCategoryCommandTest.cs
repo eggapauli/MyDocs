@@ -46,7 +46,6 @@ namespace MyDocs.Common.Test.ViewModel
         [TestMethod]
         public void ViewModelShouldBeBusyWhileRenamingCategories()
         {
-            System.Diagnostics.Debugger.Break();
             var tcs = new TaskCompletionSource<object>();
             var documentService = A.Fake<IDocumentService>();
             A.CallTo(() => documentService.RenameCategoryAsync(A<string>._, A<string>._)).Returns(tcs.Task);
