@@ -1,5 +1,4 @@
 ﻿using FakeItEasy;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyDocs.Common.Contract.Service;
 using MyDocs.Common.ViewModel;
