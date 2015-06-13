@@ -39,6 +39,7 @@ namespace MyDocs.Common.Test.ViewModel
             using (Fake.CreateScope())
             {
                 sut.DeleteDocumentCommand.Execute(null);
+                WaitForCommand();
                 A.CallTo(() => documentService.DeleteDocumentAsync(A<Model.Logic.Document>._)).MustHaveHappened();
             }
         }
@@ -51,6 +52,7 @@ namespace MyDocs.Common.Test.ViewModel
             sut.SelectedDocument = new Model.View.Document();
 
             sut.DeleteDocumentCommand.Execute(null);
+            WaitForCommand();
             sut.SelectedDocument.Should().BeNull();
         }
 
@@ -65,6 +67,7 @@ namespace MyDocs.Common.Test.ViewModel
             sut.SelectedDocument = sut.Categories.First().Documents.First();
 
             sut.DeleteDocumentCommand.Execute(null);
+            WaitForCommand();
             sut.Categories.SelectMany(c => c.Documents).Select(d => d.Id).Should().NotContain(doc.Id);
         }
 
@@ -79,8 +82,10 @@ namespace MyDocs.Common.Test.ViewModel
 
             sut.IsBusy.Should().BeFalse();
             sut.DeleteDocumentCommand.Execute(null);
+            WaitForCommand();
             sut.IsBusy.Should().BeTrue();
             tcs.SetResult(null);
+            WaitForCommand();
             sut.IsBusy.Should().BeFalse();
         }
 

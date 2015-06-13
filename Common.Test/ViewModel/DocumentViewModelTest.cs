@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyDocs.Common.Contract.Service;
 using MyDocs.Common.ViewModel;
+using System;
 using System.Threading.Tasks;
 
 namespace MyDocs.Common.Test.ViewModel
@@ -25,6 +26,11 @@ namespace MyDocs.Common.Test.ViewModel
             exportDocumentService = exportDocumentService ?? A.Fake<IExportDocumentService>();
             importDocumentService = importDocumentService ?? A.Fake<IImportDocumentService>();
             return new DocumentViewModel(documentService, uiService, navigationService, licenseService, exportDocumentService, importDocumentService);
+        }
+
+        private void WaitForCommand()
+        {
+            Task.Delay(TimeSpan.FromMilliseconds(100)).Wait();
         }
     }
 }

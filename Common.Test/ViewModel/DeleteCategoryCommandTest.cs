@@ -29,6 +29,7 @@ namespace MyDocs.Common.Test.ViewModel
             using (Fake.CreateScope())
             {
                 sut.RenameCategoryCommand.Execute(new Model.View.Category(oldCategoryName));
+                WaitForCommand();
                 A.CallTo(() => documentService.RenameCategoryAsync(oldCategoryName, newCategoryName)).MustHaveHappened();
             }
         }
@@ -44,8 +45,10 @@ namespace MyDocs.Common.Test.ViewModel
 
             sut.IsBusy.Should().BeFalse();
             sut.RenameCategoryCommand.Execute(new Model.View.Category("Old category"));
+            WaitForCommand();
             sut.IsBusy.Should().BeTrue();
             tcs.SetResult(null);
+            WaitForCommand();
             sut.IsBusy.Should().BeFalse();
         }
     }
