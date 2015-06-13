@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Model;
+using System.Threading.Tasks;
 
 namespace MyDocs.Common.Test.ViewModel
 {
@@ -30,6 +31,38 @@ namespace MyDocs.Common.Test.ViewModel
                 WaitForCommand();
                 A.CallTo(() => exportDocumentService.ExportDocuments()).MustNotHaveHappened();
             }
+        }
+
+        [TestMethod]
+        public void ExportDocumentsCommandShouldSucceedWhenLicensed()
+        {
+            var exportDocumentService = A.Fake<IExportDocumentService>();
+            var sut = CreateSut(exportDocumentService: exportDocumentService);
+
+            using (Fake.CreateScope())
+            {
+                sut.ExportDocumentsCommand.Execute(null);
+                WaitForCommand();
+                A.CallTo(() => exportDocumentService.ExportDocuments()).MustHaveHappened();
+            }
+        }
+
+
+        [TestMethod]
+        public void ViewModelShouldBeBusyWhileExportingDocuments()
+        {
+            var tcs = new TaskCompletionSource<object>();
+            var exportDocumentService = A.Fake<IExportDocumentService>();
+            A.CallTo(() => exportDocumentService.ExportDocuments()).Returns(tcs.Task);
+            var sut = CreateSut(exportDocumentService: exportDocumentService);
+
+            sut.IsBusy.Should().BeFalse();
+            sut.ExportDocumentsCommand.Execute(null);
+            WaitForCommand();
+            sut.IsBusy.Should().BeTrue();
+            tcs.SetResult(null);
+            WaitForCommand();
+            sut.IsBusy.Should().BeFalse();
         }
     }
 }
