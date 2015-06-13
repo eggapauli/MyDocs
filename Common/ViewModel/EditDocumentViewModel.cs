@@ -175,16 +175,19 @@ namespace MyDocs.Common.ViewModel
             CreateCommands();
             CreateDesignTimeData();
 
-            // TODO observe changes
-            documentService.GetCategoryNames().ContinueWith(t => {
-                CategoryNames = t.Result;
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+            ObserveCategories();
 
             PropertyChanged += (s, e) => {
                 if (e.PropertyName == "CategoryNames") {
                     ShowUseCategoryInput = CategoryNames.Any();
                 }
             };
+        }
+
+        private async void ObserveCategories()
+        {
+            // TODO observe changes and don't swallow errors
+            CategoryNames = await documentService.GetCategoryNames();
         }
 
         [Conditional("DEBUG")]
@@ -253,9 +256,21 @@ namespace MyDocs.Common.ViewModel
 
         private async void AddPhotoFromCameraAsync()
         {
-            var photo = await cameraService.GetPhotoForDocumentAsync(EditingDocument);
-            if (photo != null) {
-                EditingDocument.AddSubDocument(new SubDocument(photo.File, new[] { photo }));
+            using (SetBusy())
+            {
+                try
+                {
+                    var photo = await cameraService.GetPhotoForDocumentAsync(EditingDocument);
+                    if (photo != null)
+                    {
+                        EditingDocument.AddSubDocument(new SubDocument(photo.File, new[] { photo }));
+                    }
+                }
+                catch (Exception)
+                {
+                    // TODO translate
+                    await uiService.ShowErrorAsync("addPhotoFromCameraError");
+                }
             }
         }
 

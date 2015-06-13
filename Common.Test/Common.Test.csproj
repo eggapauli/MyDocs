@@ -90,6 +90,7 @@
   <ItemGroup>
     <Compile Include="Search\SearchViewModelTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\AddPhotoFromCameraCommandTest.cs" />
     <Compile Include="ViewModel\DocumentViewModel\ImportDocumentsCommandTest.cs" />
     <Compile Include="ViewModel\DocumentViewModel\ExportDocumentsCommandTest.cs" />
     <Compile Include="ViewModel\DocumentViewModel\AddDocumentCommandTest.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="ViewModel\DocumentViewModel\DocumentViewModelTest.cs" />
     <Compile Include="ViewModel\DocumentViewModel\EditDocumentCommandTest.cs" />
     <Compile Include="ViewModel\DocumentViewModel\RenameCategoryCommandTest.cs" />
+    <Compile Include="ViewModel\EditDocumentViewModelTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
