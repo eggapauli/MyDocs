@@ -20,9 +20,9 @@ namespace MyDocs.Common.Test.ViewModel
         public void ExportDocumentsCommandShouldFailWhenUnlicensed()
         {
             var licenseService = A.Fake<ILicenseService>();
-            var exportDocumentsService = A.Fake<IExportDocumentService>();
-            A.CallTo(() => licenseService.Unlock(A<string>._)).Throws(new LicenseStatusException("Test", LicenseStatus.Locked));
-            var sut = CreateSut(licenseService: licenseService, exportDocumentService: exportDocumentsService);
+            var exportDocumentService = A.Fake<IExportDocumentService>();
+            A.CallTo(() => licenseService.Unlock("ExportImportDocuments")).Throws(new LicenseStatusException("Test", LicenseStatus.Locked));
+            var sut = CreateSut(licenseService: licenseService, exportDocumentService: exportDocumentService);
 
             using (Fake.CreateScope())
             {
