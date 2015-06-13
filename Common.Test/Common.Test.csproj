@@ -90,6 +90,7 @@
   <ItemGroup>
     <Compile Include="Search\SearchViewModelTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\ImportDocumentsCommandTest.cs" />
     <Compile Include="ViewModel\ExportDocumentsCommandTest.cs" />
     <Compile Include="ViewModel\AddDocumentCommandTest.cs" />
     <Compile Include="ViewModel\DeleteCategoryCommandTest.cs" />
