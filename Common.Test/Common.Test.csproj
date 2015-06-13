@@ -91,6 +91,7 @@
     <Compile Include="Search\SearchViewModelTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\AddPhotoFromCameraCommandTest.cs" />
+    <Compile Include="ViewModel\AddPhotoFromFileCommandTest.cs" />
     <Compile Include="ViewModel\DocumentViewModel\ImportDocumentsCommandTest.cs" />
     <Compile Include="ViewModel\DocumentViewModel\ExportDocumentsCommandTest.cs" />
     <Compile Include="ViewModel\DocumentViewModel\AddDocumentCommandTest.cs" />
