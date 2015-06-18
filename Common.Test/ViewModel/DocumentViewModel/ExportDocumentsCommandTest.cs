@@ -1,7 +1,6 @@
-﻿using FakeItEasy;
+﻿using Common.Test.Mocks;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MyDocs.Common.Contract.Service;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using MyDocs.Common.Model;
 using System.Threading.Tasks;
 
@@ -20,31 +19,44 @@ namespace MyDocs.Common.Test.ViewModel
         [TestMethod]
         public void ExportDocumentsCommandShouldFailWhenUnlicensed()
         {
-            var licenseService = A.Fake<ILicenseService>();
-            var exportDocumentService = A.Fake<IExportDocumentService>();
-            A.CallTo(() => licenseService.Unlock("ExportImportDocuments")).Throws(new LicenseStatusException("Test", LicenseStatus.Locked));
+            var licenseService = new LicenseServiceMock();
+            licenseService.UnlockFunc = async featureName =>
+            {
+                if (featureName == "ExportImportDocuments")
+                {
+                    throw new LicenseStatusException("Test", LicenseStatus.Locked);
+                }
+                await Task.Yield();
+            };
+            var exportDocumentService = new ExportDocumentServiceMock();
+            var exportedDocuments = false;
+            exportDocumentService.ExportDocumentsFunc = async delegate 
+            {
+                exportedDocuments = true;
+                await Task.Yield();
+            };
             var sut = CreateSut(licenseService: licenseService, exportDocumentService: exportDocumentService);
 
-            using (Fake.CreateScope())
-            {
-                sut.ExportDocumentsCommand.Execute(null);
-                WaitForCommand();
-                A.CallTo(() => exportDocumentService.ExportDocuments()).MustNotHaveHappened();
-            }
+            sut.ExportDocumentsCommand.Execute(null);
+            WaitForCommand();
+            exportedDocuments.Should().BeFalse();
         }
 
         [TestMethod]
         public void ExportDocumentsCommandShouldSucceedWhenLicensed()
         {
-            var exportDocumentService = A.Fake<IExportDocumentService>();
+            var exportDocumentService = new ExportDocumentServiceMock();
+            var exportedDocuments = false;
+            exportDocumentService.ExportDocumentsFunc = async delegate
+            {
+                exportedDocuments = true;
+                await Task.Yield();
+            };
             var sut = CreateSut(exportDocumentService: exportDocumentService);
 
-            using (Fake.CreateScope())
-            {
-                sut.ExportDocumentsCommand.Execute(null);
-                WaitForCommand();
-                A.CallTo(() => exportDocumentService.ExportDocuments()).MustHaveHappened();
-            }
+            sut.ExportDocumentsCommand.Execute(null);
+            WaitForCommand();
+            exportedDocuments.Should().BeTrue();
         }
 
 
@@ -52,8 +64,8 @@ namespace MyDocs.Common.Test.ViewModel
         public void ViewModelShouldBeBusyWhileExportingDocuments()
         {
             var tcs = new TaskCompletionSource<object>();
-            var exportDocumentService = A.Fake<IExportDocumentService>();
-            A.CallTo(() => exportDocumentService.ExportDocuments()).Returns(tcs.Task);
+            var exportDocumentService = new ExportDocumentServiceMock();
+            exportDocumentService.ExportDocumentsFunc = delegate { return tcs.Task; };
             var sut = CreateSut(exportDocumentService: exportDocumentService);
 
             sut.IsBusy.Should().BeFalse();

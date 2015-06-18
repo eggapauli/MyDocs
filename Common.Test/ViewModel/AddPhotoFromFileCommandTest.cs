@@ -1,10 +1,13 @@
-﻿using FakeItEasy;
+﻿using Common.Test.Mocks;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Model.View;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace MyDocs.Common.Test.ViewModel
 {
@@ -24,30 +27,32 @@ namespace MyDocs.Common.Test.ViewModel
             throw new NotImplementedException();
         }
 
-        //[TestMethod]
-        //public void ShouldNotAddAnythingWhenUserDidntPickFiles()
-        //{
-        //    var filePicker = A.Fake<IFileOpenPickerService>();
-        //    A.CallTo(() => filePicker.PickFilesForDocumentAsync(A<Document>._)).Returns(new List<Photo>());
-        //    var sut = CreateSut();
-        //    sut.EditingDocument = new Document();
+        [TestMethod]
+        public void ShouldNotAddAnythingWhenUserDidntPickFiles()
+        {
+            var filePicker = new FileOpenPickerServiceMock();
+            filePicker.PickFilesForDocumentFunc =
+                delegate { return Task.FromResult(Enumerable.Empty<StorageFile>()); };
+            var sut = CreateSut(filePicker: filePicker);
+            sut.EditingDocument = new Document();
 
-        //    sut.AddPhotoFromFileCommand.Execute(null);
-        //    WaitForCommand();
-        //    sut.EditingDocument.SubDocuments.Should().BeEmpty();
-        //}
+            sut.AddPhotoFromFileCommand.Execute(null);
+            WaitForCommand();
+            sut.EditingDocument.SubDocuments.Should().BeEmpty();
+        }
 
-        //[TestMethod]
-        //public void ShouldNotAddPhotoFromFileWhenServiceCallFails()
-        //{
-        //    var filePicker = A.Fake<IFileOpenPickerService>();
-        //    A.CallTo(() => filePicker.PickFilesForDocumentAsync(A<Document>._)).Throws<Exception>();
-        //    var sut = CreateSut();
-        //    sut.EditingDocument = new Document();
+        [TestMethod]
+        public void ShouldNotAddPhotoFromFileWhenServiceCallFails()
+        {
+            var filePicker = new FileOpenPickerServiceMock();
+            filePicker.PickFilesForDocumentFunc =
+                delegate { throw new Exception("Test"); };
+            var sut = CreateSut();
+            sut.EditingDocument = new Document();
 
-        //    sut.AddPhotoFromFileCommand.Execute(null);
-        //    WaitForCommand();
-        //    sut.EditingDocument.SubDocuments.Should().BeEmpty();
-        //}
+            sut.AddPhotoFromFileCommand.Execute(null);
+            WaitForCommand();
+            sut.EditingDocument.SubDocuments.Should().BeEmpty();
+        }
     }
 }

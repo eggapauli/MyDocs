@@ -1,8 +1,9 @@
-﻿using FakeItEasy;
+﻿using Common.Test.Mocks;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using MyDocs.Common.Contract.Page;
-using MyDocs.Common.Contract.Service;
+using System;
+using System.Collections.Generic;
 
 namespace MyDocs.Common.Test.ViewModel
 {
@@ -19,14 +20,13 @@ namespace MyDocs.Common.Test.ViewModel
         [TestMethod]
         public void AddDocumentCommandShouldNavigateToEditPage()
         {
-            var navigationService = A.Fake<INavigationService>();
+            var navigatedToTypes = new List<Tuple<Type, object>>();
+            var navigationService = new NavigationServiceMock();
+            navigationService.NavigateAction = (t, o) => navigatedToTypes.Add(Tuple.Create(t, o));
             var sut = CreateSut(navigationService: navigationService);
 
-            using (Fake.CreateScope())
-            {
-                sut.AddDocumentCommand.Execute(null);
-                A.CallTo(() => navigationService.Navigate<IEditDocumentPage>()).MustHaveHappened();
-            }
+            sut.AddDocumentCommand.Execute(null);
+            navigatedToTypes.Should().BeEquivalentTo(Tuple.Create(typeof(IEditDocumentPage), (object)null));
         }
     }
 }

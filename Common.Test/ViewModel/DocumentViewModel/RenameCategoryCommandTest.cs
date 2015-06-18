@@ -1,7 +1,8 @@
-﻿using FakeItEasy;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using MyDocs.Common.Contract.Service;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MyDocs.Common.Test.ViewModel
@@ -32,23 +33,26 @@ namespace MyDocs.Common.Test.ViewModel
             const string oldCategoryName = "Old category";
             const string newCategoryName = "New category";
 
-            var documentService = A.Fake<IDocumentService>();
+            var documentService = CreateDocumentServiceMock();
+            var renamedCategories = new List<Tuple<string, string>>();
+            documentService.RenameCategoryAsyncFunc = async (x, y) =>
+            {
+                renamedCategories.Add(Tuple.Create(x, y));
+                await Task.Yield();
+            };
             var sut = CreateSut(documentService: documentService);
             sut.NewCategoryName = newCategoryName;
 
-            using (Fake.CreateScope())
-            {
-                sut.RenameCategoryCommand.Execute(new Model.View.Category(oldCategoryName));
-                A.CallTo(() => documentService.RenameCategoryAsync(oldCategoryName, newCategoryName)).MustHaveHappened();
-            }
+            sut.RenameCategoryCommand.Execute(new Model.View.Category(oldCategoryName));
+            renamedCategories.Should().BeEquivalentTo(Tuple.Create(oldCategoryName, newCategoryName));
         }
 
         [TestMethod]
         public void ViewModelShouldBeBusyWhileRenamingCategories()
         {
             var tcs = new TaskCompletionSource<object>();
-            var documentService = A.Fake<IDocumentService>();
-            A.CallTo(() => documentService.RenameCategoryAsync(A<string>._, A<string>._)).Returns(tcs.Task);
+            var documentService = CreateDocumentServiceMock();
+            documentService.RenameCategoryAsyncFunc = delegate { return tcs.Task; };
             var sut = CreateSut(documentService: documentService);
             sut.NewCategoryName = "New category";
 
@@ -62,11 +66,12 @@ namespace MyDocs.Common.Test.ViewModel
         [TestMethod]
         public void NewCategoryNameShouldBeResetAfterRenamingCategories()
         {
-            var documentService = A.Fake<IDocumentService>();
+            var documentService = CreateDocumentServiceMock();
             var sut = CreateSut(documentService: documentService);
             sut.NewCategoryName = "New category";
 
             sut.RenameCategoryCommand.Execute(new Model.View.Category("Old category"));
+            WaitForCommand();
             sut.NewCategoryName.Should().BeNullOrEmpty();
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyDocs.Common.ViewModel;
 using MyDocs.Common.Contract.Service;
 using System.Collections.Generic;
@@ -7,8 +6,9 @@ using MyDocs.Common.Model.Logic;
 using View = MyDocs.Common.Model.View;
 using System.Linq;
 using System.Threading.Tasks;
-using FakeItEasy;
 using System.Collections.Immutable;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using Common.Test.Mocks;
 
 namespace MyDocs.Common.Test.Search
 {
@@ -82,21 +82,13 @@ namespace MyDocs.Common.Test.Search
 
         private IDocumentService MakeDocumentService(IEnumerable<Document> documents)
         {
-            var documentService = A.Fake<IDocumentService>();
-            A.CallTo(() => documentService.LoadAsync()).Returns(Task.FromResult<IImmutableList<Document>>(documents.ToImmutableList()));
-            A.CallTo(() => documentService.GetCategoryNames()).Returns(documents.Select(d => d.Category).Distinct());
-            var years = documents
-                .Select(d => d.DateAdded.Year)
-                .Distinct()
-                .OrderBy(year => year);
-            A.CallTo(() => documentService.GetDistinctDocumentYears()).Returns(years);
-            return documentService;
+            return new DocumentServiceMock(documents);
         }
 
         private SearchViewModel MakeSut(IDocumentService documentService)
         {
-            var navigationService = A.Fake<INavigationService>();
-            var translatorService = A.Fake<ITranslatorService>();
+            var navigationService = new NavigationServiceMock();
+            var translatorService = new TranslatorServiceMock();
             var sut = new SearchViewModel(documentService, navigationService, translatorService);
             sut.LoadFilters();
             return sut;

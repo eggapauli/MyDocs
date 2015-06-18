@@ -1,9 +1,8 @@
-﻿using FakeItEasy;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MyDocs.Common.Contract.Service;
+﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using MyDocs.Common.Model.Logic;
 using System;
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -30,24 +29,45 @@ namespace MyDocs.Common.Test.ViewModel
         }
 
         [TestMethod]
-        public void ViewModelShouldCallServiceMethodWhenDeletingDocuments()
+        public void DeletedDocumentShouldBeRemovedFromList()
         {
-            var documentService = A.Fake<IDocumentService>();
+            var documentService = CreateDocumentServiceMock();
             var sut = CreateSut(documentService: documentService);
-            sut.SelectedDocument = new Model.View.Document();
+            var docs = sut.Categories.SelectMany(c => c.Documents);
+            var doc = docs.OrderBy(_ => Guid.NewGuid()).First();
+            sut.SelectedDocument = doc;
 
-            using (Fake.CreateScope())
+            sut.DeleteDocumentCommand.Execute(null);
+            WaitForCommand();
+            docs.Should().NotContain(doc);
+        }
+
+        [TestMethod]
+        public void DeletedDocumentShouldCallServiceMethod()
+        {
+            var documentService = CreateDocumentServiceMock();
+            var deletedDocumentIds = new List<Guid>();
+            documentService.DeleteDocumentAsyncFunc = async d =>
             {
-                sut.DeleteDocumentCommand.Execute(null);
-                WaitForCommand();
-                A.CallTo(() => documentService.DeleteDocumentAsync(A<Model.Logic.Document>._)).MustHaveHappened();
-            }
+                deletedDocumentIds.Add(d.Id);
+                await Task.Yield();
+            };
+            var sut = CreateSut(documentService: documentService);
+            var doc = sut.Categories
+                .SelectMany(c => c.Documents)
+                .OrderBy(_ => Guid.NewGuid())
+                .First();
+            sut.SelectedDocument = doc;
+
+            sut.DeleteDocumentCommand.Execute(null);
+            WaitForCommand();
+            deletedDocumentIds.Should().BeEquivalentTo(doc.Id);
         }
 
         [TestMethod]
         public void DocumentShouldBeUnselectedWhenDeleted()
         {
-            var documentService = A.Fake<IDocumentService>();
+            var documentService = CreateDocumentServiceMock();
             var sut = CreateSut(documentService: documentService);
             sut.SelectedDocument = new Model.View.Document();
 
@@ -57,26 +77,11 @@ namespace MyDocs.Common.Test.ViewModel
         }
 
         [TestMethod]
-        public void DocumentShouldBeRemovedFromListWhenDeleted()
-        {
-            var documentService = A.Fake<IDocumentService>();
-            var doc = CreateTestDocument();
-            A.CallTo(() => documentService.LoadAsync()).Returns(ImmutableList<Model.Logic.Document>.Empty.Add(doc));
-            var sut = CreateSut(documentService: documentService);
-            sut.LoadAsync().Wait();
-            sut.SelectedDocument = sut.Categories.First().Documents.First();
-
-            sut.DeleteDocumentCommand.Execute(null);
-            WaitForCommand();
-            sut.Categories.SelectMany(c => c.Documents).Select(d => d.Id).Should().NotContain(doc.Id);
-        }
-
-        [TestMethod]
         public void ViewModelShouldBeBusyWhileDeletingDocuments()
         {
             var tcs = new TaskCompletionSource<object>();
-            var documentService = A.Fake<IDocumentService>();
-            A.CallTo(() => documentService.DeleteDocumentAsync(A<Model.Logic.Document>._)).Returns(tcs.Task);
+            var documentService = CreateDocumentServiceMock();
+            documentService.DeleteDocumentAsyncFunc = delegate { return tcs.Task; };
             var sut = CreateSut(documentService: documentService);
             sut.SelectedDocument = new Model.View.Document();
 
@@ -89,9 +94,9 @@ namespace MyDocs.Common.Test.ViewModel
             sut.IsBusy.Should().BeFalse();
         }
 
-        private Model.Logic.Document CreateTestDocument()
+        private Document CreateTestDocument()
         {
-            return new Model.Logic.Document(Guid.NewGuid(), "Testcategory", DateTime.Now, TimeSpan.FromDays(2 * 365), true, new[] { "tag1", "tag2" });
+            return new Document(Guid.NewGuid(), "Testcategory", DateTime.Now, TimeSpan.FromDays(2 * 365), true, new[] { "tag1", "tag2" });
         }
     }
 }

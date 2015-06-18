@@ -1,10 +1,11 @@
-﻿using FakeItEasy;
+﻿using Common.Test.Mocks;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Model.View;
 using System;
 using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace MyDocs.Common.Test.ViewModel
 {
@@ -18,26 +19,26 @@ namespace MyDocs.Common.Test.ViewModel
             sut.AddPhotoFromCameraCommand.CanExecute(null).Should().BeTrue();
         }
 
-        //[TestMethod]
-        //public void ShouldAddPhotoFromCamera()
-        //{
-        //    var testFile = // TODO create StorageFile
-        //    var cameraService = A.Fake<ICameraService>();
-        //    A.CallTo(() => cameraService.GetPhotoForDocumentAsync(A<Document>._)).Returns(new Photo(testFile));
-        //    var sut = CreateSut();
-        //    sut.EditingDocument = new Document();
+        [TestMethod]
+        public async Task ShouldAddPhotoFromCamera()
+        {
+            var testFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Images/UnitTestLogo.scale-100.png"));
+            var cameraService = new CameraServiceMock();
+            cameraService.GetPhotoForDocumentFunc = _ => Task.FromResult(new Photo(testFile));
+            var sut = CreateSut(cameraService: cameraService);
+            sut.EditingDocument = new Document();
 
-        //    sut.AddPhotoFromCameraCommand.Execute(null);
-        //    WaitForCommand();
-        //    sut.EditingDocument.SubDocuments.Count.Should().Be(1);
-        //}
+            sut.AddPhotoFromCameraCommand.Execute(null);
+            WaitForCommand();
+            sut.EditingDocument.SubDocuments.Count.Should().Be(1);
+        }
 
         [TestMethod]
         public void ShouldNotAddNullPhoto()
         {
-            var cameraService = A.Fake<ICameraService>();
-            A.CallTo(() => cameraService.GetPhotoForDocumentAsync(A<Document>._)).Returns<Photo>(null);
-            var sut = CreateSut();
+            var cameraService = new CameraServiceMock();
+            cameraService.GetPhotoForDocumentFunc = _ => Task.FromResult<Photo>(null);
+            var sut = CreateSut(cameraService: cameraService);
             sut.EditingDocument = new Document();
 
             sut.AddPhotoFromCameraCommand.Execute(null);
@@ -48,9 +49,9 @@ namespace MyDocs.Common.Test.ViewModel
         [TestMethod]
         public void ShouldNotAddPhotoFromCameraWhenServiceCallFails()
         {
-            var cameraService = A.Fake<ICameraService>();
-            A.CallTo(() => cameraService.GetPhotoForDocumentAsync(A<Document>._)).Throws<Exception>();
-            var sut = CreateSut();
+            var cameraService = new CameraServiceMock();
+            cameraService.GetPhotoForDocumentFunc = _ => { throw new Exception("Test"); };
+            var sut = CreateSut(cameraService: cameraService);
             sut.EditingDocument = new Document();
 
             sut.AddPhotoFromCameraCommand.Execute(null);
@@ -62,8 +63,8 @@ namespace MyDocs.Common.Test.ViewModel
         public void ViewModelShouldBeBusyWhileAddingPhotoFromCamera()
         {
             var tcs = new TaskCompletionSource<Photo>();
-            var cameraService = A.Fake<ICameraService>();
-            A.CallTo(() => cameraService.GetPhotoForDocumentAsync(A<Document>._)).Returns(tcs.Task);
+            var cameraService = new CameraServiceMock();
+            cameraService.GetPhotoForDocumentFunc = _ => tcs.Task;
             var sut = CreateSut(cameraService: cameraService);
 
             sut.IsBusy.Should().BeFalse();
