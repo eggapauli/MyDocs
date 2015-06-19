@@ -1,10 +1,10 @@
 ﻿using Common.Test.Mocks;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Model.View;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -22,9 +22,50 @@ namespace MyDocs.Common.Test.ViewModel
         }
 
         [TestMethod]
+        public void ShouldAddPickedFileAsSubDocument()
+        {
+            var file = new Uri("ms-appx:///Images/UnitTestLogo.scale-100.png");
+            var filePicker = CreateFilePickerMock(new[] { file });
+            var pageExtractor = CreatePageExtractorMock(1);
+
+            var sut = CreateSut(filePicker: filePicker, pageExtractor: pageExtractor);
+            sut.EditingDocument = new Document();
+            sut.AddPhotoFromFileCommand.Execute(null);
+            WaitForCommand();
+
+            sut.EditingDocument.SubDocuments.Count.Should().Be(1);
+        }
+
+        [TestMethod]
         public void ShouldAddExtractedPhotosFromPickedFiles()
         {
-            throw new NotImplementedException();
+            var file = new Uri("ms-appx:///Images/UnitTestLogo.scale-100.png");
+            var filePicker = CreateFilePickerMock(new[] { file });
+            var pageExtractor = CreatePageExtractorMock(2);
+
+            var sut = CreateSut(filePicker: filePicker, pageExtractor: pageExtractor);
+            sut.EditingDocument = new Document();
+            sut.AddPhotoFromFileCommand.Execute(null);
+            WaitForCommand();
+
+            sut.EditingDocument
+                .SubDocuments
+                .SelectMany(sd => sd.Photos)
+                .Count()
+                .Should()
+                .Be(2);
+        }
+
+        [TestMethod]
+        public void ShouldSkipFilesWherePageExtractionFails()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void ViewModelShouldBeBusyWhileExtractingPages()
+        {
+            Assert.Inconclusive();
         }
 
         [TestMethod]
@@ -53,6 +94,33 @@ namespace MyDocs.Common.Test.ViewModel
             sut.AddPhotoFromFileCommand.Execute(null);
             WaitForCommand();
             sut.EditingDocument.SubDocuments.Should().BeEmpty();
+        }
+
+        private FileOpenPickerServiceMock CreateFilePickerMock(IEnumerable<Uri> fileUris)
+        {
+            return new FileOpenPickerServiceMock
+            {
+                PickFilesForDocumentFunc = async delegate
+                {
+                    var tasks = fileUris
+                        .Select(StorageFile.GetFileFromApplicationUriAsync)
+                        .Select(x => x.AsTask());
+                    return await Task.WhenAll(tasks);
+                }
+            };
+        }
+
+        private PageExtractorMock CreatePageExtractorMock(int pagesPerFile)
+        {
+            return new PageExtractorMock
+            {
+                SupportsExtensionFunc = delegate { return true; },
+                ExtractPagesFunc = (f, _) =>
+                {
+                    var pages = Enumerable.Repeat(new Model.Logic.Photo(f), pagesPerFile);
+                    return Task.FromResult(pages);
+                }
+            };
         }
     }
 }

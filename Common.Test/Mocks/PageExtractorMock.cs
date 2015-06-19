@@ -11,14 +11,17 @@ namespace Common.Test.Mocks
 {
     class PageExtractorMock : IPageExtractor
     {
+        public Func<StorageFile, Document, Task<IEnumerable<Photo>>> ExtractPagesFunc =
+            delegate { return Task.FromResult(Enumerable.Empty<Photo>()); };
         public Task<IEnumerable<Photo>> ExtractPages(StorageFile file, Document document)
         {
-            throw new NotImplementedException();
+            return ExtractPagesFunc(file, document);
         }
 
+        public Func<string, bool> SupportsExtensionFunc = delegate { return true; };
         public bool SupportsExtension(string extension)
         {
-            throw new NotImplementedException();
+            return SupportsExtensionFunc(extension);
         }
     }
 }
