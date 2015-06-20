@@ -38,7 +38,7 @@ namespace MyDocs.Common.Model.View
         public IImmutableList<SubDocument> SubDocuments
         {
             get { return subDocuments; }
-            private set { Set(ref subDocuments, value); }
+            internal set { Set(ref subDocuments, value); }
         }
 
         public Photo TitlePhoto

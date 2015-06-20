@@ -37,7 +37,7 @@ namespace MyDocs.Common.ViewModel
         public IEnumerable<string> CategoryNames
         {
             get { return categoryNames; }
-            private set { Set(ref categoryNames, value); }
+            internal set { Set(ref categoryNames, value); }
         }
 
         public bool ShowNewCategoryInput
