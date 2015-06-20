@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using MyDocs.Common.Model.View;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;

@@ -266,6 +266,7 @@ namespace MyDocs.Common.ViewModel
                         EditingDocument.AddSubDocument(new SubDocument(photo.File, new[] { photo }));
                     }
                 }
+                // TODO refine
                 catch (Exception)
                 {
                     // TODO translate

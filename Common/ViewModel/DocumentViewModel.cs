@@ -4,17 +4,10 @@ using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Messages;
 using View = MyDocs.Common.Model.View;
-using Serializable = MyDocs.Common.Model.Serializable;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using MyDocs.Common.Contract.Storage;
-using System.Collections.ObjectModel;
 using System.Collections.Immutable;
 using MyDocs.Common.Model;
 

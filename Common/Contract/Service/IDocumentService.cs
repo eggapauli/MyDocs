@@ -1,10 +1,7 @@
-﻿using MyDocs.Common.Contract.Storage;
-using MyDocs.Common.Model.Logic;
+﻿using MyDocs.Common.Model.Logic;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Threading.Tasks;
 
 namespace MyDocs.Common.Contract.Service

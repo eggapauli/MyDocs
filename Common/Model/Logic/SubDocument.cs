@@ -1,10 +1,6 @@
-﻿using MyDocs.Common.Contract.Storage;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Windows.Storage;
 
 namespace MyDocs.Common.Model.Logic

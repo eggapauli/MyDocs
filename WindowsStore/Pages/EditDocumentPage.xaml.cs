@@ -1,11 +1,8 @@
-﻿using GalaSoft.MvvmLight.Ioc;
-using MyDocs.Common.Contract.Page;
-using MyDocs.Common.Contract.Service;
+﻿using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Model.View;
 using MyDocs.Common.ViewModel;
 using MyDocs.WindowsStore.Common;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MyDocs.WindowsStore.Pages

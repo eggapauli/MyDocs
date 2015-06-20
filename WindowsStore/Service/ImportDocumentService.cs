@@ -1,14 +1,11 @@
 ﻿using MyDocs.Common;
 using MyDocs.Common.Contract.Service;
-using MyDocs.Common.Contract.Storage;
 using Logic = MyDocs.Common.Model.Logic;
 using Serializable = MyDocs.Common.Model.Serializable;
 using System;
 using System.Collections.Generic;
 using System.IO.Compression;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using MyDocs.Common.Model.Logic;

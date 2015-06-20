@@ -5,14 +5,10 @@ using MyDocs.WindowsStore.Pages;
 using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.ApplicationModel.Resources;
-using Windows.ApplicationModel.Store;
 using Windows.System;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Media.Animation;
 
 // The Grid App template is documented at http://go.microsoft.com/fwlink/?LinkId=234226
 

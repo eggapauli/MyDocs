@@ -1,11 +1,6 @@
 ﻿using MyDocs.Common.Contract.Page;
-using MyDocs.Common.Model;
 using MyDocs.Common.ViewModel;
 using MyDocs.WindowsStore.Common;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;

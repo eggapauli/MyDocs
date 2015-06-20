@@ -1,6 +1,5 @@
 ﻿using MyDocs.Common;
 using MyDocs.Common.Contract.Service;
-using MyDocs.Common.Model;
 using Serializable = MyDocs.Common.Model.Serializable;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MyDocs.WindowsStore.Service

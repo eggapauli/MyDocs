@@ -1,12 +1,9 @@
 ﻿using GalaSoft.MvvmLight;
-using MyDocs.Common.Contract.Storage;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.Serialization;
 
 namespace MyDocs.Common.Model.View
 {

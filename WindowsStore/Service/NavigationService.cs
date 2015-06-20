@@ -1,6 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Ioc;
 using MyDocs.Common.Contract.Service;
-using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 

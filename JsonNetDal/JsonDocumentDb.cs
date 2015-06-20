@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
-using Windows.Storage.Streams;
 using Logic = MyDocs.Common.Model.Logic;
 
 namespace JsonNetDal

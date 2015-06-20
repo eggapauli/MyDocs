@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using System.Threading.Tasks;
-using Windows.Storage;
 using Windows.Data.Pdf;
 using Windows.ApplicationModel;
-using System.IO;
 
 namespace WindowsStore.Test
 {

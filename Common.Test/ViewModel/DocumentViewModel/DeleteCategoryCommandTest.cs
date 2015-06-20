@@ -1,8 +1,5 @@
-﻿using Common.Test.Mocks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using MyDocs.Common.Contract.Service;
-using MyDocs.Common.Model.Logic;
 using System;
 using System.Collections.Generic;
 using System.Linq;

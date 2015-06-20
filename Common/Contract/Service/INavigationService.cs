@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MyDocs.Common.Contract.Service
+﻿namespace MyDocs.Common.Contract.Service
 {
     public interface INavigationService
     {
