@@ -139,6 +139,7 @@
     <Compile Include="ViewModel\DocumentViewModel\RenameCategoryCommandTest.cs" />
     <Compile Include="Mocks\SettingsServiceMock.cs" />
     <Compile Include="ViewModel\EditDocumentViewModelTest.cs" />
+    <Compile Include="ViewModel\RemovePhotoCommandTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

@@ -302,6 +302,7 @@ namespace MyDocs.Common.ViewModel
         private void RemovePhoto()
         {
             EditingDocument.RemovePhoto(SelectedPhoto);
+            SelectedPhoto = null;
         }
 
         #endregion
