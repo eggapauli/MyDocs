@@ -1,109 +1,83 @@
-﻿using GalaSoft.MvvmLight;
+﻿using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Linq;
 
 namespace MyDocs.Common.Model.View
 {
 #pragma warning disable 0659 // GetHashCode not needed, because documents are not stored in dictionaries
 
     [DebuggerDisplay("{Id} - {Category}")]
-    public class Document : ObservableObject, IEquatable<Document>
+    public class Document : ReactiveObject, IEquatable<Document>
     {
-        private Guid id;
+        private readonly Guid id;
         private string category;
         private IImmutableList<SubDocument> subDocuments;
         private IImmutableList<string> tags;
         private DateTime dateAdded;
-        private TimeSpan lifespan;
         private bool hasLimitedLifespan;
 
         public Guid Id
         {
             get { return id; }
-            private set { Set(ref id, value); }
         }
 
         public string Category
         {
             get { return category; }
-            set { Set(ref category, value); }
+            set { this.RaiseAndSetIfChanged(ref category, value); }
         }
 
         public IImmutableList<SubDocument> SubDocuments
         {
             get { return subDocuments; }
-            internal set { Set(ref subDocuments, value); }
+            internal set { this.RaiseAndSetIfChanged(ref subDocuments, value); }
         }
 
+        private readonly ObservableAsPropertyHelper<Photo> titlePhoto;
         public Photo TitlePhoto
         {
-            get
-            {
-                var subDocument = SubDocuments.FirstOrDefault();
-                if (subDocument != null) {
-                    return subDocument.Photos.FirstOrDefault();
-                }
-                return null;
-            }
+            get { return titlePhoto.Value; }
         }
-
+        
         public IImmutableList<string> Tags
         {
             get { return tags; }
-            set
-            {
-                if (Set(ref tags, value)) {
-                    RaisePropertyChanged(() => TagsString);
-                }
-            }
+            set { this.RaiseAndSetIfChanged(ref tags, value); }
         }
 
         public DateTime DateAdded
         {
             get { return dateAdded; }
-            set { Set(ref dateAdded, value); }
+            set { this.RaiseAndSetIfChanged(ref dateAdded, value); }
         }
 
+        private readonly ObservableAsPropertyHelper<TimeSpan> lifespan;
         public TimeSpan Lifespan
         {
-            get { return lifespan; }
-            set
-            {
-                if (Set(ref lifespan, value)) {
-                    RaisePropertyChanged(() => DateRemoved);
-                    RaisePropertyChanged(() => DaysToRemoval);
-                }
-            }
+            get { return lifespan.Value; }
         }
 
         public bool HasLimitedLifespan
         {
             get { return hasLimitedLifespan; }
-            set { Set(ref hasLimitedLifespan, value); }
+            set { this.RaiseAndSetIfChanged(ref hasLimitedLifespan, value); }
         }
-
-        public string TagsString
-        {
-            get { return string.Join(", ", Tags); }
-            set
-            {
-                var tags = value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                Tags = tags.Select(tag => tag.Trim()).ToImmutableList();
-            }
-        }
-
+        
+        private DateTime dateRemoved;
         public DateTime DateRemoved
         {
-            get { return DateAdded.Add(Lifespan).Date; }
-            set { Lifespan = value.Subtract(DateAdded); }
+            get { return dateRemoved; }
+            set { this.RaiseAndSetIfChanged(ref dateRemoved, value); }
         }
 
+        private readonly ObservableAsPropertyHelper<int> daysToRemoval;
         public int DaysToRemoval
         {
-            get { return Convert.ToInt32(DateRemoved.Subtract(DateTime.Today).TotalDays); }
+            get { return daysToRemoval.Value; }
         }
 
         public Document()
@@ -129,13 +103,24 @@ namespace MyDocs.Common.Model.View
             IEnumerable<string> tags,
             IEnumerable<SubDocument> subDocuments)
         {
-            Id = id;
+            this.id = id;
             Category = category;
             DateAdded = dateAdded;
-            Lifespan = lifespan;
+            DateRemoved = DateAdded.Add(lifespan);
             HasLimitedLifespan = hasLimitedLifespan;
             Tags = tags.ToImmutableList();
             SubDocuments = subDocuments.ToImmutableList();
+
+            titlePhoto = this.WhenAnyValue(x => x.SubDocuments)
+                .Select(x => SubDocuments.FirstOrDefault()?.Photos.FirstOrDefault())
+                .ToProperty(this, x => x.TitlePhoto);
+
+            this.lifespan = this.WhenAnyValue(x => x.DateAdded, x => x.DateRemoved, (added, removed) => removed.Subtract(added))
+                .ToProperty(this, x => x.Lifespan);
+
+            daysToRemoval = this.WhenAnyValue(x => x.DateRemoved)
+                .Select(x => (int)(x.Subtract(DateTime.Today).TotalDays))
+                .ToProperty(this, x => x.DaysToRemoval);
         }
 
         public void AddSubDocument(SubDocument doc)
@@ -167,7 +152,7 @@ namespace MyDocs.Common.Model.View
 
         public Document Clone()
         {
-            return new Document(id, category, dateAdded, lifespan, hasLimitedLifespan, tags, subDocuments);
+            return new Document(Id, Category, DateAdded, Lifespan, HasLimitedLifespan, Tags, SubDocuments);
         }
 
         public Logic.Document ToLogic()

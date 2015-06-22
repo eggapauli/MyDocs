@@ -1,11 +1,11 @@
-﻿using GalaSoft.MvvmLight;
+﻿using ReactiveUI;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
 namespace MyDocs.Common.Model.View
 {
-    public class Category : ObservableObject
+    public class Category : ReactiveObject
     {
         private string name;
         private IImmutableList<Document> documents;
@@ -13,13 +13,13 @@ namespace MyDocs.Common.Model.View
         public string Name
         {
             get { return name; }
-            set { Set(ref name, value); }
+            set { this.RaiseAndSetIfChanged(ref name, value); }
         }
 
         public IImmutableList<Document> Documents
         {
             get { return documents; }
-            set { Set(ref documents, value); }
+            set { this.RaiseAndSetIfChanged(ref documents, value); }
         }
 
         public int CountDocuments

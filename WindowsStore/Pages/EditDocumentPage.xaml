@@ -6,6 +6,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:common="using:MyDocs.WindowsStore.Common"
     xmlns:controls="using:MyDocs.WindowsStore.Controls"
+    xmlns:converters="using:MyDocs.WindowsStore.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
@@ -71,6 +72,9 @@
             </Grid.RowDefinitions>
             
             <Grid>
+                <Grid.Resources>
+                    <converters:StringListConverter x:Key="StringListConverter" />
+                </Grid.Resources>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -89,7 +93,12 @@
                 </Grid>
             </Grid>
 
-            <TextBox x:Uid="Edit_TagsInput" Grid.Row="1" Header="Tags" PlaceholderText="Enter comma-separated list of tags" Text="{Binding EditingDocument.TagsString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBoxStyle}" />
+            <TextBox x:Uid="Edit_TagsInput"
+                     Grid.Row="1"
+                     Header="Tags"
+                     PlaceholderText="Enter comma-separated list of tags"
+                     Text="{Binding EditingDocument.TagsString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringListConverter}"
+                     Style="{StaticResource TextBoxStyle}"/>
 
             <StackPanel Grid.Row="2" x:Name="lifespanPanel" Orientation="Horizontal">
                 <ToggleSwitch

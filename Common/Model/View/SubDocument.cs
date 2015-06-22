@@ -1,4 +1,4 @@
-﻿using GalaSoft.MvvmLight;
+﻿using ReactiveUI;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -7,7 +7,7 @@ using Windows.Storage;
 
 namespace MyDocs.Common.Model.View
 {
-    public class SubDocument : ObservableObject
+    public class SubDocument : ReactiveObject
     {
         private readonly string title;
         private readonly IStorageFile file;
@@ -26,7 +26,7 @@ namespace MyDocs.Common.Model.View
         public IImmutableList<Photo> Photos
         {
             get { return photos; }
-            set { Set(ref photos, value); }
+            set { this.RaiseAndSetIfChanged(ref photos, value); }
         }
 
         public SubDocument(IStorageFile file, IEnumerable<Photo> photos)
