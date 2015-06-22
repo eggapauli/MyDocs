@@ -125,10 +125,10 @@
     <Compile Include="Mocks\PageExtractorMock.cs" />
     <Compile Include="Mocks\TranslatorServiceMock.cs" />
     <Compile Include="Mocks\UserInterfaceServiceMock.cs" />
-    <Compile Include="Search\SearchViewModelTest.cs" />
+    <Compile Include="ViewModel\SearchViewModelTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModel\AddPhotoFromCameraCommandTest.cs" />
-    <Compile Include="ViewModel\AddPhotoFromFileCommandTest.cs" />
+    <Compile Include="ViewModel\EditDocumentViewModel\AddPhotoFromCameraCommandTest.cs" />
+    <Compile Include="ViewModel\EditDocumentViewModel\AddPhotoFromFileCommandTest.cs" />
     <Compile Include="ViewModel\DocumentViewModel\ImportDocumentsCommandTest.cs" />
     <Compile Include="ViewModel\DocumentViewModel\ExportDocumentsCommandTest.cs" />
     <Compile Include="ViewModel\DocumentViewModel\AddDocumentCommandTest.cs" />
@@ -138,9 +138,9 @@
     <Compile Include="ViewModel\DocumentViewModel\EditDocumentCommandTest.cs" />
     <Compile Include="ViewModel\DocumentViewModel\RenameCategoryCommandTest.cs" />
     <Compile Include="Mocks\SettingsServiceMock.cs" />
-    <Compile Include="ViewModel\EditDocumentViewModelTest.cs" />
-    <Compile Include="ViewModel\RemovePhotoCommandTest.cs" />
-    <Compile Include="ViewModel\SaveDocumentCommandTest.cs" />
+    <Compile Include="ViewModel\EditDocumentViewModel\EditDocumentViewModelTest.cs" />
+    <Compile Include="ViewModel\EditDocumentViewModel\RemovePhotoCommandTest.cs" />
+    <Compile Include="ViewModel\EditDocumentViewModel\SaveDocumentCommandTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
