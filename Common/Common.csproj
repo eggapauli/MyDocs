@@ -55,6 +55,8 @@
     <Compile Include="Contract\Service\ISettingsService.cs" />
     <Compile Include="Contract\Storage\FileSize.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="ICanBeBusy.cs" />
+    <Compile Include="ReactiveCommandExtensions.cs" />
     <Compile Include="StorageExtensions.cs" />
     <Compile Include="Messages\CloseFlyoutsMessage.cs" />
     <Compile Include="Model\Logic\Document.cs" />
