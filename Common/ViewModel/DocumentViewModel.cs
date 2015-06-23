@@ -1,6 +1,4 @@
-﻿using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using MyDocs.Common.Contract.Page;
+﻿using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Messages;
 using View = MyDocs.Common.Model.View;
@@ -10,10 +8,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
 using MyDocs.Common.Model;
+using ReactiveUI;
+using System.Reactive.Linq;
+using System.Windows.Input;
+using Splat;
+using System.Reactive.Disposables;
 
 namespace MyDocs.Common.ViewModel
 {
-    public class DocumentViewModel : ViewModelBase
+    public class DocumentViewModel : ReactiveObject, ICanBeBusy
     {
         private readonly IDocumentService documentService;
         private readonly INavigationService navigationService;
@@ -35,71 +38,55 @@ namespace MyDocs.Common.ViewModel
         public bool InZoomedInView
         {
             get { return inZoomedInView; }
-            set { Set(ref inZoomedInView, value); }
+            set { this.RaiseAndSetIfChanged(ref inZoomedInView, value); }
         }
 
         public IImmutableList<View.Category> Categories
         {
             get { return categories; }
-            set { Set(ref categories, value); }
+            set { this.RaiseAndSetIfChanged(ref categories, value); }
         }
 
+        private readonly ObservableAsPropertyHelper<bool> categoriesEmpty;
         public bool CategoriesEmpty
         {
-            get { return !IsBusy && categories.Count == 0; }
+            get { return categoriesEmpty.Value; }
         }
 
         public View.Document SelectedDocument
         {
             get { return selectedDocument; }
-            set
-            {
-                if (Set(ref selectedDocument, value)) {
-                    RaisePropertyChanged(() => HasSelectedDocument);
-
-                    DeleteDocumentCommand.RaiseCanExecuteChanged();
-                    EditDocumentCommand.RaiseCanExecuteChanged();
-                }
-            }
+            set { this.RaiseAndSetIfChanged(ref selectedDocument, value); }
         }
 
+        private readonly ObservableAsPropertyHelper<bool> hasSelectedDocument;
         public bool HasSelectedDocument
         {
-            get { return SelectedDocument != null; }
+            get { return hasSelectedDocument.Value; }
         }
 
         public string NewCategoryName
         {
             get { return newCategoryName; }
-            set
-            {
-                if (Set(ref newCategoryName, value)) {
-                    RenameCategoryCommand.RaiseCanExecuteChanged();
-                }
-            }
+            set { this.RaiseAndSetIfChanged(ref newCategoryName, value); }
         }
 
         public bool InEditCategoryMode
         {
             get { return inCategoryEditMode; }
-            set { Set(ref inCategoryEditMode, value); }
+            set { this.RaiseAndSetIfChanged(ref inCategoryEditMode, value); }
         }
 
         public bool IsLoading
         {
             get { return isLoading; }
-            set { Set(ref isLoading, value); }
+            set { this.RaiseAndSetIfChanged(ref isLoading, value); }
         }
 
         public bool IsBusy
         {
             get { return isBusy; }
-            set
-            {
-                if (Set(ref isBusy, value)) {
-                    RaisePropertyChanged(() => CategoriesEmpty);
-                }
-            }
+            set { this.RaiseAndSetIfChanged(ref isBusy, value); }
         }
 
         #endregion
@@ -127,32 +114,41 @@ namespace MyDocs.Common.ViewModel
                 RaisePropertyChanged(() => CategoriesEmpty);
             };
 
+            categoriesEmpty = this.WhenAnyValue(x => x.IsBusy, x => x.Categories, (isBusy, categories) => new { isBusy, categories })
+                .Select(x => !x.isBusy && x.categories.Count == 0)
+                .ToProperty(this, x => x.CategoriesEmpty);
+
+            hasSelectedDocument = this.WhenAnyValue(x => x.SelectedDocument)
+                .Select(x => x != null)
+                .ToProperty(this, x => x.HasSelectedDocument);
+
             CreateCommands();
             CreateDesignTimeData();
         }
 
         [Conditional("DEBUG")]
-        private void CreateDesignTimeData()
+        private async void CreateDesignTimeData()
         {
-            if (IsInDesignMode) {
-                documentService.LoadAsync().ContinueWith(t =>
-                {
-                    var doc = t.Result
-                        .First(d => d.Tags.Count > 2);
-                    SelectedDocument = View.Document.FromLogic(doc);
-                }, TaskScheduler.FromCurrentSynchronizationContext());
+            if (ModeDetector.InDesignMode())
+            {
+                var docs = await documentService.LoadAsync();
+                var doc = docs.First(d => d.Tags.Count > 2);
+                SelectedDocument = View.Document.FromLogic(doc);
             }
         }
 
         public async Task LoadAsync(Guid? selectedDocumentId = null)
         {
-            using (new TemporaryState(() => IsLoading = true, () => IsLoading = false)) {
+            IsLoading = true;
+            using (Disposable.Create(() => IsLoading = false))
+            {
                 var documents = await documentService.LoadAsync();
                 Categories = documents
                     .GroupBy(d => d.Category)
                     .Select(g => new View.Category(g.Key, g.Select(View.Document.FromLogic)))
                     .ToImmutableList();
-                if (selectedDocumentId.HasValue) {
+                if (selectedDocumentId.HasValue)
+                {
                     var doc = await documentService.GetDocumentById(selectedDocumentId.Value);
                     SelectedDocument = View.Document.FromLogic(doc);
                 }
@@ -161,30 +157,30 @@ namespace MyDocs.Common.ViewModel
 
         #region Commands
 
-        public RelayCommand AddDocumentCommand { get; private set; }
-        public RelayCommand EditDocumentCommand { get; private set; }
-        public RelayCommand DeleteDocumentCommand { get; private set; }
-        public RelayCommand<View.Document> ShowDocumentCommand { get; private set; }
-        public RelayCommand<View.Category> RenameCategoryCommand { get; private set; }
-        public RelayCommand<View.Category> DeleteCategoryCommand { get; private set; }
-        public RelayCommand NavigateToSearchPageCommand { get; private set; }
-        public RelayCommand ExportDocumentsCommand { get; private set; }
-        public RelayCommand ImportDocumentsCommand { get; private set; }
+        public ICommand AddDocumentCommand { get; private set; }
+        public ICommand EditDocumentCommand { get; private set; }
+        public ICommand DeleteDocumentCommand { get; private set; }
+        public ICommand ShowDocumentCommand { get; private set; }
+        public ICommand RenameCategoryCommand { get; private set; }
+        public ICommand DeleteCategoryCommand { get; private set; }
+        public ICommand NavigateToSearchPageCommand { get; private set; }
+        public ICommand ExportDocumentsCommand { get; private set; }
+        public ICommand ImportDocumentsCommand { get; private set; }
 
         private void CreateCommands()
         {
-            AddDocumentCommand = new RelayCommand(AddDocument);
-            EditDocumentCommand = new RelayCommand(EditDocument, () => SelectedDocument != null);
-            DeleteDocumentCommand = new RelayCommand(DeleteDocumentAsync, () => SelectedDocument != null);
-            ShowDocumentCommand = new RelayCommand<View.Document>(doc => navigationService.Navigate<IShowDocumentPage>(doc.Id), doc => doc != null);
+            AddDocumentCommand = this.CreateCommand(_ => AddDocument());
+            EditDocumentCommand = this.CreateCommand(_ => EditDocument(), this.WhenAnyValue(x => x.HasSelectedDocument));
+            DeleteDocumentCommand = this.CreateAsyncCommand(_ => DeleteDocumentAsync(), this.WhenAnyValue(x => x.HasSelectedDocument));
+            ShowDocumentCommand = this.CreateCommand(o => navigationService.Navigate<IShowDocumentPage>(((View.Document)o).Id));
 
-            RenameCategoryCommand = new RelayCommand<View.Category>(RenameCategoryAsync, _ => !String.IsNullOrWhiteSpace(newCategoryName));
-            DeleteCategoryCommand = new RelayCommand<View.Category>(DeleteCategoryAsync);
+            RenameCategoryCommand = this.CreateAsyncCommand(o => RenameCategoryAsync((View.Category)o), this.WhenAnyValue(x => x.NewCategoryName).Select(x => !string.IsNullOrWhiteSpace(x)));
+            DeleteCategoryCommand = this.CreateAsyncCommand(o => DeleteCategoryAsync((View.Category)o));
 
-            NavigateToSearchPageCommand = new RelayCommand(() => navigationService.Navigate<ISearchPage>());
+            NavigateToSearchPageCommand = this.CreateCommand(_ => navigationService.Navigate<ISearchPage>());
 
-            ExportDocumentsCommand = new RelayCommand(ExportDocumentsAsync);
-            ImportDocumentsCommand = new RelayCommand(ImportDocumentsAsync);
+            ExportDocumentsCommand = this.CreateAsyncCommand(_ => ExportDocumentsAsync());
+            ImportDocumentsCommand = this.CreateAsyncCommand(_ => ImportDocumentsAsync());
         }
 
         private void AddDocument()
@@ -197,103 +193,104 @@ namespace MyDocs.Common.ViewModel
             navigationService.Navigate<IEditDocumentPage>(selectedDocument.Id);
         }
 
-        private async void DeleteDocumentAsync()
+        private async Task DeleteDocumentAsync()
         {
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
-            using (SetBusy()) {
-                await documentService.DeleteDocumentAsync(selectedDocument.ToLogic());
-                foreach (var category in Categories.Where(c => c.Documents.Contains(selectedDocument))) {
-                    category.Documents = category.Documents.Remove(selectedDocument);
-                }
-                SelectedDocument = null;
+            await documentService.DeleteDocumentAsync(selectedDocument.ToLogic());
+            foreach (var category in Categories.Where(c => c.Documents.Contains(selectedDocument)))
+            {
+                category.Documents = category.Documents.Remove(selectedDocument);
             }
+            SelectedDocument = null;
         }
 
-        private async void RenameCategoryAsync(View.Category category)
+        private async Task RenameCategoryAsync(View.Category category)
         {
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
-            using (SetBusy()) {
-                await documentService.RenameCategoryAsync(category.Name, newCategoryName);
-            }
+            await documentService.RenameCategoryAsync(category.Name, newCategoryName);
             NewCategoryName = null;
         }
 
-        private async void DeleteCategoryAsync(View.Category category)
+        private async Task DeleteCategoryAsync(View.Category category)
         {
             MessengerInstance.Send(new CloseFlyoutsMessage());
 
-            using (SetBusy()) {
-                await documentService.DeleteCategoryAsync(category.Name);
-            }
+            await documentService.DeleteCategoryAsync(category.Name);
         }
 
-        private async void ExportDocumentsAsync()
+        private async Task ExportDocumentsAsync()
         {
-            using (SetBusy()) {
-                string error = null;
-                try {
-                    await licenseService.Unlock("ExportImportDocuments");
-                    await exportDocumentService.ExportDocuments();
+            string error = null;
+            try
+            {
+                await licenseService.Unlock("ExportImportDocuments");
+                await exportDocumentService.ExportDocuments();
+            }
+            catch (LicenseStatusException e)
+            {
+                if (e.LicenseStatus == LicenseStatus.Locked)
+                {
+                    error = "exportLocked";
                 }
-                catch (LicenseStatusException e) {
-                    if (e.LicenseStatus == LicenseStatus.Locked) {
-                        error = "exportLocked";
-                    }
-                    else if (e.LicenseStatus == LicenseStatus.Error) {
-                        error = "exportUnlockError";
-                    }
+                else if (e.LicenseStatus == LicenseStatus.Error)
+                {
+                    error = "exportUnlockError";
                 }
-                catch (Exception) {
-                    // TODO refine errors
-                    error = "exportError";
-                }
-                if (error != null) {
-                    await uiService.ShowErrorAsync(error);
-                }
-                else {
-                    await uiService.ShowNotificationAsync("exportFinished");
-                }
+            }
+            catch (Exception)
+            {
+                // TODO refine errors
+                error = "exportError";
+            }
+            if (error != null)
+            {
+                await uiService.ShowErrorAsync(error);
+            }
+            else
+            {
+                await uiService.ShowNotificationAsync("exportFinished");
             }
         }
 
         // TODO set options for import (overwrite existing documents, delete documents before importing, ...)
-        private async void ImportDocumentsAsync()
+        private async Task ImportDocumentsAsync()
         {
-            using (SetBusy()) {
-                string error = null;
-                try {
-                    await licenseService.Unlock("ExportImportDocuments");
-                    await importDocumentService.ImportDocuments();
+            string error = null;
+            try
+            {
+                await licenseService.Unlock("ExportImportDocuments");
+                await importDocumentService.ImportDocuments();
+            }
+            catch (LicenseStatusException e)
+            {
+                if (e.LicenseStatus == LicenseStatus.Locked)
+                {
+                    error = "importLocked";
                 }
-                catch (LicenseStatusException e) {
-                    if (e.LicenseStatus == LicenseStatus.Locked) {
-                        error = "importLocked";
-                    }
-                    else if (e.LicenseStatus == LicenseStatus.Error) {
-                        error = "importUnlockError";
-                    }
-                }
-                catch (ImportManifestNotFoundException) {
-                    error = "documentDescriptionFileNotFound";
-                }
-                catch (Exception) {
-                    // TODO refine errors
-                    error = "importError";
-                }
-                if (error != null) {
-                    await uiService.ShowErrorAsync(error);
-                }
-                else {
-                    await uiService.ShowNotificationAsync("importFinished");
+                else if (e.LicenseStatus == LicenseStatus.Error)
+                {
+                    error = "importUnlockError";
                 }
             }
-        }
-
-        public IDisposable SetBusy()
-        {
-            return new TemporaryState(() => IsBusy = true, () => IsBusy = false);
+            catch (ImportManifestNotFoundException)
+            {
+                error = "documentDescriptionFileNotFound";
+            }
+            catch (Exception)
+            {
+                // TODO refine errors
+                error = "importError";
+            }
+            if (error != null)
+            {
+                await uiService.ShowErrorAsync(error);
+            }
+            else
+            {
+                await uiService.ShowNotificationAsync("importFinished");
+            }
         }
 
         #endregion
