@@ -1,19 +1,23 @@
-﻿using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
-using MyDocs.Common.Contract.Page;
+﻿using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Contract.Service;
 using MyDocs.Common.Model.View;
+using ReactiveUI;
+using Splat;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace MyDocs.Common.ViewModel
 {
-    public class EditDocumentViewModel : ViewModelBase
+    public class EditDocumentViewModel : ReactiveObject, ICanBeBusy, IDisposable
     {
         private readonly IDocumentService documentService;
         private readonly INavigationService navigator;
@@ -21,11 +25,11 @@ namespace MyDocs.Common.ViewModel
         private readonly ICameraService cameraService;
         private readonly IFileOpenPickerService filePicker;
         private readonly ISettingsService settingsService;
-        private readonly IPageExtractor pageExtractor;
+        private readonly IPageExtractorService pageExtractor;
 
         #region Properties
 
-        private IEnumerable<string> categoryNames = Enumerable.Empty<string>();
+        private readonly ObservableAsPropertyHelper<IImmutableList<string>> categoryNames;
         private bool showNewCategoryInput;
         private string useCategoryName;
         private string newCategoryName;
@@ -33,56 +37,42 @@ namespace MyDocs.Common.ViewModel
         private Document editingDocument;
         private Photo selectedPhoto;
         private bool isBusy;
+        private IDisposable disposables;
 
-        public IEnumerable<string> CategoryNames
+        public IImmutableList<string> CategoryNames
         {
-            get { return categoryNames; }
-            internal set { Set(ref categoryNames, value); }
+            get { return categoryNames.Value; }
         }
 
         public bool ShowNewCategoryInput
         {
             get { return !HasCategories || showNewCategoryInput; }
-            set
-            {
-                if (Set(ref showNewCategoryInput, value)) {
-                    RaisePropertyChanged(() => ShowUseCategoryInput);
-                    SaveDocumentCommand.RaiseCanExecuteChanged();
-                }
-            }
+            set { this.RaiseAndSetIfChanged(ref showNewCategoryInput, value); }
         }
 
+        private readonly ObservableAsPropertyHelper<bool> showUseCategoryInput;
         public bool ShowUseCategoryInput
         {
-            get { return !ShowNewCategoryInput; }
-            set { ShowNewCategoryInput = !value; }
+            get { return showUseCategoryInput.Value; }
         }
+
+        private ObservableAsPropertyHelper<bool> hasCategories;
 
         public bool HasCategories
         {
-            get { return CategoryNames.Any(); }
+            get { return hasCategories.Value; }
         }
 
         public string UseCategoryName
         {
             get { return useCategoryName; }
-            set
-            {
-                if (Set(ref useCategoryName, value)) {
-                    SaveDocumentCommand.RaiseCanExecuteChanged();
-                }
-            }
+            set { this.RaiseAndSetIfChanged(ref useCategoryName, value); }
         }
 
         public string NewCategoryName
         {
             get { return newCategoryName; }
-            set
-            {
-                if (Set(ref newCategoryName, value)) {
-                    SaveDocumentCommand.RaiseCanExecuteChanged();
-                }
-            }
+            set { this.RaiseAndSetIfChanged(ref newCategoryName, value); }
         }
 
         public Document EditingDocument
@@ -90,22 +80,11 @@ namespace MyDocs.Common.ViewModel
             get { return editingDocument; }
             set
             {
-                if (editingDocument != null) {
-                    editingDocument.PropertyChanged -= EditingDocumentChangedHandler;
-                }
-                if (editingDocument != value) {
-                    if (value != null) {
-                        editingDocument = value.Clone();
-                        NewCategoryName = editingDocument.Category;
-                        UseCategoryName = editingDocument.Category;
-                        editingDocument.PropertyChanged += EditingDocumentChangedHandler;
-                    }
-                    else {
-                        editingDocument = null;
-                    }
+                if (editingDocument != value)
+                {
+                    editingDocument = value != null ? value.Clone() : null;
                     originalDocument = value;
-                    RaisePropertyChanged();
-                    SaveDocumentCommand.RaiseCanExecuteChanged();
+                    this.RaisePropertyChanged();
                 }
             }
         }
@@ -128,29 +107,16 @@ namespace MyDocs.Common.ViewModel
             }
         }
 
-        private void EditingDocumentChangedHandler(object sender, PropertyChangedEventArgs e)
-        {
-            // TODO make strongly typed
-            if (e.PropertyName == "Tags" || e.PropertyName == "Category" || e.PropertyName == "SubDocuments") {
-                SaveDocumentCommand.RaiseCanExecuteChanged();
-            }
-        }
-
         public Photo SelectedPhoto
         {
             get { return selectedPhoto; }
-            set
-            {
-                if (Set(ref selectedPhoto, value)) {
-                    RemovePhotoCommand.RaiseCanExecuteChanged();
-                }
-            }
+            set { this.RaiseAndSetIfChanged(ref selectedPhoto, value); }
         }
 
         public bool IsBusy
         {
             get { return isBusy; }
-            set { Set(ref isBusy, value); }
+            set { this.RaiseAndSetIfChanged(ref isBusy, value); }
         }
 
         #endregion
@@ -162,7 +128,7 @@ namespace MyDocs.Common.ViewModel
             ICameraService cameraService,
             IFileOpenPickerService filePicker,
             ISettingsService settingsService,
-            IPageExtractor pageExtractor)
+            IPageExtractorService pageExtractor)
         {
             this.documentService = documentService;
             this.navigator = navigator;
@@ -175,76 +141,82 @@ namespace MyDocs.Common.ViewModel
             CreateCommands();
             CreateDesignTimeData();
 
-            ObserveCategories();
+            categoryNames = documentService.GetCategoryNames()
+                .Select(x => x.ToImmutableList())
+                .ToProperty(this, x => x.CategoryNames);
 
-            PropertyChanged += (s, e) => {
-                if (e.PropertyName == "CategoryNames") {
-                    ShowUseCategoryInput = CategoryNames.Any();
-                }
-            };
-        }
+            showUseCategoryInput = this.WhenAnyValue(x => x.ShowNewCategoryInput)
+                .Select(x => !x)
+                .ToProperty(this, x => x.ShowUseCategoryInput);
 
-        private async void ObserveCategories()
-        {
-            // TODO observe changes and don't swallow errors
-            CategoryNames = await documentService.GetCategoryNames();
+            hasCategories = this.WhenAnyValue(x => x.CategoryNames)
+                .Select(x => x.Count > 0)
+                .ToProperty(this, x => x.HasCategories);
+
+            var categorySubscription = this.WhenAnyValue(x => x.EditingDocument.Category)
+                .Subscribe(x =>
+                {
+                    NewCategoryName = x;
+                    UseCategoryName = x;
+                });
+
+            disposables = new CompositeDisposable(categoryNames, showUseCategoryInput, hasCategories, categorySubscription);
         }
 
         [Conditional("DEBUG")]
-        private void CreateDesignTimeData()
+        private async void CreateDesignTimeData()
         {
-            if (IsInDesignMode) {
-                documentService.LoadAsync().ContinueWith(t => {
-                    EditingDocument = Document.FromLogic(t.Result.First());
-                }, TaskScheduler.FromCurrentSynchronizationContext());
-            }
-        }
-
-        public async Task LoadAsync()
-        {
-            using (SetBusy()) {
-                await documentService.LoadAsync();
+            if (ModeDetector.InDesignMode())
+            {
+                var docs = await documentService.GetDocuments().Take(1).ToTask();
+                EditingDocument = Document.FromLogic(docs.First());
             }
         }
 
         #region Commands
 
-        public RelayCommand ShowNewCategoryCommand { get; private set; }
-        public RelayCommand ShowUseCategoryCommand { get; private set; }
-        public RelayCommand AddPhotoFromCameraCommand { get; private set; }
-        public RelayCommand AddPhotoFromFileCommand { get; private set; }
-        public RelayCommand RemovePhotoCommand { get; private set; }
-        public RelayCommand SaveDocumentCommand { get; private set; }
+        public ICommand ShowNewCategoryCommand { get; private set; }
+        public ICommand ShowUseCategoryCommand { get; private set; }
+        public ICommand AddPhotoFromCameraCommand { get; private set; }
+        public ICommand AddPhotoFromFileCommand { get; private set; }
+        public ICommand RemovePhotoCommand { get; private set; }
+        public ICommand SaveDocumentCommand { get; private set; }
 
         private void CreateCommands()
         {
-            AddPhotoFromCameraCommand = new RelayCommand(AddPhotoFromCameraAsync);
-            AddPhotoFromFileCommand = new RelayCommand(AddPhotoFromFileAsync);
-            RemovePhotoCommand = new RelayCommand(RemovePhoto, () => SelectedPhoto != null);
-            SaveDocumentCommand = new RelayCommand(SaveDocumentAsync, () =>
-                EditingDocument != null
-                && EditingDocument.Tags.Any()
-                && (ShowNewCategoryInput && !String.IsNullOrWhiteSpace(NewCategoryName)
-                    || ShowUseCategoryInput && !String.IsNullOrWhiteSpace(UseCategoryName))
-                && EditingDocument.SubDocuments.Count > 0);
-            ShowNewCategoryCommand = new RelayCommand(() => { ShowNewCategoryInput = true; });
-            ShowUseCategoryCommand = new RelayCommand(() => { ShowNewCategoryInput = false; });
+            AddPhotoFromCameraCommand = this.CreateAsyncCommand(_ => AddPhotoFromCameraAsync());
+            AddPhotoFromFileCommand = this.CreateAsyncCommand(_ => AddPhotoFromFileAsync());
+            RemovePhotoCommand = this.CreateCommand(_ => RemovePhoto(), this.WhenAnyValue(x => x.SelectedPhoto).Select(x => x != null));
+            SaveDocumentCommand = this.CreateAsyncCommand(_ => SaveDocumentAsync(),
+                this.WhenAnyValue(
+                    x => x.EditingDocument.Tags,
+                    x => x.ShowNewCategoryInput,
+                    x => x.NewCategoryName,
+                    x => x.UseCategoryName,
+                    (tags, showNewCategoryInput, newCategoryName, useCategoryName) =>
+                    {
+                        var newCategoryInputOk = !showNewCategoryInput || !string.IsNullOrWhiteSpace(newCategoryName);
+                        var useCategoryInputOk = showNewCategoryInput || !string.IsNullOrWhiteSpace(useCategoryName);
+                        return tags.Any() && newCategoryInputOk && useCategoryInputOk;
+                    }
+                )
+            );
+            ShowNewCategoryCommand = this.CreateCommand(_ => ShowNewCategoryInput = true);
+            ShowUseCategoryCommand = this.CreateCommand(_ => ShowNewCategoryInput = false);
         }
 
-        private async void SaveDocumentAsync()
+        private async Task SaveDocumentAsync()
         {
             EditingDocument.Category = ShowNewCategoryInput ? NewCategoryName : UseCategoryName;
 
-            using (SetBusy()) {
-                await documentService.SaveDocumentAsync(EditingDocument.ToLogic());
+            await documentService.SaveDocumentAsync(EditingDocument.ToLogic());
 
-                // Delete removed photos
-                if (originalDocument != null) {
-                    var oldPhotos = originalDocument.SubDocuments.SelectMany(d => d.Photos);
-                    var newPhotos = EditingDocument.SubDocuments.SelectMany(d => d.Photos);
-                    var deletedPhotos = oldPhotos.Where(p => !newPhotos.Contains(p));
-                    await documentService.RemovePhotosAsync(deletedPhotos.Select(p => p.ToLogic()));
-                }
+            // Delete removed photos
+            if (originalDocument != null) {
+                var oldPhotos = originalDocument.SubDocuments.SelectMany(d => d.Photos);
+                var newPhotos = EditingDocument.SubDocuments.SelectMany(d => d.Photos);
+                var deletedPhotos = oldPhotos.Where(p => !newPhotos.Contains(p));
+                await documentService.RemovePhotosAsync(deletedPhotos.Select(p => p.ToLogic()));
             }
 
             var doc = EditingDocument;
@@ -254,49 +226,44 @@ namespace MyDocs.Common.ViewModel
             navigator.Navigate<IMainPage>(originalDocument.Id);
         }
 
-        private async void AddPhotoFromCameraAsync()
+        private async Task AddPhotoFromCameraAsync()
         {
-            using (SetBusy())
+            try
             {
-                try
+                var photo = await cameraService.GetPhotoForDocumentAsync(EditingDocument);
+                if (photo != null)
                 {
-                    var photo = await cameraService.GetPhotoForDocumentAsync(EditingDocument);
-                    if (photo != null)
-                    {
-                        EditingDocument.AddSubDocument(new SubDocument(photo.File, new[] { photo }));
-                    }
+                    EditingDocument.AddSubDocument(new SubDocument(photo.File, new[] { photo }));
                 }
-                // TODO refine
-                catch (Exception)
-                {
-                    // TODO translate
-                    await uiService.ShowErrorAsync("addPhotoFromCameraError");
-                }
+            }
+            // TODO refine
+            catch (Exception)
+            {
+                // TODO translate
+                await uiService.ShowErrorAsync("addPhotoFromCameraError");
             }
         }
 
-        private async void AddPhotoFromFileAsync()
+        private async Task AddPhotoFromFileAsync()
         {
             var files = await filePicker.PickFilesForDocumentAsync(EditingDocument);
 
-            using (SetBusy()) {
-                var error = false;
-                foreach (var file in files) {
-                    try {
-                        var pages =
-                            pageExtractor.SupportsExtension(Path.GetExtension(file.Name)) ?
-                            await pageExtractor.ExtractPages(file, EditingDocument.ToLogic()) :
-                            null;
-                        EditingDocument.AddSubDocument(new SubDocument(file, pages.Select(Photo.FromLogic)));
-                    }
-                    catch (Exception) {
-                        error = true;
-                    }
+            var error = false;
+            foreach (var file in files) {
+                try {
+                    var pages =
+                        pageExtractor.SupportsExtension(Path.GetExtension(file.Name)) ?
+                        await pageExtractor.ExtractPages(file, EditingDocument.ToLogic()) :
+                        null;
+                    EditingDocument.AddSubDocument(new SubDocument(file, pages.Select(Photo.FromLogic)));
                 }
+                catch (Exception) {
+                    error = true;
+                }
+            }
 
-                if (error) {
-                    await uiService.ShowErrorAsync("fileLoadError");
-                }
+            if (error) {
+                await uiService.ShowErrorAsync("fileLoadError");
             }
         }
 
@@ -306,11 +273,11 @@ namespace MyDocs.Common.ViewModel
             SelectedPhoto = null;
         }
 
-        #endregion
-
-        private IDisposable SetBusy()
+        public void Dispose()
         {
-            return new TemporaryState(() => IsBusy = true, () => IsBusy = false);
+            disposables.Dispose();
         }
+
+        #endregion
     }
 }

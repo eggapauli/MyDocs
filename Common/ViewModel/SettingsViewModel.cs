@@ -1,9 +1,9 @@
-﻿using GalaSoft.MvvmLight;
-using MyDocs.Common.Contract.Service;
+﻿using MyDocs.Common.Contract.Service;
+using ReactiveUI;
 
 namespace MyDocs.Common.ViewModel
 {
-    public class SettingsViewModel : ViewModelBase
+    public class SettingsViewModel : ReactiveObject
     {
         private ISettingsService settingsService;
 
@@ -14,10 +14,11 @@ namespace MyDocs.Common.ViewModel
             {
                 if (settingsService.IsSyncEnabled != value) {
                     settingsService.IsSyncEnabled = value;
-                    RaisePropertyChanged();
+                    this.RaisePropertyChanged();
                 }
             }
         }
+
         public SettingsViewModel(ISettingsService settingsService)
         {
             this.settingsService = settingsService;

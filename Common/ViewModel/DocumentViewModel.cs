@@ -13,10 +13,12 @@ using System.Reactive.Linq;
 using System.Windows.Input;
 using Splat;
 using System.Reactive.Disposables;
+using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 
 namespace MyDocs.Common.ViewModel
 {
-    public class DocumentViewModel : ReactiveObject, ICanBeBusy
+    public class DocumentViewModel : ReactiveObject, ICanBeBusy, IDisposable
     {
         private readonly IDocumentService documentService;
         private readonly INavigationService navigationService;
@@ -27,13 +29,15 @@ namespace MyDocs.Common.ViewModel
 
         #region Properties
 
-        private IImmutableList<View.Category> categories = ImmutableList<View.Category>.Empty;
+        private readonly ObservableAsPropertyHelper<IImmutableList<View.Category>> categories;
         private View.Document selectedDocument;
         private string newCategoryName;
         private bool inCategoryEditMode = false;
         private bool inZoomedInView = true;
-        private bool isLoading = false;
+        private readonly ObservableAsPropertyHelper<bool> isLoading;
         private bool isBusy = false;
+        private ISubject<CloseFlyoutsMessage> closeFlyoutsMessages =
+            new Subject<CloseFlyoutsMessage>();
 
         public bool InZoomedInView
         {
@@ -43,8 +47,7 @@ namespace MyDocs.Common.ViewModel
 
         public IImmutableList<View.Category> Categories
         {
-            get { return categories; }
-            set { this.RaiseAndSetIfChanged(ref categories, value); }
+            get { return categories.Value; }
         }
 
         private readonly ObservableAsPropertyHelper<bool> categoriesEmpty;
@@ -60,6 +63,8 @@ namespace MyDocs.Common.ViewModel
         }
 
         private readonly ObservableAsPropertyHelper<bool> hasSelectedDocument;
+        private CompositeDisposable disposables;
+
         public bool HasSelectedDocument
         {
             get { return hasSelectedDocument.Value; }
@@ -79,14 +84,18 @@ namespace MyDocs.Common.ViewModel
 
         public bool IsLoading
         {
-            get { return isLoading; }
-            set { this.RaiseAndSetIfChanged(ref isLoading, value); }
+            get { return isLoading.Value; }
         }
 
         public bool IsBusy
         {
             get { return isBusy; }
             set { this.RaiseAndSetIfChanged(ref isBusy, value); }
+        }
+
+        public IObservable<CloseFlyoutsMessage> CloseFlyoutsMessages
+        {
+            get { return closeFlyoutsMessages.AsObservable(); }
         }
 
         #endregion
@@ -106,13 +115,18 @@ namespace MyDocs.Common.ViewModel
             this.exportDocumentService = exportDocumentService;
             this.importDocumentService = importDocumentService;
 
-            documentService.Changed += (s, e) =>
-            {
-                // TODO check `e` and update collection
+            categories = documentService.GetDocuments()
+                .Select(docs => docs
+                    .GroupBy(d => d.Category)
+                    .Select(g => new View.Category(g.Key, g.Select(View.Document.FromLogic)))
+                    .ToImmutableList()
+                 )
+                 .ToProperty(this, x => x.Categories, ImmutableList<View.Category>.Empty);
 
-                RaisePropertyChanged(() => Categories);
-                RaisePropertyChanged(() => CategoriesEmpty);
-            };
+            isLoading = documentService.GetDocuments()
+                .Take(1)
+                .Select(_ => false)
+                .ToProperty(this, x => x.IsLoading);
 
             categoriesEmpty = this.WhenAnyValue(x => x.IsBusy, x => x.Categories, (isBusy, categories) => new { isBusy, categories })
                 .Select(x => !x.isBusy && x.categories.Count == 0)
@@ -121,6 +135,8 @@ namespace MyDocs.Common.ViewModel
             hasSelectedDocument = this.WhenAnyValue(x => x.SelectedDocument)
                 .Select(x => x != null)
                 .ToProperty(this, x => x.HasSelectedDocument);
+
+            disposables = new CompositeDisposable(categories, isLoading, categoriesEmpty, hasSelectedDocument);
 
             CreateCommands();
             CreateDesignTimeData();
@@ -131,28 +147,22 @@ namespace MyDocs.Common.ViewModel
         {
             if (ModeDetector.InDesignMode())
             {
-                var docs = await documentService.LoadAsync();
+                var docs = await documentService.GetDocuments().Take(1).ToTask();
                 var doc = docs.First(d => d.Tags.Count > 2);
                 SelectedDocument = View.Document.FromLogic(doc);
             }
         }
 
-        public async Task LoadAsync(Guid? selectedDocumentId = null)
+        public void TrySelectDocument(Guid selectedDocumentId)
         {
-            IsLoading = true;
-            using (Disposable.Create(() => IsLoading = false))
-            {
-                var documents = await documentService.LoadAsync();
-                Categories = documents
-                    .GroupBy(d => d.Category)
-                    .Select(g => new View.Category(g.Key, g.Select(View.Document.FromLogic)))
-                    .ToImmutableList();
-                if (selectedDocumentId.HasValue)
-                {
-                    var doc = await documentService.GetDocumentById(selectedDocumentId.Value);
-                    SelectedDocument = View.Document.FromLogic(doc);
-                }
-            }
+            SelectedDocument = Categories
+                .SelectMany(c => c.Documents)
+                .SingleOrDefault(d => d.Id == selectedDocumentId);
+        }
+
+        public void Dispose()
+        {
+            disposables.Dispose();
         }
 
         #region Commands
@@ -195,7 +205,7 @@ namespace MyDocs.Common.ViewModel
 
         private async Task DeleteDocumentAsync()
         {
-            MessengerInstance.Send(new CloseFlyoutsMessage());
+            closeFlyoutsMessages.OnNext(new CloseFlyoutsMessage());
 
             await documentService.DeleteDocumentAsync(selectedDocument.ToLogic());
             foreach (var category in Categories.Where(c => c.Documents.Contains(selectedDocument)))
@@ -207,7 +217,7 @@ namespace MyDocs.Common.ViewModel
 
         private async Task RenameCategoryAsync(View.Category category)
         {
-            MessengerInstance.Send(new CloseFlyoutsMessage());
+            closeFlyoutsMessages.OnNext(new CloseFlyoutsMessage());
 
             await documentService.RenameCategoryAsync(category.Name, newCategoryName);
             NewCategoryName = null;
@@ -215,7 +225,7 @@ namespace MyDocs.Common.ViewModel
 
         private async Task DeleteCategoryAsync(View.Category category)
         {
-            MessengerInstance.Send(new CloseFlyoutsMessage());
+            closeFlyoutsMessages.OnNext(new CloseFlyoutsMessage());
 
             await documentService.DeleteCategoryAsync(category.Name);
         }
