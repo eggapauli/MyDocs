@@ -2,8 +2,10 @@
 using MyDocs.Common.Model.View;
 using MyDocs.Common.ViewModel;
 using MyDocs.WindowsStore.Common;
+using ReactiveUI;
 using System;
 using System.Linq;
+using System.Reactive.Linq;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -35,8 +37,8 @@ namespace MyDocs.WindowsStore.Pages
 
         private void dtm_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
         {
-            var document = ((Document)ViewModel.SelectedDocument);
-            string fileTitle = document.TagsString;
+            var document = ViewModel.SelectedDocument;
+            string fileTitle = string.Join("_", document.Tags);
 
             var data = args.Request.Data;
             data.Properties.Title = fileTitle;
@@ -54,7 +56,14 @@ namespace MyDocs.WindowsStore.Pages
 
         protected override void LoadState(object sender, LoadStateEventArgs args)
         {
-            var t = ViewModel.LoadAsync((Guid?)args.NavigationParameter);
+            // unify with `MainPage.LoadState`
+            var selectedDocumentId = (Guid?)args.NavigationParameter;
+            if (selectedDocumentId.HasValue)
+            {
+                ViewModel.WhenAnyValue(x => x.Categories)
+                    .Take(1)
+                    .Subscribe(_ => ViewModel.TrySelectDocument(selectedDocumentId.Value));
+            }
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)

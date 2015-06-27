@@ -1,6 +1,8 @@
-﻿using MyDocs.Common.Contract.Page;
+﻿using Autofac;
+using MyDocs.Common.Contract.Page;
 using MyDocs.Common.ViewModel;
 using MyDocs.WindowsStore.Common;
+using MyDocs.WindowsStore.ViewModel;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -31,7 +33,8 @@ namespace MyDocs.WindowsStore.Pages
 
         protected override void LoadState(object sender, LoadStateEventArgs e)
         {
-            ViewModel.LoadFilters();
+            // TODO set filter year etc.?
+            //ViewModel.LoadFilters();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -57,9 +60,9 @@ namespace MyDocs.WindowsStore.Pages
         /// </summary>
         /// <param name="sender">The ComboBox instance.</param>
         /// <param name="e">Event data describing how the selected filter was changed.</param>
-        private async void Filter_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Filter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            await ViewModel.SetActiveFilter(e.AddedItems.FirstOrDefault() as SearchViewModel.Filter);
+            ViewModel.SetActiveFilter(e.AddedItems.FirstOrDefault() as SearchViewModel.Filter);
         }
 
         /// <summary>
@@ -83,9 +86,10 @@ namespace MyDocs.WindowsStore.Pages
             ViewModel.ShowDocumentCommand.Execute(e.ClickedItem);
         }
 
-        private async void queryText_QuerySubmitted(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
+        // TODO should work anyway
+        private void queryText_QuerySubmitted(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
         {
-            await ViewModel.RefreshResults();
+            //await ViewModel.RefreshResults();
         }
     }
 }

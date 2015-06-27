@@ -1,12 +1,14 @@
-﻿using GalaSoft.MvvmLight.Messaging;
-using MyDocs.Common.Contract.Page;
+﻿using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Messages;
 using MyDocs.Common.Model.View;
 using MyDocs.Common.ViewModel;
 using MyDocs.WindowsStore.Common;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -17,6 +19,8 @@ namespace MyDocs.WindowsStore.Pages
 {
     public sealed partial class MainPage : LayoutAwarePage, IMainPage
     {
+        private IDisposable closeFlyoutsMessageSubscription;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -36,7 +40,7 @@ namespace MyDocs.WindowsStore.Pages
 
             Window.Current.SizeChanged += WindowSizeChanged;
 
-            Messenger.Default.Register<CloseFlyoutsMessage>(this, m => CloseFlyouts());
+            closeFlyoutsMessageSubscription = ViewModel.CloseFlyoutsMessages.Subscribe(_ => CloseFlyouts());
 
             RefreshLayout();
         }
@@ -50,7 +54,7 @@ namespace MyDocs.WindowsStore.Pages
 
             Window.Current.SizeChanged -= WindowSizeChanged;
 
-            Messenger.Default.Unregister<CloseFlyoutsMessage>(this);
+            closeFlyoutsMessageSubscription.Dispose();
         }
 
         private void CloseFlyouts()
@@ -71,10 +75,19 @@ namespace MyDocs.WindowsStore.Pages
 
         protected override async void LoadState(object sender, LoadStateEventArgs args)
         {
-            using (ViewModel.SetBusy()) {
+            ViewModel.IsBusy = true;
+            using (Disposable.Create(() => ViewModel.IsBusy = false)) {
                 await MigrationHelper.Migrate();
             }
-            await ViewModel.LoadAsync((Guid?)args.NavigationParameter);
+
+            // unify with `ShowDocumentPage.LoadState`
+            var selectedDocumentId = (Guid?)args.NavigationParameter;
+            if (selectedDocumentId.HasValue) {
+                ViewModel.WhenAnyValue(x => x.Categories)
+                    .Take(1)
+                    .Subscribe(_ => ViewModel.TrySelectDocument(selectedDocumentId.Value));
+            }
+
             if (groupedDocumentsViewSource.View != null) {
                 var collectionGroups = groupedDocumentsViewSource.View.CollectionGroups;
                 ((ListViewBase)this.semanticZoom.ZoomedOutView).ItemsSource = collectionGroups;

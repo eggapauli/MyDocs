@@ -7,6 +7,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Logic = MyDocs.Common.Model.Logic;
+using System.Reactive;
+using System.Reactive.Subjects;
+using System.Reactive.Linq;
 
 namespace JsonNetDal
 {
@@ -17,6 +20,12 @@ namespace JsonNetDal
             Formatting = Formatting.None,
             Culture = CultureInfo.InvariantCulture
         };
+
+        private readonly ISubject<Unit> changed = new Subject<Unit>();
+        public IObservable<Unit> Changed
+        {
+            get { return changed.AsObservable(); }
+        }
 
         public async Task Setup(IEnumerable<Logic.Document> documents)
         {
@@ -31,6 +40,8 @@ namespace JsonNetDal
             var dbFile = await GetDbFile();
             await dbFile.DeleteAsync();
             // TODO remove photos
+
+            changed.OnNext(Unit.Default);
         }
 
         public async Task<IEnumerable<Logic.Document>> GetAllDocumentsAsync()
@@ -96,6 +107,7 @@ namespace JsonNetDal
         {
             var dbFile = await GetDbFile();
             await FileIO.WriteTextAsync(dbFile, content);
+            changed.OnNext(Unit.Default);
         }
 
         private async Task<IEnumerable<Document>> ReadDocuments()

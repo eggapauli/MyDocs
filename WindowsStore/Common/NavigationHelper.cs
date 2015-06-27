@@ -98,8 +98,8 @@ namespace MyDocs.WindowsStore.Common
 
         #region Navigation support
 
-        RelayCommand _goBackCommand;
-        RelayCommand _goForwardCommand;
+        ICommand _goBackCommand;
+        ICommand _goForwardCommand;
 
         /// <summary>
         /// <see cref="RelayCommand"/> used to bind to the back Button's Command property
@@ -109,15 +109,15 @@ namespace MyDocs.WindowsStore.Common
         /// The <see cref="RelayCommand"/> is set up to use the virtual method <see cref="GoBack"/>
         /// as the Execute Action and <see cref="CanGoBack"/> for CanExecute.
         /// </summary>
-        public RelayCommand GoBackCommand
+        public ICommand GoBackCommand
         {
             get
             {
                 if (_goBackCommand == null)
                 {
-                    _goBackCommand = new RelayCommand(
-                        () => this.GoBack(),
-                        () => this.CanGoBack());
+                    _goBackCommand = ReactiveCommand.CreateAsyncTask(
+                        Observable.Return(true), // TODO get observable from `this.CanGoBack()`
+                        async _ => { GoBack(); await Task.Yield(); });
                 }
                 return _goBackCommand;
             }
@@ -133,15 +133,15 @@ namespace MyDocs.WindowsStore.Common
         /// The <see cref="RelayCommand"/> is set up to use the virtual method <see cref="GoForward"/>
         /// as the Execute Action and <see cref="CanGoForward"/> for CanExecute.
         /// </summary>
-        public RelayCommand GoForwardCommand
+        public ICommand GoForwardCommand
         {
             get
             {
                 if (_goForwardCommand == null)
                 {
-                    _goForwardCommand = new RelayCommand(
-                        () => this.GoForward(),
-                        () => this.CanGoForward());
+                    _goForwardCommand = ReactiveCommand.CreateAsyncTask(
+                        Observable.Return(true), // TODO get observable from `this.CanGoForward()`
+                        async _ => { GoForward(); await Task.Yield(); });
                 }
                 return _goForwardCommand;
             }

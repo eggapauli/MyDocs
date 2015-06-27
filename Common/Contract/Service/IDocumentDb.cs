@@ -1,12 +1,15 @@
 ﻿using MyDocs.Common.Model.Logic;
 using System;
 using System.Collections.Generic;
+using System.Reactive;
 using System.Threading.Tasks;
 
 namespace MyDocs.Common.Contract.Service
 {
     public interface IDocumentDb
     {
+        IObservable<Unit> Changed { get; }
+
         Task ClearAllData();
 
         Task<IEnumerable<Document>> GetAllDocumentsAsync();

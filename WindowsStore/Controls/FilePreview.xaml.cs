@@ -5,6 +5,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using MyDocs.Common.Model.View;
 using MyDocs.Common;
+using System.Reactive.Disposables;
 
 namespace MyDocs.WindowsStore.Controls
 {
@@ -48,7 +49,8 @@ namespace MyDocs.WindowsStore.Controls
             var photo = (Photo)e.NewValue;
 
             if (photo != null) {
-                using (new TemporaryState(() => self.Loading.IsActive = true, () => self.Loading.IsActive = false)) {
+                self.Loading.IsActive = true;
+                using (Disposable.Create(() => self.Loading.IsActive = false)) {
                     self.Preview.Source = await photo.File.GetResizedBitmapImageAsync(self.FileSize);
                     // Image is not shown immediately, so wait a bit before inactivating loading
                     await System.Threading.Tasks.Task.Delay(500);

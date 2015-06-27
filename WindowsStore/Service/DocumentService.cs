@@ -2,8 +2,8 @@
 using MyDocs.Common.Model.Logic;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 
 namespace MyDocs.WindowsStore.Service
@@ -26,30 +26,17 @@ namespace MyDocs.WindowsStore.Service
 
         private async Task InsertTestData()
         {
-            var service = new MyDocs.WindowsStore.Service.Design.DesignDocumentService();
-            var testDocuments = await service.LoadAsync();
-
+            var service = new Design.DesignDocumentService();
+            var testDocuments = await service.GetDocuments().FirstAsync();
+            
             foreach (var document in testDocuments) {
                 await SaveDocumentAsync(document);
             }
         }
 
-        public async Task<IImmutableList<Document>> LoadAsync()
+        public IObservable<IEnumerable<Document>> GetDocuments()
         {
-            // TODO create CachedDocumentService
-            //if (Documents.Count > 0) {
-            //    return;
-            //}
-#if DEBUG
-            //await ClearAllData();
-            //await InsertTestData();
-            //Documents.Clear();
-#endif
-            //await Task.Delay(2000);
-            //categories.Clear();
-
-            var documents = await documentDb.GetAllDocumentsAsync();
-            return documents.ToImmutableList();
+            return ObserveDocuments(documentDb.GetAllDocumentsAsync);
 
             // TODO create CleanDocumentService
             //await RemoveOutdatedDocuments();
@@ -80,14 +67,23 @@ namespace MyDocs.WindowsStore.Service
         //    }
         //}
 
-        public Task<IEnumerable<string>> GetCategoryNames()
+        public IObservable<IEnumerable<string>> GetCategoryNames()
         {
-            return documentDb.GetDistinctCategories();
+            return ObserveDocuments(documentDb.GetDistinctCategories);
         }
 
-        public Task<IEnumerable<int>> GetDistinctDocumentYears()
+        public IObservable<IEnumerable<int>> GetDistinctDocumentYears()
         {
-            return documentDb.GetDistinctDocumentYears();
+            return ObserveDocuments(documentDb.GetDistinctDocumentYears);
+        }
+
+        private IObservable<T> ObserveDocuments<T>(Func<Task<T>> func)
+        {
+            return documentDb.Changed
+                .Select(_ => func())
+                .Switch()
+                .Replay(1)
+                .RefCount();
         }
 
         public async Task DeleteCategoryAsync(string categoryName)

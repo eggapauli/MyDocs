@@ -2,8 +2,8 @@
 using MyDocs.Common.Model.Logic;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 
@@ -13,25 +13,29 @@ namespace MyDocs.WindowsStore.Service.Design
     {
         private readonly Random random = new Random();
 
-        public async Task<IImmutableList<Document>> LoadAsync()
+        public IObservable<IEnumerable<Document>> GetDocuments()
         {
-            var photos = new List<StorageFile>();
-            try {
-                var folder = await ApplicationData.Current.LocalFolder.GetFolderAsync("design");
-                photos.AddRange(await folder.GetFilesAsync());
-            }
-            catch {}
-            return CreateDocuments(photos).ToImmutableList();
+            return Observable.FromAsync(async () =>
+            {
+                var photos = new List<StorageFile>();
+                try
+                {
+                    var folder = await ApplicationData.Current.LocalFolder.GetFolderAsync("design");
+                    photos.AddRange(await folder.GetFilesAsync());
+                }
+                catch { }
+                return CreateDocuments(photos);
+            });
         }
 
-        public Task<IEnumerable<string>> GetCategoryNames()
+        public IObservable<IEnumerable<string>> GetCategoryNames()
         {
-            return Task.FromResult(Enumerable.Range(1, 5).Select(i => "Category " + i));
+            return Observable.Return(Enumerable.Range(1, 5).Select(i => "Category " + i));
         }
 
-        public Task<IEnumerable<int>> GetDistinctDocumentYears()
+        public IObservable<IEnumerable<int>> GetDistinctDocumentYears()
         {
-            return Task.FromResult<IEnumerable<int>>(new[] { DateTime.Today.Year });
+            return Observable.Return(new[] { DateTime.Today.Year });
         }
 
         private IEnumerable<Document> CreateDocuments(IList<StorageFile> photos)
