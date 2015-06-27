@@ -97,7 +97,7 @@
                      Grid.Row="1"
                      Header="Tags"
                      PlaceholderText="Enter comma-separated list of tags"
-                     Text="{Binding EditingDocument.TagsString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringListConverter}"
+                     Text="{Binding EditingDocument.TagsString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringListConverter}}"
                      Style="{StaticResource TextBoxStyle}"/>
 
             <StackPanel Grid.Row="2" x:Name="lifespanPanel" Orientation="Horizontal">
