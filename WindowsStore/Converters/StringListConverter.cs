@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using Windows.UI.Xaml.Data;
 
-namespace MyDocs.WindowsStore.Converter
+namespace MyDocs.WindowsStore.Converters
 {
     public class StringListConverter : IValueConverter
     {
