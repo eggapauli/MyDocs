@@ -14,7 +14,7 @@ namespace MyDocs.WindowsStore.Pages
 
         public void GoBack(object sender, RoutedEventArgs e)
         {
-            Popup parent = this.Parent as Popup;
+            Popup parent = Parent as Popup;
             if (parent != null) {
                 parent.IsOpen = false;
             }

@@ -16,7 +16,7 @@ namespace MyDocs.WindowsStore.Pages
 
         public EditDocumentViewModel ViewModel
         {
-            get { return this.DataContext as EditDocumentViewModel; }
+            get { return DataContext as EditDocumentViewModel; }
         }
 
         protected override void LoadState(object sender, LoadStateEventArgs args)

@@ -26,7 +26,7 @@ namespace MyDocs.WindowsStore
         public App()
         {
             this.InitializeComponent();
-            this.Suspending += OnSuspending;
+            Suspending += OnSuspending;
         }
 
         /// <summary>

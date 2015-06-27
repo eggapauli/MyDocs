@@ -37,7 +37,7 @@ namespace MyDocs.WindowsStore.Common
         /// </summary>
         public NavigationHelper NavigationHelper
         {
-            get { return this.navigationHelper; }
+            get { return navigationHelper; }
         }
 
         private List<Control> _layoutAwareControls;
@@ -49,15 +49,15 @@ namespace MyDocs.WindowsStore.Common
         {
             if (Windows.ApplicationModel.DesignMode.DesignModeEnabled) return;
 
-            this.navigationHelper = new NavigationHelper(this);
-            this.navigationHelper.LoadState += LoadState;
-            this.navigationHelper.SaveState += SaveState;
+            navigationHelper = new NavigationHelper(this);
+            navigationHelper.LoadState += LoadState;
+            navigationHelper.SaveState += SaveState;
 
             // When this page is part of the visual tree make the following change: 
             // * Map application view state to visual state for the page 
-            this.Loaded += (sender, e) =>
+            Loaded += (sender, e) =>
             {
-                this.StartLayoutUpdates(sender, e);
+                StartLayoutUpdates(sender, e);
             };
         }
 
@@ -100,13 +100,13 @@ namespace MyDocs.WindowsStore.Common
         {
             var control = sender as Control;
             if (control == null) return;
-            if (this._layoutAwareControls == null)
+            if (_layoutAwareControls == null)
             {
                 // Start listening to view state changes when there are controls interested in updates 
-                Window.Current.SizeChanged += this.WindowSizeChanged;
-                this._layoutAwareControls = new List<Control>();
+                Window.Current.SizeChanged += WindowSizeChanged;
+                _layoutAwareControls = new List<Control>();
             }
-            this._layoutAwareControls.Add(control);
+            _layoutAwareControls.Add(control);
 
             // Set the initial visual state of the control 
             VisualStateManager.GoToState(control, DetermineVisualState(Window.Current.Bounds.Width), false);
@@ -114,7 +114,7 @@ namespace MyDocs.WindowsStore.Common
 
         private void WindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
         {
-            this.InvalidateVisualState();
+            InvalidateVisualState();
         }
 
         /// <summary> 
@@ -131,13 +131,13 @@ namespace MyDocs.WindowsStore.Common
         public void StopLayoutUpdates(object sender, RoutedEventArgs e)
         {
             var control = sender as Control;
-            if (control == null || this._layoutAwareControls == null) return;
-            this._layoutAwareControls.Remove(control);
-            if (this._layoutAwareControls.Count == 0)
+            if (control == null || _layoutAwareControls == null) return;
+            _layoutAwareControls.Remove(control);
+            if (_layoutAwareControls.Count == 0)
             {
                 // Stop listening to view state changes when no controls are interested in updates 
-                this._layoutAwareControls = null;
-                Window.Current.SizeChanged -= this.WindowSizeChanged;
+                _layoutAwareControls = null;
+                Window.Current.SizeChanged -= WindowSizeChanged;
             }
         }
 
@@ -166,10 +166,10 @@ namespace MyDocs.WindowsStore.Common
         /// </remarks> 
         public void InvalidateVisualState()
         {
-            if (this._layoutAwareControls != null)
+            if (_layoutAwareControls != null)
             {
                 string visualState = DetermineVisualState(Window.Current.Bounds.Width);
-                foreach (var layoutAwareControl in this._layoutAwareControls)
+                foreach (var layoutAwareControl in _layoutAwareControls)
                 {
                     VisualStateManager.GoToState(layoutAwareControl, visualState, false);
                 }
