@@ -16,10 +16,10 @@ namespace MyDocs.WindowsStore.Service
     {
         private readonly IFileOpenPickerService fileOpenPickerService;
         private readonly IDocumentService documentService;
-        private readonly IPageExtractor pageExtractor;
+        private readonly IPageExtractorService pageExtractor;
         private readonly ISettingsService settingsService;
 
-        public ImportDocumentService(IFileOpenPickerService fileOpenPickerService, IDocumentService documentService, IPageExtractor pageExtractor, ISettingsService settingsService)
+        public ImportDocumentService(IFileOpenPickerService fileOpenPickerService, IDocumentService documentService, IPageExtractorService pageExtractor, ISettingsService settingsService)
         {
             this.fileOpenPickerService = fileOpenPickerService;
             this.documentService = documentService;

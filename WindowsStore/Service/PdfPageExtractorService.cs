@@ -10,7 +10,7 @@ using Windows.Storage;
 
 namespace MyDocs.WindowsStore.Service
 {
-    public class PdfPageExtractor : IPageExtractor
+    public class PdfPageExtractorService : IPageExtractorService
     {
         public bool SupportsExtension(string extension)
         {

@@ -125,14 +125,14 @@
     <Compile Include="Common\NavigationHelper.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="MigrationHelper.cs" />
-    <Compile Include="Service\ApplicationDataContainerDocumentStorage.cs" />
+    <Compile Include="Service\ApplicationDataContainerDocumentStorageService.cs" />
     <Compile Include="Service\CameraService.cs" />
     <Compile Include="Service\ExportDocumentService.cs" />
     <Compile Include="Service\FileSavePickerService.cs" />
     <Compile Include="Service\ImportDocumentService.cs" />
     <Compile Include="Service\LicenseService.cs" />
     <Compile Include="Service\ModernUIService.cs" />
-    <Compile Include="Service\PdfPageExtractor.cs" />
+    <Compile Include="Service\PdfPageExtractorService.cs" />
     <Compile Include="Service\SettingsService.cs" />
     <Compile Include="Common\StorageExtension.cs" />
     <Compile Include="Pages\EditDocumentPage.xaml.cs">
@@ -227,6 +227,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.3.5.2\lib\portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Autofac.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ReactiveUI, Version=6.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\reactiveui-core.6.5.0\lib\Win8\ReactiveUI.dll</HintPath>

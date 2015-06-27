@@ -8,14 +8,14 @@ using Windows.Storage;
 
 namespace MyDocs.Common.Contract.Service
 {
-    public interface IPageExtractor
+    public interface IPageExtractorService
     {
         bool SupportsExtension(string extension);
 
         Task<IEnumerable<Photo>> ExtractPages(StorageFile file, Document document);
     }
 
-    public class ImagePageExtractor : IPageExtractor
+    public class ImagePageExtractorService : IPageExtractorService
     {
         public bool SupportsExtension(string extension)
         {
@@ -28,11 +28,11 @@ namespace MyDocs.Common.Contract.Service
         }
     }
 
-    public class PageExtractorList : IPageExtractor
+    public class PageExtractorListService : IPageExtractorService
     {
-        private readonly IList<IPageExtractor> extractors;
+        private readonly IList<IPageExtractorService> extractors;
 
-        public PageExtractorList(IEnumerable<IPageExtractor> extractors)
+        public PageExtractorListService(IEnumerable<IPageExtractorService> extractors)
         {
             this.extractors = extractors.ToList();
         }

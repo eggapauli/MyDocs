@@ -19,7 +19,7 @@ namespace MyDocs.Common.Test.ViewModel
             ICameraService cameraService = null,
             IFileOpenPickerService filePicker = null,
             ISettingsService settingsService = null,
-            IPageExtractor pageExtractor = null)
+            IPageExtractorService pageExtractor = null)
         {
             documentService = documentService ?? new DocumentServiceMock(Enumerable.Empty<Document>());
             navigator = navigator ?? new NavigationServiceMock();

@@ -1,100 +1,84 @@
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Ioc;
-using Microsoft.Practices.ServiceLocation;
-using MyDocs.Common.Contract.Page;
+using Autofac;
 using MyDocs.Common.Contract.Service;
-using MyDocs.Common.ViewModel;
-using MyDocs.WindowsStore.Pages;
 using MyDocs.WindowsStore.Service;
 using MyDocs.WindowsStore.Service.Design;
-using System;
+using Splat;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace MyDocs.WindowsStore.ViewModel
 {
-    public class ViewModelLocator
+    public static class ViewModelLocator
     {
-        public ViewModelLocator()
-        {
-            ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
+        private static readonly IContainer container;
 
-            if (ViewModelBase.IsInDesignModeStatic) {
-                Register<IDocumentService, DesignDocumentService>();
+        public static IContainer Container
+        {
+            get { return container; }
+        }
+
+        static ViewModelLocator()
+        {
+            var builder = new ContainerBuilder();
+            if (ModeDetector.InDesignMode())
+            {
+                builder.RegisterType<DesignDocumentService>()
+                    .As<IDocumentService>();
             }
-            else {
-                Register<IDocumentService, DocumentService>();
+            else
+            {
+                builder.RegisterType<DocumentService>()
+                    .As<IDocumentService>();
             }
 
-            Register<INavigationService, NavigationService>();
-            Register<ISettingsService, SettingsService>();
-            Register<IUserInterfaceService, ModernUIService>();
-            Register<ICameraService, CameraService>();
-            Register<IImportDocumentService, ImportDocumentService>();
-            Register<IFileOpenPickerService, FileOpenPickerService>();
-            Register<IExportDocumentService, ExportDocumentService>();
-            Register<IFileSavePickerService, FileSavePickerService>();
-            Register<IPageExtractor>(() => new PageExtractorList(GetPageExtractors()));
-            Register<ITranslatorService, TranslatorService>();
-            Register<ILicenseService, LicenseService>();
+            var manuallyAddedTypes = new[]
+            {
+                typeof(DesignDocumentService),
+                typeof(DocumentService),
+                typeof(PageExtractorListService),
+                typeof(PdfPageExtractorService),
+                typeof(ImagePageExtractorService),
+            };
 
-            Register(() => new ApplicationDataContainerDocumentStorage(ServiceLocator.Current.GetInstance<ISettingsService>()));
-            
-            var jsonDocumentDb = new JsonNetDal.JsonDocumentDb();
-            Register(() => jsonDocumentDb);
-            Register<IDocumentDb>(() => jsonDocumentDb);
+            var thisAssembly = typeof(ViewModelLocator).GetTypeInfo().Assembly;
 
-            Register<IMainPage, MainPage>();
-            Register<IEditDocumentPage, EditDocumentPage>();
-            Register<IShowDocumentPage, ShowDocumentPage>();
-            Register<ISearchPage, SearchResultsPage>();
+            builder.RegisterAssemblyTypes(thisAssembly)
+                .Where(t => t.Name.EndsWith("Service"))
+                .Where(t => !manuallyAddedTypes.Contains(t))
+                .AsImplementedInterfaces()
+                .SingleInstance();
 
-            SimpleIoc.Default.Register<DocumentViewModel>();
-            SimpleIoc.Default.Register<EditDocumentViewModel>();
-            SimpleIoc.Default.Register<SearchViewModel>();
-            SimpleIoc.Default.Register<SettingsViewModel>();
+            builder.Register(_ => new PageExtractorListService(GetPageExtractors()))
+                .As<IPageExtractorService>()
+                .SingleInstance();
+
+            builder.RegisterType<ApplicationDataContainerDocumentStorageService>()
+                .AsSelf()
+                .SingleInstance();
+
+            builder.RegisterType<JsonNetDal.JsonDocumentDb>()
+                .AsSelf()
+                .As<IDocumentDb>()
+                .SingleInstance();
+
+            builder.RegisterAssemblyTypes(thisAssembly)
+                .Where(t => t.Name.EndsWith("Page"))
+                .AsImplementedInterfaces()
+                .SingleInstance();
+
+            builder.RegisterAssemblyTypes(thisAssembly)
+                .Where(t => t.Name.EndsWith("ViewModel"))
+                .AsSelf()
+                .InstancePerDependency();
+
+            container = builder.Build();
         }
 
-        private void Register<TInterface, TClass>()
-            where TInterface : class
-            where TClass : class
+        private static IEnumerable<IPageExtractorService> GetPageExtractors()
         {
-            if (!SimpleIoc.Default.IsRegistered<TInterface>()) {
-                SimpleIoc.Default.Register<TInterface, TClass>();
-            }
-        }
-
-        private void Register<TInterface>(Func<TInterface> factory)
-            where TInterface : class
-        {
-            if (!SimpleIoc.Default.IsRegistered<TInterface>()) {
-                SimpleIoc.Default.Register<TInterface>(factory);
-            }
-        }
-
-        private IEnumerable<IPageExtractor> GetPageExtractors()
-        {
-            yield return new PdfPageExtractor();
-            yield return new ImagePageExtractor();
-        }
-
-        public DocumentViewModel DocumentVM
-        {
-            get { return ServiceLocator.Current.GetInstance<DocumentViewModel>(); }
-        }
-
-        public EditDocumentViewModel EditDocumentVM
-        {
-            get { return ServiceLocator.Current.GetInstance<EditDocumentViewModel>(); }
-        }
-
-        public SearchViewModel SearchVM
-        {
-            get { return ServiceLocator.Current.GetInstance<SearchViewModel>(); }
-        }
-
-        public SettingsViewModel SettingsVM
-        {
-            get { return ServiceLocator.Current.GetInstance<SettingsViewModel>(); }
+            yield return new PdfPageExtractorService();
+            yield return new ImagePageExtractorService();
         }
 
         public static void Cleanup()

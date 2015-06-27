@@ -13,20 +13,18 @@ namespace MyDocs.WindowsStore.Pages
         public SearchResultsPage()
         {
             this.InitializeComponent();
-
-            this.Loaded += async (s, e) => {
-                await ViewModel.RefreshResults();
-            };
         }
 
         public SearchViewModel ViewModel
         {
             get { return (SearchViewModel)DataContext; }
+            set { DataContext = value; }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            ViewModel = ViewModelLocator.Container.Resolve<SearchViewModel>();
             ViewModel.IsInDefaultLayout = DetermineVisualState(Window.Current.Bounds.Width) == "DefaultLayout";
             Window.Current.SizeChanged += WindowSizeChanged;
         }
@@ -40,6 +38,8 @@ namespace MyDocs.WindowsStore.Pages
         {
             base.OnNavigatedFrom(e);
             Window.Current.SizeChanged -= WindowSizeChanged;
+            ViewModel.Dispose();
+            ViewModel = null;
         }
 
         private void WindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
