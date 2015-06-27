@@ -25,49 +25,41 @@ namespace MyDocs.Common.Test.ViewModel
         }
 
         [TestMethod]
-        public async Task RefreshResults_SingleTag_ReturnsDocumentsWithTag()
+        public void RefreshResults_SingleTag_ReturnsDocumentsWithTag()
         {
             var expected = documents.Take(2).Select(View.Document.FromLogic).ToList();
             var sut = MakeSut(documentService);
             sut.QueryText = "tag2";
 
-            await sut.RefreshResults();
-
             CollectionAssert.AreEqual(expected, sut.Results.ToList());
         }
 
         [TestMethod]
-        public async Task RefreshResults_MultipleTags_ReturnsDocumentsWhichHaveAllTags()
+        public void RefreshResults_MultipleTags_ReturnsDocumentsWhichHaveAllTags()
         {
             var expected = documents.Take(2).Select(View.Document.FromLogic).ToList();
             var sut = MakeSut(documentService);
             sut.QueryText = "tag2 tag3";
 
-            await sut.RefreshResults();
-
             CollectionAssert.AreEqual(expected, sut.Results.ToList());
         }
 
         [TestMethod]
-        public async Task RefreshResults_Always_ReturnsDistinctResults()
+        public void RefreshResults_Always_ReturnsDistinctResults()
         {
             var expected = View.Document.FromLogic(documents.First());
             var sut = MakeSut(documentService);
             sut.QueryText = "tag1 tag2";
 
-            await sut.RefreshResults();
-
             Assert.AreEqual(1, sut.Results.Count(r => r.Equals(expected)));
         }
 
         [TestMethod]
-        public async Task RefreshResults_YearFilter_ReturnsCorrectResults()
+        public void RefreshResults_YearFilter_ReturnsCorrectResults()
         {
             var expected = documents.Skip(1).Select(View.Document.FromLogic).ToList();
             var sut = MakeSut(documentService);
             sut.FilterYear = sut.FilterYears.First(filterYear => filterYear.Item1.HasValue && filterYear.Item1 == 2014);
-
-            await sut.RefreshResults();
 
             CollectionAssert.AreEqual(expected, sut.Results.ToList());
         }
@@ -88,9 +80,7 @@ namespace MyDocs.Common.Test.ViewModel
         {
             var navigationService = new NavigationServiceMock();
             var translatorService = new TranslatorServiceMock();
-            var sut = new SearchViewModel(documentService, navigationService, translatorService);
-            sut.LoadFilters();
-            return sut;
+            return new SearchViewModel(documentService, navigationService, translatorService);
         }
     }
 }

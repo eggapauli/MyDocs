@@ -43,7 +43,7 @@ namespace MyDocs.Common.Test.ViewModel
         public void SaveDocumentCommandShouldBeDisabledWhenUseCategoryNameIsEmpty()
         {
             var sut = CreateSutForSavingDocuments();
-            sut.ShowUseCategoryInput = true;
+            sut.ShowNewCategoryInput = false;
             sut.UseCategoryName = "";
 
             sut.SaveDocumentCommand.CanExecute(null).Should().BeFalse();
@@ -64,7 +64,6 @@ namespace MyDocs.Common.Test.ViewModel
             sut.EditingDocument = CreateSampleDocument();
             sut.ShowNewCategoryInput = true;
             sut.NewCategoryName = "newcat";
-            sut.CategoryNames = new[] { "cat1", "cat2" };
             sut.UseCategoryName = sut.CategoryNames.First();
             return sut;
         }

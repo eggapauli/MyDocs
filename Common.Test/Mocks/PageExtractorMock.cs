@@ -8,7 +8,7 @@ using Windows.Storage;
 
 namespace Common.Test.Mocks
 {
-    class PageExtractorMock : IPageExtractor
+    class PageExtractorMock : IPageExtractorService
     {
         public Func<StorageFile, Document, Task<IEnumerable<Photo>>> ExtractPagesFunc =
             delegate { return Task.FromResult(Enumerable.Empty<Photo>()); };

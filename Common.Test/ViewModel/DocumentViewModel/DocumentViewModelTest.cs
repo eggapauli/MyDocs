@@ -27,7 +27,6 @@ namespace MyDocs.Common.Test.ViewModel
             exportDocumentService = exportDocumentService ?? new ExportDocumentServiceMock();
             importDocumentService = importDocumentService ?? new ImportDocumentServiceMock();
             var sut = new DocumentViewModel(documentService, uiService, navigationService, licenseService, exportDocumentService, importDocumentService);
-            sut.LoadAsync().Wait();
             return sut;
         }
 

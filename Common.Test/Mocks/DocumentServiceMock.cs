@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MyDocs.Common.Model.Logic;
 using System.Collections.Immutable;
+using System.Reactive.Linq;
 
 namespace Common.Test.Mocks
 {
@@ -16,7 +17,7 @@ namespace Common.Test.Mocks
         
         public DocumentServiceMock(IEnumerable<Document> documents)
         {
-            this.Documents = documents.ToImmutableList();
+            Documents = documents.ToImmutableList();
         }
 
         public Func<string, Task> DeleteCategoryAsyncFunc =
@@ -35,24 +36,24 @@ namespace Common.Test.Mocks
             return DeleteDocumentAsyncFunc(doc);
         }
 
-        public Task<IEnumerable<string>> GetCategoryNames()
+        public IObservable<IEnumerable<string>> GetCategoryNames()
         {
             var categoryNames = Documents
                 .Select(d => d.Category)
                 .Distinct()
                 .OrderBy(x => x)
                 .AsEnumerable();
-            return Task.FromResult(categoryNames);
+            return Observable.Return(categoryNames);
         }
 
-        public Task<IEnumerable<int>> GetDistinctDocumentYears()
+        public IObservable<IEnumerable<int>> GetDistinctDocumentYears()
         {
             var years = Documents
                 .Select(d => d.DateAdded.Year)
                 .Distinct()
                 .OrderBy(x => x)
                 .AsEnumerable();
-            return Task.FromResult(years);
+            return Observable.Return(years);
         }
 
         public Task<Document> GetDocumentById(Guid id)
@@ -60,9 +61,9 @@ namespace Common.Test.Mocks
             return Task.FromResult(Documents.Single(d => d.Id == id));
         }
 
-        public Task<IImmutableList<Document>> LoadAsync()
+        public IObservable<IEnumerable<Document>> GetDocuments()
         {
-            return Task.FromResult<IImmutableList<Document>>(Documents);
+            return Observable.Return(Documents);
         }
 
         public async Task RemovePhotosAsync(IEnumerable<Photo> photos)
