@@ -1,7 +1,7 @@
-﻿using GalaSoft.MvvmLight.Ioc;
-using MyDocs.Common.Contract.Service;
+﻿using MyDocs.Common.Contract.Service;
 using MyDocs.WindowsStore.Common;
 using MyDocs.WindowsStore.Pages;
+using Splat;
 using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -82,7 +82,7 @@ namespace MyDocs.WindowsStore
 
         private void App_CommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
         {
-            var translator = SimpleIoc.Default.GetInstance<ITranslatorService>();
+            var translator = Locator.Current.GetService<ITranslatorService>();
             //SettingsCommand settingsCommand = new SettingsCommand("settings", translator.Translate("settings"), handler =>
             //{
             //    SettingsPage settingsPage = new SettingsPage();
