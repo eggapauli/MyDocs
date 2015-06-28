@@ -13,8 +13,6 @@ namespace Common.Test.Mocks
     {
         public readonly ImmutableList<Document> Documents;
 
-        public event EventHandler Changed;
-        
         public DocumentServiceMock(IEnumerable<Document> documents)
         {
             Documents = documents.ToImmutableList();
