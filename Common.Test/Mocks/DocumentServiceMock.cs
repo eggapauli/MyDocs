@@ -39,8 +39,7 @@ namespace Common.Test.Mocks
             var categoryNames = Documents
                 .Select(d => d.Category)
                 .Distinct()
-                .OrderBy(x => x)
-                .AsEnumerable();
+                .OrderBy(x => x);
             return Observable.Return(categoryNames);
         }
 

@@ -61,7 +61,7 @@ namespace MyDocs.Common.ViewModel
 
         public Tuple<int?, string> FilterYear
         {
-            get { return filterYear ?? FilterYears.First(); }
+            get { return filterYear; }
             set { this.RaiseAndSetIfChanged(ref filterYear, value); }
         }
 
@@ -120,14 +120,18 @@ namespace MyDocs.Common.ViewModel
                 .Select(years => years.Select(y => Tuple.Create<int?, string>(y, y.ToString())))
                 .Select(years => new[] { allYears }.Concat(years))
                 .Select(years => years.ToImmutableList())
-                .ToProperty(this, x => x.FilterYears);
+                .ToProperty(this, x => x.FilterYears, ImmutableList<Tuple<int?, string>>.Empty);
+
+            this.WhenAnyValue(x => x.FilterYears)
+                .TakeWhile(_ => FilterYear == null)
+                .Subscribe(x => FilterYear = x.FirstOrDefault());
 
             ActiveFilter = allFilter = new Filter(translatorService.Translate("all"), _ => true);
             filters = documentService.GetCategoryNames()
                 .Select(names => names.Select(name => new Filter(name, d => d.Category == name)))
                 .Select(names => new[] { allFilter }.Concat(names))
                 .Select(names => names.ToImmutableList())
-                .ToProperty(this, x => x.Filters);
+                .ToProperty(this, x => x.Filters, ImmutableList<Filter>.Empty);
 
             showDefaultResults = this.WhenAnyValue(x => x.HasResults, x => x.IsInDefaultLayout, (x, y) => x && y)
                 .ToProperty(this, x => x.ShowDefaultResults);

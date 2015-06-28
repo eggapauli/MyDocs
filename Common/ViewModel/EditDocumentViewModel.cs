@@ -30,7 +30,8 @@ namespace MyDocs.Common.ViewModel
         #region Properties
 
         private readonly ObservableAsPropertyHelper<IImmutableList<string>> categoryNames;
-        private bool showNewCategoryInput;
+        private readonly ObservableAsPropertyHelper<bool> showNewCategoryInput;
+        private bool showNewCategoryInputValue;
         private string useCategoryName;
         private string newCategoryName;
         private Document originalDocument;
@@ -44,10 +45,15 @@ namespace MyDocs.Common.ViewModel
             get { return categoryNames.Value; }
         }
 
+        public bool ShowNewCategoryInputValue
+        {
+            get { return showNewCategoryInputValue; }
+            set { this.RaiseAndSetIfChanged(ref showNewCategoryInputValue, value); }
+        }
+
         public bool ShowNewCategoryInput
         {
-            get { return !HasCategories || showNewCategoryInput; }
-            set { this.RaiseAndSetIfChanged(ref showNewCategoryInput, value); }
+            get { return showNewCategoryInput.Value; }
         }
 
         private readonly ObservableAsPropertyHelper<bool> showUseCategoryInput;
@@ -145,13 +151,16 @@ namespace MyDocs.Common.ViewModel
                 .Select(x => x.ToImmutableList())
                 .ToProperty(this, x => x.CategoryNames);
 
-            showUseCategoryInput = this.WhenAnyValue(x => x.ShowNewCategoryInput)
-                .Select(x => !x)
-                .ToProperty(this, x => x.ShowUseCategoryInput);
-
             hasCategories = this.WhenAnyValue(x => x.CategoryNames)
                 .Select(x => x.Count > 0)
                 .ToProperty(this, x => x.HasCategories);
+
+            showNewCategoryInput = this.WhenAnyValue(x => x.ShowNewCategoryInputValue, x => x.HasCategories, (x, y) => !y || x)
+                .ToProperty(this, x => x.ShowNewCategoryInput);
+
+            showUseCategoryInput = this.WhenAnyValue(x => x.ShowNewCategoryInput)
+                .Select(x => !x)
+                .ToProperty(this, x => x.ShowUseCategoryInput);
 
             var categorySubscription = this.WhenAnyValue(x => x.EditingDocument.Category)
                 .Subscribe(x =>
@@ -190,19 +199,24 @@ namespace MyDocs.Common.ViewModel
             SaveDocumentCommand = this.CreateAsyncCommand(_ => SaveDocumentAsync(),
                 this.WhenAnyValue(
                     x => x.EditingDocument.Tags,
+                    x => x.EditingDocument.SubDocuments,
                     x => x.ShowNewCategoryInput,
                     x => x.NewCategoryName,
                     x => x.UseCategoryName,
-                    (tags, showNewCategoryInput, newCategoryName, useCategoryName) =>
+                    (tags, subDocs, showNewCategoryInput, newCategoryName, useCategoryName) =>
                     {
+                        var test = this.ShowNewCategoryInput;
                         var newCategoryInputOk = !showNewCategoryInput || !string.IsNullOrWhiteSpace(newCategoryName);
                         var useCategoryInputOk = showNewCategoryInput || !string.IsNullOrWhiteSpace(useCategoryName);
-                        return tags.Any() && newCategoryInputOk && useCategoryInputOk;
+                        return tags.Any()
+                            && newCategoryInputOk
+                            && useCategoryInputOk
+                            && subDocs.Count > 0;
                     }
                 )
             );
-            ShowNewCategoryCommand = this.CreateCommand(_ => ShowNewCategoryInput = true);
-            ShowUseCategoryCommand = this.CreateCommand(_ => ShowNewCategoryInput = false);
+            ShowNewCategoryCommand = this.CreateCommand(_ => ShowNewCategoryInputValue = true);
+            ShowUseCategoryCommand = this.CreateCommand(_ => ShowNewCategoryInputValue = false);
         }
 
         private async Task SaveDocumentAsync()

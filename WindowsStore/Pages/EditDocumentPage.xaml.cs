@@ -25,7 +25,7 @@ namespace MyDocs.WindowsStore.Pages
                 args.PageState.ConvertToDocumentAsync().ContinueWith(t =>
                 {
                     ViewModel.EditingDocument = Document.FromLogic(t.Result);
-                    ViewModel.ShowNewCategoryInput = (bool)args.PageState["ShowNewCategoryInput"];
+                    ViewModel.ShowNewCategoryInputValue = (bool)args.PageState["ShowNewCategoryInput"];
                     ViewModel.UseCategoryName = (string)args.PageState["UseCategoryName"];
                     ViewModel.NewCategoryName = (string)args.PageState["NewCategoryName"];
                 }, TaskScheduler.FromCurrentSynchronizationContext());
@@ -43,7 +43,7 @@ namespace MyDocs.WindowsStore.Pages
             if (ViewModel.EditingDocument != null) {
                 ViewModel.EditingDocument.ToLogic().ConvertToRestorableDocument(args.PageState);
             }
-            args.PageState["ShowNewCategoryInput"] = ViewModel.ShowNewCategoryInput;
+            args.PageState["ShowNewCategoryInput"] = ViewModel.ShowNewCategoryInputValue;
             args.PageState["UseCategoryName"] = ViewModel.UseCategoryName;
             args.PageState["NewCategoryName"] = ViewModel.NewCategoryName;
         }
