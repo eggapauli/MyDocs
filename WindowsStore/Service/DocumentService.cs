@@ -3,6 +3,7 @@ using MyDocs.Common.Model.Logic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
@@ -80,6 +81,7 @@ namespace MyDocs.WindowsStore.Service
         private IObservable<T> ObserveDocuments<T>(Func<Task<T>> func)
         {
             return documentDb.Changed
+                .StartWith(Unit.Default)
                 .Select(_ => func())
                 .Switch()
                 .Replay(1)
