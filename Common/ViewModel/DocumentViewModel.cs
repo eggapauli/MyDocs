@@ -130,8 +130,12 @@ namespace MyDocs.Common.ViewModel
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .ToProperty(this, x => x.IsLoading);
 
-            categoriesEmpty = this.WhenAnyValue(x => x.IsBusy, x => x.Categories, (isBusy, categories) => new { isBusy, categories })
-                .Select(x => !x.isBusy && x.categories.Count == 0)
+            categoriesEmpty = this.WhenAnyValue(
+                    x => x.IsBusy,
+                    x => x.IsLoading,
+                    x => x.Categories,
+                    (isBusy, isLoading, categories) =>
+                        !isBusy && !isLoading && categories.Count == 0)
                 .ToProperty(this, x => x.CategoriesEmpty);
 
             hasSelectedDocument = this.WhenAnyValue(x => x.SelectedDocument)
