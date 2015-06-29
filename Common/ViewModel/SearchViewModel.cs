@@ -155,7 +155,7 @@ namespace MyDocs.Common.ViewModel
             var applyFilterSubscription = Observable.CombineLatest(
                 documentService.GetDocuments(),
                 this.WhenAnyValue(x => x.QueryText),
-                this.WhenAnyValue(x => x.FilterYear).Select(x => x.Item1),
+                this.WhenAnyValue(x => x.FilterYear).Where(x => x != null).Select(x => x.Item1),
                 this.WhenAnyValue(x => x.ActiveFilter),
                 (docs, queryText, year, activeFilter) => new { docs, queryText, year, activeFilter }
             )
