@@ -42,6 +42,12 @@ namespace MyDocs.Common.Model.View
         {
             get { return titlePhoto.Value; }
         }
+
+        private readonly ObservableAsPropertyHelper<IEnumerable<Photo>> previews;
+        public IEnumerable<Photo> Previews
+        {
+            get { return previews.Value; }
+        }
         
         public IImmutableList<string> Tags
         {
@@ -121,6 +127,16 @@ namespace MyDocs.Common.Model.View
             daysToRemoval = this.WhenAnyValue(x => x.DateRemoved)
                 .Select(x => (int)(x.Subtract(DateTime.Today).TotalDays))
                 .ToProperty(this, x => x.DaysToRemoval);
+
+            previews = this.WhenAnyValue(x => x.SubDocuments)
+                .Select(subDocs =>
+                    subDocs.Select(sd => sd
+                        .WhenAnyValue(x => x.Photos)
+                    )
+                    .CombineLatest(x => x.SelectMany(y => y))
+                )
+                .Switch()
+                .ToProperty(this, x => x.Previews, Enumerable.Empty<Photo>());
         }
 
         public void AddSubDocument(SubDocument doc)
