@@ -149,7 +149,7 @@ namespace MyDocs.Common.ViewModel
 
             categoryNames = documentService.GetCategoryNames()
                 .Select(x => x.ToImmutableList())
-                .ToProperty(this, x => x.CategoryNames);
+                .ToProperty(this, x => x.CategoryNames, ImmutableList<string>.Empty);
 
             hasCategories = this.WhenAnyValue(x => x.CategoryNames)
                 .Select(x => x.Count > 0)

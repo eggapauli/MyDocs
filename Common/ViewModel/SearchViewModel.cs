@@ -156,7 +156,7 @@ namespace MyDocs.Common.ViewModel
             .Subscribe(x => ApplyFilters(x.docs, x.queryText, x.year, x.activeFilter));
 
             results = this.WhenAnyValue(x => x.ActiveFilter.FilteredDocuments)
-                .ToProperty(this, x => x.Results);
+                .ToProperty(this, x => x.Results, ImmutableList<Document>.Empty);
 
             hasResults = this.WhenAnyValue(x => x.Results)
                 .Select(results => results.Any())
