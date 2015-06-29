@@ -67,7 +67,7 @@ namespace MyDocs.WindowsStore.ViewModel
                 .AsImplementedInterfaces()
                 .SingleInstance();
 
-            builder.RegisterAssemblyTypes(thisAssembly)
+            builder.RegisterAssemblyTypes(typeof(MyDocs.Common.ViewModel.DocumentViewModel).GetTypeInfo().Assembly)
                 .Where(t => t.Name.EndsWith("ViewModel"))
                 .AsSelf()
                 .InstancePerDependency();
