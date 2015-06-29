@@ -98,10 +98,14 @@ namespace MyDocs.Common.ViewModel
         private readonly ObservableAsPropertyHelper<bool> showTightResults;
         public bool ShowTightResults
         {
-            get { return HasResults && !IsInDefaultLayout; }
+            get { return showTightResults.Value; }
         }
 
-        public bool ShowNoResultsText { get { return !HasResults; } }
+        private readonly ObservableAsPropertyHelper<bool> showNoResultsText;
+        public bool ShowNoResultsText
+        {
+            get { return showNoResultsText.Value; }
+        }
 
         public SearchViewModel(
             IDocumentService documentService,
@@ -140,6 +144,9 @@ namespace MyDocs.Common.ViewModel
                 .ToProperty(this, x => x.ShowDefaultResults);
             showTightResults = this.WhenAnyValue(x => x.HasResults, x => x.IsInDefaultLayout, (x, y) => x && !y)
                 .ToProperty(this, x => x.ShowTightResults);
+            showNoResultsText = this.WhenAnyValue(x => x.HasResults)
+                .Select(x => !x)
+                .ToProperty(this, x => x.ShowNoResultsText);
 
             showFilters = this.WhenAnyValue(x => x.Filters)
                 .Select(x => x.Any())
@@ -168,6 +175,7 @@ namespace MyDocs.Common.ViewModel
                 filters,
                 showDefaultResults,
                 showTightResults,
+                showNoResultsText,
                 showFilters,
                 applyFilterSubscription,
                 results,
