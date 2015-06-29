@@ -1,4 +1,6 @@
-﻿using MyDocs.WindowsStore.Service;
+﻿using Autofac;
+using MyDocs.WindowsStore.Service;
+using MyDocs.WindowsStore.ViewModel;
 using Splat;
 using System;
 using System.Threading.Tasks;
@@ -42,10 +44,11 @@ namespace MyDocs.WindowsStore
 
         private static async Task MigrateFromBuiltInDbToJsonDb()
         {
-            var builtInDb = Locator.Current.GetService<ApplicationDataContainerDocumentStorageService>();
+            var builtInDb = ViewModelLocator.Container.Resolve<ApplicationDataContainerDocumentStorageService>();
             var documents = await builtInDb.GetAllDocumentsAsync();
 
-            await Locator.Current.GetService<JsonNetDal.JsonDocumentDb>().Setup(documents);
+            var jsonDb = ViewModelLocator.Container.Resolve<JsonNetDal.JsonDocumentDb>();
+            await jsonDb.Setup(documents);
         }
     }
 }

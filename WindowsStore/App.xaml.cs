@@ -1,6 +1,8 @@
-﻿using MyDocs.Common.Contract.Service;
+﻿using Autofac;
+using MyDocs.Common.Contract.Service;
 using MyDocs.WindowsStore.Common;
 using MyDocs.WindowsStore.Pages;
+using MyDocs.WindowsStore.ViewModel;
 using Splat;
 using System;
 using Windows.ApplicationModel;
@@ -82,7 +84,7 @@ namespace MyDocs.WindowsStore
 
         private void App_CommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
         {
-            var translator = Locator.Current.GetService<ITranslatorService>();
+            var translator = ViewModelLocator.Container.Resolve<ITranslatorService>();
             //SettingsCommand settingsCommand = new SettingsCommand("settings", translator.Translate("settings"), handler =>
             //{
             //    SettingsPage settingsPage = new SettingsPage();

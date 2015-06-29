@@ -1,4 +1,6 @@
-﻿using MyDocs.Common.Contract.Service;
+﻿using Autofac;
+using MyDocs.Common.Contract.Service;
+using MyDocs.WindowsStore.ViewModel;
 using Splat;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -20,14 +22,14 @@ namespace MyDocs.WindowsStore.Service
         public void Navigate<T>()
         {
             // TODO get type without creating an instance
-            var type = Locator.Current.GetService<T>().GetType();
+            var type = ViewModelLocator.Container.Resolve<T>().GetType();
             Frame.Navigate(type);
         }
 
         public void Navigate<T>(object parameter)
         {
             // TODO get type without creating an instance
-            var type = Locator.Current.GetService<T>().GetType();
+            var type = ViewModelLocator.Container.Resolve<T>().GetType();
             Frame.Navigate(type, parameter);
         }
 
