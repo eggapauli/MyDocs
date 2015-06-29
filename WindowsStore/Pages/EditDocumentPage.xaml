@@ -63,6 +63,9 @@
         </Grid>
 
         <Grid Grid.Row="1">
+            <Grid.Resources>
+                <converters:StringListConverter x:Key="StringListConverter" />
+            </Grid.Resources>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -71,9 +74,6 @@
             </Grid.RowDefinitions>
             
             <Grid>
-                <Grid.Resources>
-                    <converters:StringListConverter x:Key="StringListConverter" />
-                </Grid.Resources>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -96,7 +96,7 @@
                      Grid.Row="1"
                      Header="Tags"
                      PlaceholderText="Enter comma-separated list of tags"
-                     Text="{Binding EditingDocument.TagsString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringListConverter}}"
+                     Text="{Binding EditingDocument.Tags, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource StringListConverter}}"
                      Style="{StaticResource TextBoxStyle}"/>
 
             <StackPanel Grid.Row="2" x:Name="lifespanPanel" Orientation="Horizontal">

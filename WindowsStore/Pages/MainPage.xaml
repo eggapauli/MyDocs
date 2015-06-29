@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:common="using:MyDocs.WindowsStore.Common"
     xmlns:controls="using:MyDocs.WindowsStore.Controls"
+    xmlns:converters="using:MyDocs.WindowsStore.Converters"
     xmlns:model="using:MyDocs.Common.Model"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -27,6 +28,9 @@
 
                 <StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
                     <Grid Margin="15 0 15 10">
+                        <Grid.Resources>
+                            <converters:StringListConverter x:Key="StringListConverter" />
+                        </Grid.Resources>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
@@ -34,7 +38,7 @@
                         
                         <Button Style="{StaticResource TagButtonStyle}" Width="15" Margin="0 5 5 0" />
                         <TextBlock Grid.Column="1"
-                                   Text="{Binding TagsString}"
+                                   Text="{Binding Tags, Converter={StaticResource StringListConverter}}"
                                    Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}"
                                    Style="{StaticResource TitleTextBlockStyle}"/>
                     </Grid>
