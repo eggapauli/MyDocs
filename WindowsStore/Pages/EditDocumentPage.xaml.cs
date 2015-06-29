@@ -1,22 +1,33 @@
-﻿using MyDocs.Common.Contract.Page;
+﻿using Autofac;
+using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Model.View;
 using MyDocs.Common.ViewModel;
 using MyDocs.WindowsStore.Common;
+using MyDocs.WindowsStore.ViewModel;
 using System;
+using System.Collections.Generic;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Navigation;
 
 namespace MyDocs.WindowsStore.Pages
 {
     public sealed partial class EditDocumentPage : LayoutAwarePage, IEditDocumentPage
     {
-        public EditDocumentPage()
+        private EditDocumentViewModel ViewModel
         {
-            this.InitializeComponent();
+            get { return (EditDocumentViewModel)DataContext; }
+            set { DataContext = value; }
         }
 
-        public EditDocumentViewModel ViewModel
+        public EditDocumentPage()
         {
-            get { return DataContext as EditDocumentViewModel; }
+            InitializeComponent();
+        }
+
+        protected override IEnumerable<IDisposable> Activate()
+        {
+            yield return ViewModel = ViewModelLocator.Container.Resolve<EditDocumentViewModel>();
         }
 
         protected override void LoadState(object sender, LoadStateEventArgs args)

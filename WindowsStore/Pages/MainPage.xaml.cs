@@ -1,70 +1,67 @@
-﻿using MyDocs.Common.Contract.Page;
-using MyDocs.Common.Messages;
+﻿using Autofac;
+using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Model.View;
 using MyDocs.Common.ViewModel;
 using MyDocs.WindowsStore.Common;
+using MyDocs.WindowsStore.ViewModel;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Navigation;
 
 namespace MyDocs.WindowsStore.Pages
 {
     public sealed partial class MainPage : LayoutAwarePage, IMainPage
     {
-        private IDisposable closeFlyoutsMessageSubscription;
+        private DocumentViewModel ViewModel
+        {
+            get { return (DocumentViewModel)DataContext; }
+            set { DataContext = value; }
+        }
 
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
-        public DocumentViewModel ViewModel
+        protected override IEnumerable<IDisposable> Activate()
         {
-            get { return (DocumentViewModel)DataContext; }
-        }
+            yield return ViewModel = ViewModelLocator.Container.Resolve<DocumentViewModel>();
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
+            // TODO solve this in XAML using <VisualStateGroup x:Name="SemanticZoomStates" />
+            yield return Observable.FromEventPattern<SemanticZoomViewChangedEventHandler, SemanticZoomViewChangedEventArgs>(
+                h => semanticZoom.ViewChangeCompleted += h,
+                h => semanticZoom.ViewChangeCompleted -= h
+            ).Subscribe(_ => RefreshLayout());
 
-            this.semanticZoom.ViewChangeCompleted += semanticZoom_ViewChangeCompleted;
-            this.semanticZoomTight.ViewChangeCompleted += semanticZoom_ViewChangeCompleted;
+            yield return Observable.FromEventPattern<WindowSizeChangedEventHandler, WindowSizeChangedEventArgs>(
+                h => Window.Current.SizeChanged += h,
+                h => Window.Current.SizeChanged -= h
+            )
+            .Select(_ => Unit.Default)
+            .StartWith(Unit.Default)
+            .Subscribe(_ => RefreshLayout());
 
-            Window.Current.SizeChanged += WindowSizeChanged;
-
-            closeFlyoutsMessageSubscription = ViewModel.CloseFlyoutsMessages.Subscribe(_ => CloseFlyouts());
-
-            RefreshLayout();
-        }
-
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            base.OnNavigatedFrom(e);
-
-            this.semanticZoom.ViewChangeCompleted -= semanticZoom_ViewChangeCompleted;
-            this.semanticZoomTight.ViewChangeCompleted -= semanticZoom_ViewChangeCompleted;
-
-            Window.Current.SizeChanged -= WindowSizeChanged;
-
-            closeFlyoutsMessageSubscription.Dispose();
+            yield return ViewModel.CloseFlyoutsMessages.Subscribe(_ => CloseFlyouts());
         }
 
         private void CloseFlyouts()
         {
-            foreach (var flyout in GetFlyouts(this).Concat(GetFlyouts(BottomAppBar))) {
+            foreach (var flyout in GetFlyouts(this).Concat(GetFlyouts(BottomAppBar)))
+            {
                 flyout.Hide();
             }
         }
 
-        private IEnumerable<FlyoutBase> GetFlyouts(DependencyObject parent)
+        private static IEnumerable<FlyoutBase> GetFlyouts(DependencyObject parent)
         {
             return from child in VisualTreeHelperEx.GetChildren(parent)
                    where child is Button
@@ -84,7 +81,7 @@ namespace MyDocs.WindowsStore.Pages
             var selectedDocumentId = (Guid?)args.NavigationParameter;
             if (selectedDocumentId.HasValue) {
                 ViewModel.WhenAnyValue(x => x.Categories)
-                    .Take(1)
+                    .TakeWhile(_ => ViewModel.SelectedDocument == null)
                     .Subscribe(_ => ViewModel.TrySelectDocument(selectedDocumentId.Value));
             }
 
@@ -95,11 +92,6 @@ namespace MyDocs.WindowsStore.Pages
             }
         }
 
-        private void WindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
-        {
-            RefreshLayout();
-        }
-
         private void RefreshLayout()
         {
             bool zoomedIn = (ApplicationView.GetForCurrentView().IsFullScreen ?
@@ -107,19 +99,6 @@ namespace MyDocs.WindowsStore.Pages
                 this.semanticZoomTight.IsZoomedInViewActive);
 
             ViewModel.InZoomedInView = zoomedIn;
-        }
-
-        // TODO solve this in XAML using <VisualStateGroup x:Name="SemanticZoomStates" />
-        private void semanticZoom_ViewChangeCompleted(object sender, SemanticZoomViewChangedEventArgs e)
-        {
-            // synchronize semantic zooms - strange behavior
-            //if (sender as SemanticZoom == this.semanticZoom) {
-            //    this.semanticZoomSnapped.IsZoomedInViewActive = this.semanticZoom.IsZoomedInViewActive;
-            //}
-            //else {
-            //    this.semanticZoom.IsZoomedInViewActive = this.semanticZoomSnapped.IsZoomedInViewActive;
-            //}
-            RefreshLayout();
         }
 
         private void OnDocumentClick(object sender, ItemClickEventArgs e)

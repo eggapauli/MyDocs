@@ -9,6 +9,7 @@ using System.Windows.Input;
 using ReactiveUI;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Reactive.Disposables;
 
 namespace MyDocs.WindowsStore.Common
 {
@@ -269,6 +270,7 @@ namespace MyDocs.WindowsStore.Common
 
         private String _pageKey;
 
+
         /// <summary>
         /// Register this event on the current page to populate the page
         /// with content passed during navigation as well as any saved
@@ -335,12 +337,20 @@ namespace MyDocs.WindowsStore.Common
         public void OnNavigatedFrom(NavigationEventArgs e)
         {
             var frameState = SuspensionManager.SessionStateForFrame(Frame);
-            var pageState = new Dictionary<String, Object>();
+            var pageState = new Dictionary<string, object>();
             if (SaveState != null)
             {
                 SaveState(this, new SaveStateEventArgs(pageState));
             }
             frameState[_pageKey] = pageState;
+
+            disposeOnNavigatedFrom.Dispose();
+        }
+
+        private IDisposable disposeOnNavigatedFrom = Disposable.Empty;
+        public void DisposeOnNavigatedFrom(IDisposable disposable)
+        {
+            disposeOnNavigatedFrom = new CompositeDisposable(disposable, disposeOnNavigatedFrom);
         }
 
         #endregion

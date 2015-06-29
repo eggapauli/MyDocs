@@ -3,6 +3,8 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Controls;
+using System.Reactive.Disposables;
+using System;
 
 namespace MyDocs.WindowsStore.Common
 {
@@ -27,7 +29,7 @@ namespace MyDocs.WindowsStore.Common
     /// </list> 
     /// </summary> 
     [Windows.Foundation.Metadata.WebHostHidden]
-    public class LayoutAwarePage : Page
+    public abstract class LayoutAwarePage : Page
     {
         private NavigationHelper navigationHelper;
 
@@ -63,10 +65,15 @@ namespace MyDocs.WindowsStore.Common
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            var disposables = new CompositeDisposable(Activate());
+            NavigationHelper.DisposeOnNavigatedFrom(disposables);
+
             navigationHelper.OnNavigatedTo(e);
         }
 
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        protected abstract IEnumerable<IDisposable> Activate();
+
+        protected sealed override void OnNavigatedFrom(NavigationEventArgs e)
         {
             navigationHelper.OnNavigatedFrom(e);
         }

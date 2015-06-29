@@ -1,12 +1,18 @@
-﻿using MyDocs.Common.Contract.Page;
+﻿using Autofac;
+using MyDocs.Common.Contract.Page;
 using MyDocs.Common.Model.View;
 using MyDocs.Common.ViewModel;
 using MyDocs.WindowsStore.Common;
+using MyDocs.WindowsStore.ViewModel;
 using ReactiveUI;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Foundation;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -15,27 +21,34 @@ namespace MyDocs.WindowsStore.Pages
 {
     public sealed partial class ShowDocumentPage : LayoutAwarePage, IShowDocumentPage
     {
-        private DataTransferManager dtm;
-
         public ShowDocumentPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         public DocumentViewModel ViewModel
         {
             get { return (DocumentViewModel)DataContext; }
+            private set { DataContext = value; }
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override IEnumerable<IDisposable> Activate()
         {
-            base.OnNavigatedTo(e);
-            dtm = DataTransferManager.GetForCurrentView();
-            dtm.DataRequested += dtm_DataRequested;
-            Window.Current.SizeChanged += Window_SizeChanged;
+            yield return ViewModel = ViewModelLocator.Container.Resolve<DocumentViewModel>();
+
+            var dtm = DataTransferManager.GetForCurrentView();
+            yield return Observable.FromEventPattern<TypedEventHandler<DataTransferManager, DataRequestedEventArgs>, DataRequestedEventArgs>(
+                h => dtm.DataRequested += h,
+                h => dtm.DataRequested -= h)
+                .Subscribe(e => TransferData(e.EventArgs));
+
+            yield return Observable.FromEventPattern<WindowSizeChangedEventHandler, WindowSizeChangedEventArgs>(
+                h => Window.Current.SizeChanged += h,
+                h => Window.Current.SizeChanged -= h)
+                .Subscribe(e => OnWindowSizeChanged(e.EventArgs.Size));
         }
 
-        private void dtm_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
+        private void TransferData(DataRequestedEventArgs args)
         {
             var document = ViewModel.SelectedDocument;
             string fileTitle = string.Join("_", document.Tags);
@@ -61,25 +74,18 @@ namespace MyDocs.WindowsStore.Pages
             if (selectedDocumentId.HasValue)
             {
                 ViewModel.WhenAnyValue(x => x.Categories)
-                    .Take(1)
+                    .TakeWhile(_ => ViewModel.SelectedDocument == null)
                     .Subscribe(_ => ViewModel.TrySelectDocument(selectedDocumentId.Value));
             }
         }
 
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            base.OnNavigatedFrom(e);
-            dtm.DataRequested -= dtm_DataRequested;
-            Window.Current.SizeChanged -= Window_SizeChanged;
-        }
-
-        private void backButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void backButton_Click(object sender, RoutedEventArgs e)
         {
             NavigationHelper.GoBack();
         }
 
         // http://stackoverflow.com/questions/14667556/a-simple-photo-album-with-pinch-and-zoom-using-flipview
-        private void Window_SizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
+        private void OnWindowSizeChanged(Size size)
         {
             // Reset scroll view size
             var flipViewItems = Enumerable.Range(0, imageFlipView.Items.Count)
@@ -91,13 +97,13 @@ namespace MyDocs.WindowsStore.Pages
 
                 // TODO size should automatically adapt because of binding
                 var filePreview = VisualTreeHelperEx.GetChildren(flipViewItem).OfType<MyDocs.WindowsStore.Controls.FilePreview>().Single();
-                filePreview.Width = e.Size.Width;
-                filePreview.Height = e.Size.Height;
+                filePreview.Width = size.Width;
+                filePreview.Height = size.Height;
             }
         }
 
         // http://stackoverflow.com/questions/14667556/a-simple-photo-album-with-pinch-and-zoom-using-flipview
-        private void FlipView_SelectionChanged(object sender, Windows.UI.Xaml.Controls.SelectionChangedEventArgs e)
+        private void FlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var flipView = (FlipView)sender;
             var flipViewItem = flipView.ContainerFromIndex(flipView.SelectedIndex);

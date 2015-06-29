@@ -6,7 +6,10 @@ using MyDocs.WindowsStore.ViewModel;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
+using System;
+using System.Collections.Generic;
+using System.Reactive.Linq;
+using Windows.UI.Core;
 
 namespace MyDocs.WindowsStore.Pages
 {
@@ -14,7 +17,7 @@ namespace MyDocs.WindowsStore.Pages
     {
         public SearchResultsPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         public SearchViewModel ViewModel
@@ -23,31 +26,26 @@ namespace MyDocs.WindowsStore.Pages
             set { DataContext = value; }
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override IEnumerable<IDisposable> Activate()
         {
-            base.OnNavigatedTo(e);
-            ViewModel = ViewModelLocator.Container.Resolve<SearchViewModel>();
-            ViewModel.IsInDefaultLayout = DetermineVisualState(Window.Current.Bounds.Width) == "DefaultLayout";
-            Window.Current.SizeChanged += WindowSizeChanged;
+            yield return ViewModel = ViewModelLocator.Container.Resolve<SearchViewModel>();
+
+            yield return Observable.FromEventPattern<WindowSizeChangedEventHandler, WindowSizeChangedEventArgs>(
+                h => Window.Current.SizeChanged += h,
+                h => Window.Current.SizeChanged -= h
+                )
+                .Select(e => e.EventArgs.Size.Width)
+                .StartWith(Window.Current.Bounds.Width)
+                .Subscribe(width =>
+                {
+                    ViewModel.IsInDefaultLayout = DetermineVisualState(width) == "DefaultLayout";
+                });
         }
 
         protected override void LoadState(object sender, LoadStateEventArgs e)
         {
             // TODO set filter year etc.?
             //ViewModel.LoadFilters();
-        }
-
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            base.OnNavigatedFrom(e);
-            Window.Current.SizeChanged -= WindowSizeChanged;
-            ViewModel.Dispose();
-            ViewModel = null;
-        }
-
-        private void WindowSizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
-        {
-            ViewModel.IsInDefaultLayout = DetermineVisualState(Window.Current.Bounds.Width) == "DefaultLayout";
         }
 
         protected override string DetermineVisualState(double width)
