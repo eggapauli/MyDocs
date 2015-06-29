@@ -116,16 +116,18 @@ namespace MyDocs.Common.ViewModel
             this.importDocumentService = importDocumentService;
 
             categories = documentService.GetDocuments()
-                .Select(docs => docs
+               .Select(docs => docs
                     .GroupBy(d => d.Category)
                     .Select(g => new View.Category(g.Key, g.Select(View.Document.FromLogic)))
                     .ToImmutableList()
-                 )
-                 .ToProperty(this, x => x.Categories, ImmutableList<View.Category>.Empty);
+                )
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .ToProperty(this, x => x.Categories, ImmutableList<View.Category>.Empty);
 
             isLoading = documentService.GetDocuments()
                 .Take(1)
                 .Select(_ => false)
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .ToProperty(this, x => x.IsLoading);
 
             categoriesEmpty = this.WhenAnyValue(x => x.IsBusy, x => x.Categories, (isBusy, categories) => new { isBusy, categories })

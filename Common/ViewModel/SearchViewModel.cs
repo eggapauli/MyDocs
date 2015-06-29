@@ -114,12 +114,14 @@ namespace MyDocs.Common.ViewModel
 
             categoryNames = documentService.GetCategoryNames()
                 .Select(x => x.ToImmutableList())
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .ToProperty(this, x => x.CategoryNames);
 
             filterYears = documentService.GetDistinctDocumentYears()
                 .Select(years => years.Select(y => Tuple.Create<int?, string>(y, y.ToString())))
                 .Select(years => new[] { allYears }.Concat(years))
                 .Select(years => years.ToImmutableList())
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .ToProperty(this, x => x.FilterYears, ImmutableList<Tuple<int?, string>>.Empty);
 
             this.WhenAnyValue(x => x.FilterYears)
@@ -131,6 +133,7 @@ namespace MyDocs.Common.ViewModel
                 .Select(names => names.Select(name => new Filter(name, d => d.Category == name)))
                 .Select(names => new[] { allFilter }.Concat(names))
                 .Select(names => names.ToImmutableList())
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .ToProperty(this, x => x.Filters, ImmutableList<Filter>.Empty);
 
             showDefaultResults = this.WhenAnyValue(x => x.HasResults, x => x.IsInDefaultLayout, (x, y) => x && y)
@@ -148,7 +151,9 @@ namespace MyDocs.Common.ViewModel
                 this.WhenAnyValue(x => x.FilterYear).Select(x => x.Item1),
                 this.WhenAnyValue(x => x.ActiveFilter),
                 (docs, queryText, year, activeFilter) => new { docs, queryText, year, activeFilter }
-            ).Subscribe(x => ApplyFilters(x.docs, x.queryText, x.year, x.activeFilter));
+            )
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(x => ApplyFilters(x.docs, x.queryText, x.year, x.activeFilter));
 
             results = this.WhenAnyValue(x => x.ActiveFilter.FilteredDocuments)
                 .ToProperty(this, x => x.Results);
