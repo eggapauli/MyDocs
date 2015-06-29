@@ -128,7 +128,7 @@ namespace MyDocs.Common.ViewModel
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .ToProperty(this, x => x.FilterYears, ImmutableList<Tuple<int?, string>>.Empty);
 
-            this.WhenAnyValue(x => x.FilterYears)
+            var filterYearSubscription = this.WhenAnyValue(x => x.FilterYears)
                 .TakeWhile(_ => FilterYear == null)
                 .Subscribe(x => FilterYear = x.FirstOrDefault());
 
@@ -172,6 +172,7 @@ namespace MyDocs.Common.ViewModel
             disposables = new CompositeDisposable(
                 categoryNames,
                 filterYears,
+                filterYearSubscription,
                 filters,
                 showDefaultResults,
                 showTightResults,
