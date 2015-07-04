@@ -120,7 +120,7 @@ namespace MyDocs.WindowsStore.Common
                 if (_goBackCommand == null)
                 {
                     _goBackCommand = ReactiveCommand.CreateAsyncTask(
-                        Observable.Return(true), // TODO get observable from `this.CanGoBack()`
+                        this.WhenAnyValue(x => x.Page.Frame.CanGoBack),
                         async _ => { GoBack(); await Task.Yield(); });
                 }
                 return _goBackCommand;
@@ -144,7 +144,7 @@ namespace MyDocs.WindowsStore.Common
                 if (_goForwardCommand == null)
                 {
                     _goForwardCommand = ReactiveCommand.CreateAsyncTask(
-                        Observable.Return(true), // TODO get observable from `this.CanGoForward()`
+                        this.WhenAnyValue(x => x.Page.Frame.CanGoForward),
                         async _ => { GoForward(); await Task.Yield(); });
                 }
                 return _goForwardCommand;
