@@ -19,6 +19,11 @@ namespace MyDocs.Common.Model.Logic
 
         public TimeSpan Lifespan { get; private set; }
 
+        public DateTime DateRemoved
+        {
+            get { return DateAdded.Add(Lifespan); }
+        }
+
         public bool HasLimitedLifespan { get; private set; }
 
         public Document(Guid id, string category, DateTime dateAdded, TimeSpan lifespan, bool hasLimitedLifespan, IEnumerable<string> tags)

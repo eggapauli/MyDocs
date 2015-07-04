@@ -17,8 +17,14 @@
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="MyDocs.App">
       <Extensions>
         <Extension Category="windows.search" />
+        <Extension Category="windows.backgroundTasks" EntryPoint="MyDocs.WindowsStore.Common.CleanupDocumentTask">
+          <BackgroundTasks>
+            <Task Type="timer" />
+          </BackgroundTasks>
+        </Extension>
       </Extensions>
       <m2:VisualElements DisplayName="My Docs" Description="My Docs" BackgroundColor="#BF3D11" ForegroundText="light" Square150x150Logo="Assets\Logo.png" Square30x30Logo="Assets\SmallLogo.png">
+        <m2:LockScreen Notification="badge" BadgeLogo="Assets\BadgeLogo.png" />
         <m2:DefaultTile>
           <m2:ShowNameOnTiles>
             <m2:ShowOn Tile="square150x150Logo" />

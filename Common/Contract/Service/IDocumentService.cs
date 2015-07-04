@@ -19,5 +19,7 @@ namespace MyDocs.Common.Contract.Service
         Task DeleteDocumentAsync(Document doc);
 
         Task RemovePhotosAsync(IEnumerable<Photo> photos);
+
+        Task RemoveOutdatedDocuments();
     }
 }

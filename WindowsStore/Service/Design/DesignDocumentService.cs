@@ -98,6 +98,11 @@ namespace MyDocs.WindowsStore.Service.Design
             throw new NotImplementedException();
         }
 
+        public Task RemoveOutdatedDocuments()
+        {
+            throw new NotImplementedException();
+        }
+
         public event EventHandler Changed;
     }
 }

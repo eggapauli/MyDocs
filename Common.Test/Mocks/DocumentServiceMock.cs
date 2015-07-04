@@ -80,5 +80,10 @@ namespace Common.Test.Mocks
         {
             await Task.Yield();
         }
+
+        public Task RemoveOutdatedDocuments()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -11,13 +11,11 @@ namespace MyDocs.WindowsStore.Service
 {
     public class DocumentService : IDocumentService
     {
-        private IDocumentDb documentDb;
-        private INavigationService navigationService;
+        private readonly IDocumentDb documentDb;
 
-        public DocumentService(IDocumentDb documentDb, INavigationService navigationService)
+        public DocumentService(IDocumentDb documentDb)
         {
             this.documentDb = documentDb;
-            this.navigationService = navigationService;
         }
 
         private async Task ClearAllData()
@@ -38,27 +36,20 @@ namespace MyDocs.WindowsStore.Service
         public IObservable<IEnumerable<Document>> GetDocuments()
         {
             return ObserveDocuments(documentDb.GetAllDocumentsAsync);
-
-            // TODO create CleanDocumentService
-            //await RemoveOutdatedDocuments();
-
-            // TODO create CleanDocumentService
-            //if (!navigationService.CanGoBack) {
-            //    await ClearTempState();
-            //}
         }
 
-        //private async Task RemoveOutdatedDocuments()
-        //{
-        //    var documents = (from doc in Documents
-        //                     where doc.HasLimitedLifespan
-        //                     where doc.DateRemoved < DateTime.Today
-        //                     select doc).ToList();
+        public async Task RemoveOutdatedDocuments()
+        {
+            var documents = (from doc in await documentDb.GetAllDocumentsAsync()
+                             where doc.HasLimitedLifespan
+                             where doc.DateRemoved < DateTime.Today
+                             select doc).ToList();
 
-        //    foreach (var document in documents) {
-        //        await DeleteDocumentAsync(document);
-        //    }
-        //}
+            foreach (var document in documents)
+            {
+                await DeleteDocumentAsync(document);
+            }
+        }
 
         //private async Task ClearTempState()
         //{

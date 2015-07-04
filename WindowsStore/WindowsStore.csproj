@@ -113,6 +113,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\CleanupDocumentTask.cs" />
     <Compile Include="Common\Global.cs" />
     <Compile Include="Common\VisualTreeHelperEx.cs" />
     <Compile Include="Converters\DateTimeToDateTimeOffsetConverter.cs" />
@@ -172,6 +173,9 @@
     <PRIResource Include="Locale\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\BadgeLogo.scale-100.png" />
+    <Content Include="Assets\BadgeLogo.scale-140.png" />
+    <Content Include="Assets\BadgeLogo.scale-180.png" />
     <Content Include="Assets\Logo.png" />
     <Content Include="Assets\SmallLogo.png" />
     <Content Include="Assets\SplashScreen.png" />

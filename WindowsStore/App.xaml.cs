@@ -5,8 +5,10 @@ using MyDocs.WindowsStore.Pages;
 using MyDocs.WindowsStore.ViewModel;
 using Splat;
 using System;
+using System.Linq;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Background;
 using Windows.System;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml;
@@ -78,8 +80,35 @@ namespace MyDocs.WindowsStore
                     throw new Exception("Failed to create initial page");
                 }
             }
+
+            RegisterBackgroundTasks();
+
             // Ensure the current window is active
             Window.Current.Activate();
+        }
+
+        private void RegisterBackgroundTasks()
+        {
+            const string cleanUpTaskName = "CleanupDocumentTask";
+
+#if DEBUG
+            foreach (var task in BackgroundTaskRegistration.AllTasks)
+            {
+                task.Value.Unregister(true);
+            }
+#endif
+
+            var isRegistered = BackgroundTaskRegistration.AllTasks
+                .Any(t => t.Value.Name == cleanUpTaskName);
+
+            if (isRegistered) return;
+
+            var taskBuilder = new BackgroundTaskBuilder();
+            taskBuilder.Name = cleanUpTaskName;
+            taskBuilder.TaskEntryPoint = typeof(CleanupDocumentTask).FullName;
+            const int minutesPerDay = 15;// 60 * 24;
+            taskBuilder.SetTrigger(new TimeTrigger(minutesPerDay, false));
+            taskBuilder.Register();
         }
 
         private void App_CommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
