@@ -115,12 +115,14 @@ namespace MyDocs.Common.ViewModel
             this.exportDocumentService = exportDocumentService;
             this.importDocumentService = importDocumentService;
 
-            categories = documentService.GetDocuments()
+            var viewCategories = documentService.GetDocuments()
                .Select(docs => docs
                     .GroupBy(d => d.Category)
                     .Select(g => new View.Category(g.Key, g.Select(View.Document.FromLogic)))
                     .ToImmutableList()
-                )
+                );
+
+            categories = viewCategories
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .ToProperty(this, x => x.Categories, ImmutableList<View.Category>.Empty);
 
@@ -128,14 +130,10 @@ namespace MyDocs.Common.ViewModel
                 .Take(1)
                 .Select(_ => false)
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .ToProperty(this, x => x.IsLoading);
+                .ToProperty(this, x => x.IsLoading, true);
 
-            categoriesEmpty = this.WhenAnyValue(
-                    x => x.IsBusy,
-                    x => x.IsLoading,
-                    x => x.Categories,
-                    (isBusy, isLoading, categories) =>
-                        !isBusy && !isLoading && categories.Count == 0)
+            categoriesEmpty = viewCategories.Select(c => c.Count == 0)
+                .ObserveOn(RxApp.MainThreadScheduler)
                 .ToProperty(this, x => x.CategoriesEmpty);
 
             hasSelectedDocument = this.WhenAnyValue(x => x.SelectedDocument)
