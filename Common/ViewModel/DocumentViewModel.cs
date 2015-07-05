@@ -36,7 +36,7 @@ namespace MyDocs.Common.ViewModel
         private bool inZoomedInView = true;
         private readonly ObservableAsPropertyHelper<bool> isLoading;
         private bool isBusy = false;
-        private ISubject<CloseFlyoutsMessage> closeFlyoutsMessages =
+        private readonly ISubject<CloseFlyoutsMessage> closeFlyoutsMessages =
             new Subject<CloseFlyoutsMessage>();
 
         public bool InZoomedInView
