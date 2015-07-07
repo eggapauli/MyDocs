@@ -122,7 +122,7 @@ namespace MyDocs.Common.Model.View
                 .ToProperty(this, x => x.TitlePhoto);
 
             this.lifespan = this.WhenAnyValue(x => x.DateAdded, x => x.DateRemoved, (added, removed) => removed.Subtract(added))
-                .ToProperty(this, x => x.Lifespan);
+                .ToProperty(this, x => x.Lifespan, DateRemoved.Subtract(DateAdded));
 
             daysToRemoval = this.WhenAnyValue(x => x.DateRemoved)
                 .Select(x => (int)(x.Subtract(DateTime.Today).TotalDays))
