@@ -113,6 +113,12 @@ namespace MyDocs.Common.ViewModel
             }
         }
 
+        private ObservableAsPropertyHelper<IImmutableList<Photo>> allPhotos;
+        public IImmutableList<Photo> AllPhotos
+        {
+            get { return allPhotos.Value; }
+        }
+
         public Photo SelectedPhoto
         {
             get { return selectedPhoto; }
@@ -169,7 +175,20 @@ namespace MyDocs.Common.ViewModel
                     UseCategoryName = x;
                 });
 
-            disposables = new CompositeDisposable(categoryNames, showUseCategoryInput, hasCategories, categorySubscription);
+            allPhotos = this.WhenAnyValue(x => x.EditingDocument.SubDocuments)
+                .Select(subDocs => subDocs
+                    .Select(doc => doc
+                        .WhenAnyValue(x => x.Photos)
+                    )
+                    .CombineLatest(x => x
+                        .SelectMany(y => y)
+                        .ToImmutableList()
+                    )
+                )
+                .Switch()
+                .ToProperty(this, x => x.AllPhotos);
+
+            disposables = new CompositeDisposable(categoryNames, showUseCategoryInput, hasCategories, categorySubscription, allPhotos);
         }
 
         [Conditional("DEBUG")]
