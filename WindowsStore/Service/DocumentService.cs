@@ -98,7 +98,8 @@ namespace MyDocs.WindowsStore.Service
         private IEnumerable<Task> SetDocumentsCategory(IEnumerable<Document> documents, string categoryName) {
             foreach (var document in documents) {
                 // TODO use https://github.com/AArnott/ImmutableObjectGraph ?
-                var doc = new Document(document.Id, categoryName, document.DateAdded, document.Lifespan, document.HasLimitedLifespan, document.Tags);
+                var subDocuments = document.SubDocuments.Select(sd => new SubDocument(sd.Title, sd.File, sd.Photos.Select(p => new Photo(p.File))));
+                var doc = new Document(document.Id, categoryName, document.DateAdded, document.Lifespan, document.HasLimitedLifespan, document.Tags, subDocuments);
                 yield return SaveDocumentAsync(doc);
             }
         }
