@@ -86,7 +86,7 @@ namespace JsonNetDal
         {
             var docs = await ReadDocuments();
             var dbDoc = Document.FromLogic(document);
-            await WriteDocuments(docs.Concat(Enumerable.Repeat(dbDoc, 1)));
+            await WriteDocuments(docs.Where(d => d.Id != dbDoc.Id).Concat(Enumerable.Repeat(dbDoc, 1)));
             // TODO save photos
         }
 
