@@ -51,6 +51,9 @@ namespace MyDocs.WindowsStore.Pages
             .Subscribe(_ => RefreshLayout());
 
             yield return ViewModel.CloseFlyoutsMessages.Subscribe(_ => CloseFlyouts());
+
+            yield return ViewModel.WhenAnyValue(x => x.Categories)
+                .Subscribe(_ => groupedDocumentsViewSource.Source = _);
         }
 
         private void CloseFlyouts()
