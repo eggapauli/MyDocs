@@ -115,6 +115,11 @@ namespace JsonNetDal
 
         private async Task<Uri> MoveFileToLocalFolder(Uri fileUrl)
         {
+            if (fileUrl.IsInLocalFolder())
+            {
+                return fileUrl;
+            }
+
             var file = await StorageFile.GetFileFromApplicationUriAsync(fileUrl);
             await file.MoveAsync(ApplicationData.Current.LocalFolder, file.Name);
             return file.GetUri();
