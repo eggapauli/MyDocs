@@ -11,14 +11,14 @@ namespace JsonNetDal
     public class SubDocument
     {
         public string Title { get; set; }
-
-        public string File { get; set; }
-
-        public List<string> Photos { get; set; }
+        
+        public Uri File { get; set; }
+        
+        public List<Uri> Photos { get; set; }
 
         public SubDocument() { }
 
-        public SubDocument(string title, string file, IEnumerable<string> photos)
+        public SubDocument(string title, Uri file, IEnumerable<Uri> photos)
         {
             Title = title;
             File = file;
@@ -27,15 +27,14 @@ namespace JsonNetDal
 
         public static SubDocument FromLogic(Logic.SubDocument subDocument)
         {
-            return new SubDocument(subDocument.Title, subDocument.File.GetUri().AbsoluteUri, subDocument.Photos.Select(p => p.File.GetUri().AbsoluteUri));
+            return new SubDocument(subDocument.Title, subDocument.File.GetUri(), subDocument.Photos.Select(p => p.File.GetUri()));
         }
 
         public async Task<Logic.SubDocument> ToLogic()
         {
-            var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri(File));
+            var file = await StorageFile.GetFileFromApplicationUriAsync(File);
             var photoTasks =
                 Photos
-                .Select(p => new Uri(p))
                 .Select(StorageFile.GetFileFromApplicationUriAsync)
                 .Select(x => x.AsTask());
             var photos = await Task.WhenAll(photoTasks);
