@@ -10,6 +10,8 @@ using Logic = MyDocs.Common.Model.Logic;
 using System.Reactive;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
+using MyDocs.Common;
+using System.Collections.Concurrent;
 
 namespace JsonNetDal
 {
@@ -94,8 +96,28 @@ namespace JsonNetDal
         {
             var docs = await ReadDocuments();
             var dbDoc = Document.FromLogic(document);
+            await Task.WhenAll(MoveSubDocumentsToLocalFolder(dbDoc));
             await WriteDocuments(docs.Where(d => d.Id != dbDoc.Id).Concat(Enumerable.Repeat(dbDoc, 1)));
-            // TODO save photos
+        }
+
+        private Task MoveSubDocumentsToLocalFolder(Document document)
+        {
+            var moveTasks = document.SubDocuments
+                .Select(async sd => {
+                    var tasks = new ConcurrentDictionary<Uri, Task<Uri>>();
+                    sd.File = await tasks.GetOrAdd(sd.File, MoveFileToLocalFolder);
+                    var photoTasks = sd.Photos.Select(p =>
+                        tasks.GetOrAdd(p, MoveFileToLocalFolder));
+                    sd.Photos = (await Task.WhenAll(photoTasks)).ToList();
+                });
+            return Task.WhenAll(moveTasks);
+        }
+
+        private async Task<Uri> MoveFileToLocalFolder(Uri fileUrl)
+        {
+            var file = await StorageFile.GetFileFromApplicationUriAsync(fileUrl);
+            await file.MoveAsync(ApplicationData.Current.LocalFolder, file.Name);
+            return file.GetUri();
         }
 
         public async Task Remove(Guid documentId)
