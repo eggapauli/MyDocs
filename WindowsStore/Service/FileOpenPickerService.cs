@@ -1,7 +1,7 @@
 ﻿using MyDocs.Common.Contract.Service;
-using MyDocs.Common.Model.View;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -19,8 +19,12 @@ namespace MyDocs.WindowsStore.Service
             filePicker.ViewMode = PickerViewMode.List;
 
             var files = await filePicker.PickMultipleFilesAsync();
-            var folder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(document.Id.ToString(), CreationCollisionOption.OpenIfExists);
-            var tasks = files.Select(file => file.CopyAsync(folder, file.Name, NameCollisionOption.GenerateUniqueName).AsTask());
+            var folder = ApplicationData.Current.TemporaryFolder;
+            var tasks = files.Select(file =>
+            {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.Name);
+                return file.CopyAsync(folder, fileName).AsTask();
+            });
             return await Task.WhenAll(tasks);
         }
 
