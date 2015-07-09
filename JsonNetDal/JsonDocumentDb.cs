@@ -106,8 +106,8 @@ namespace JsonNetDal
                 .Select(async sd => {
                     var tasks = new ConcurrentDictionary<Uri, Task<Uri>>();
                     sd.File = await tasks.GetOrAdd(sd.File, MoveFileToLocalFolder);
-                    var photoTasks = sd.Photos.Select(p =>
-                        tasks.GetOrAdd(p, MoveFileToLocalFolder));
+                    var photoTasks = sd.Photos
+                        .Select(p => tasks.GetOrAdd(p, MoveFileToLocalFolder));
                     sd.Photos = (await Task.WhenAll(photoTasks)).ToList();
                 });
             return Task.WhenAll(moveTasks);
