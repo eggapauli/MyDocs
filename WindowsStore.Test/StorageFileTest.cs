@@ -49,7 +49,7 @@ namespace WindowsStore.Test
             const string folderName = "testFolder";
             var folder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(folderName, CreationCollisionOption.ReplaceExisting);
             var file = await folder.CreateFileAsync("test.pdf", CreationCollisionOption.ReplaceExisting);
-            await folder.DeleteAsync();
+            await folder.DeleteAsync(StorageDeleteOption.PermanentDelete);
             var folders = await ApplicationData.Current.LocalFolder.GetFoldersAsync();
             Assert.IsFalse(folders.Any(f => f.Name == folderName));
         }

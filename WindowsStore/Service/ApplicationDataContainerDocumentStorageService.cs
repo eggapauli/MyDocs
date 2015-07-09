@@ -45,7 +45,7 @@ namespace MyDocs.WindowsStore.Service
             foreach (var folder in folders) {
                 var files = await folder.GetFilesAsync();
                 foreach (var file in files) {
-                    await file.DeleteAsync();
+                    await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
                 }
             }
         }
@@ -100,7 +100,7 @@ namespace MyDocs.WindowsStore.Service
             try
             {
                 var folder = await ApplicationData.Current.LocalFolder.GetFolderAsync(documentId.ToString());
-                await folder.DeleteAsync();
+                await folder.DeleteAsync(StorageDeleteOption.PermanentDelete);
             }
             catch (FileNotFoundException) { }
         }

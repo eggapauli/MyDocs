@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace MyDocs.WindowsStore.Service
 {
@@ -133,7 +134,7 @@ namespace MyDocs.WindowsStore.Service
 
         public async Task RemovePhotosAsync(IEnumerable<Photo> photos)
         {
-            var tasks = photos.Select(p => p.File.DeleteAsync().AsTask());
+            var tasks = photos.Select(p => p.File.DeleteAsync(StorageDeleteOption.PermanentDelete).AsTask());
             await Task.WhenAll(tasks);
         }
     }

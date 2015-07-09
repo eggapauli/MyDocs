@@ -38,9 +38,9 @@ namespace JsonNetDal
         public async Task ClearAllData()
         {
             var dbFile = await GetDbFile();
-            await dbFile.DeleteAsync();
             // TODO remove photos
 
+            await dbFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
             changed.OnNext(Unit.Default);
         }
 
