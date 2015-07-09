@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MyDocs.Common.Model.View;
 using Windows.Storage;
 using System.Linq;
 
@@ -10,14 +9,14 @@ namespace Common.Test.Mocks
 {
     class FileOpenPickerServiceMock : IFileOpenPickerService
     {
-        public Func<Document, Task<IEnumerable<StorageFile>>> PickFilesForDocumentFunc =
+        public Func<Task<IEnumerable<StorageFile>>> PickFilesForDocumentFunc =
            delegate { return Task.FromResult(Enumerable.Empty<StorageFile>()); };
-        public Task<IEnumerable<StorageFile>> PickFilesForDocumentAsync(Document document)
+        public Task<IEnumerable<StorageFile>> PickSubDocuments()
         {
-            return PickFilesForDocumentFunc(document);
+            return PickFilesForDocumentFunc();
         }
 
-        public Task<StorageFile> PickOpenFileAsync(IEnumerable<string> fileTypes)
+        public Task<StorageFile> PickImportFile()
         {
             throw new NotImplementedException();
         }

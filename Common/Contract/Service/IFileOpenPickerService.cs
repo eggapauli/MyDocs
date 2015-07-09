@@ -7,8 +7,8 @@ namespace MyDocs.Common.Contract.Service
 {
     public interface IFileOpenPickerService
     {
-        Task<IEnumerable<StorageFile>> PickFilesForDocumentAsync(Document document);
+        Task<IEnumerable<StorageFile>> PickSubDocuments();
 
-        Task<StorageFile> PickOpenFileAsync(IEnumerable<string> fileTypes);
+        Task<StorageFile> PickImportFile();
     }
 }

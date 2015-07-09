@@ -11,7 +11,7 @@ namespace MyDocs.WindowsStore.Service
 {
     public class FileOpenPickerService : IFileOpenPickerService
     {
-        public async Task<IEnumerable<StorageFile>> PickFilesForDocumentAsync(Document document)
+        public async Task<IEnumerable<StorageFile>> PickSubDocuments()
         {
             var filePicker = new FileOpenPicker();
             filePicker.FileTypeFilter.Add("*");
@@ -24,12 +24,10 @@ namespace MyDocs.WindowsStore.Service
             return await Task.WhenAll(tasks);
         }
 
-        public async Task<StorageFile> PickOpenFileAsync(IEnumerable<string> fileTypes)
+        public async Task<StorageFile> PickImportFile()
         {
             var filePicker = new FileOpenPicker();
-            foreach (var fileType in fileTypes) {
-                filePicker.FileTypeFilter.Add(fileType);
-            }
+            filePicker.FileTypeFilter.Add(".zip");
             return await filePicker.PickSingleFileAsync();
         }
     }

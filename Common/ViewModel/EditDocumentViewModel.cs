@@ -279,7 +279,7 @@ namespace MyDocs.Common.ViewModel
 
         private async Task AddPhotoFromFileAsync()
         {
-            var files = await filePicker.PickFilesForDocumentAsync(EditingDocument);
+            var files = await filePicker.PickSubDocuments();
 
             var error = false;
             foreach (var file in files) {

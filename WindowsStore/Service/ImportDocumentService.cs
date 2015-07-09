@@ -29,7 +29,7 @@ namespace MyDocs.WindowsStore.Service
 
         public async Task ImportDocuments()
         {
-            var zipFile = await fileOpenPickerService.PickOpenFileAsync(new List<string> { ".zip" });
+            var zipFile = await fileOpenPickerService.PickImportFile();
             if (zipFile == null) {
                 return;
             }
