@@ -12,6 +12,10 @@ namespace MyDocs.Common
 {
     public static class StorageExtensions
     {
+        private const string localFolderName = "local";
+        private const string tempFolderName = "temp";
+        private const string roamingFolderName = "roaming";
+
         public static string GetRelativePath(this IStorageFile storageFile)
         {
             string folderPath;
@@ -39,15 +43,15 @@ namespace MyDocs.Common
             string folderPath;
             if (storageFile.IsInFolder(ApplicationData.Current.LocalFolder))
             {
-                folderPath = "local";
+                folderPath = localFolderName;
             }
             else if (storageFile.IsInFolder(ApplicationData.Current.TemporaryFolder))
             {
-                folderPath = "temp";
+                folderPath = tempFolderName;
             }
             else if (storageFile.IsInFolder(ApplicationData.Current.RoamingFolder))
             {
-                folderPath = "roaming";
+                folderPath = roamingFolderName;
             }
             else
             {
@@ -60,6 +64,16 @@ namespace MyDocs.Common
         {
             // TODO add '/' at the end of both?
             return System.IO.Path.GetDirectoryName(storageFile.Path).StartsWith(folder.Path);
+        }
+
+        public static bool IsInLocalFolder(this Uri fileUri)
+        {
+            return IsInFolder(fileUri, localFolderName);
+        }
+
+        private static bool IsInFolder(Uri fileUri, string folderName)
+        {
+            return fileUri.Segments[1].Trim('/') == tempFolderName;
         }
 
         public static async Task<BitmapImage> GetResizedBitmapImageAsync(this StorageFile storageFile, FileSize fileSize = FileSize.Small)
