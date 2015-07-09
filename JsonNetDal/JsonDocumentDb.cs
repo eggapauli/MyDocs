@@ -123,8 +123,29 @@ namespace JsonNetDal
         public async Task Remove(Guid documentId)
         {
             var docs = await ReadDocuments();
-            await WriteDocuments(docs.Where(d => d.Id != documentId));
-            // TODO remove photos
+            var doc = docs.Single(d => d.Id == documentId);
+            await WriteDocuments(docs.Except(new[] { doc }));
+            await RemoveSubDocuments(doc);
+        }
+
+        private async Task RemoveSubDocuments(Document document)
+        {
+            var removeTasks = document.SubDocuments
+                .Select(async sd =>
+                {
+                    var tasks = sd.Photos
+                        .Concat(new[] { sd.File })
+                        .Distinct()
+                        .Select(RemoveFile);
+                    await Task.WhenAll(tasks);
+                });
+            await Task.WhenAll(removeTasks);
+        }
+
+        private async Task RemoveFile(Uri fileUrl)
+        {
+            var file = await StorageFile.GetFileFromApplicationUriAsync(fileUrl);
+            await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
         }
 
         private async Task WriteDocuments(IEnumerable<Document> documents)
