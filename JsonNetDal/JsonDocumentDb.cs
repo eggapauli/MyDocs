@@ -38,10 +38,18 @@ namespace JsonNetDal
         public async Task ClearAllData()
         {
             var dbFile = await GetDbFile();
-            // TODO remove photos
-
             await dbFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+            await ClearFolder(ApplicationData.Current.LocalFolder);
             changed.OnNext(Unit.Default);
+        }
+
+        private async Task ClearFolder(StorageFolder folder)
+        {
+            var storageItems = await folder.GetItemsAsync();
+            var deleteTasks = storageItems
+                .Select(f => f.DeleteAsync(StorageDeleteOption.PermanentDelete))
+                .Select(x => x.AsTask());
+            await Task.WhenAll(deleteTasks);
         }
 
         public async Task<IEnumerable<Logic.Document>> GetAllDocumentsAsync()
