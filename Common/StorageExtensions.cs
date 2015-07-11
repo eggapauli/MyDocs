@@ -73,7 +73,7 @@ namespace MyDocs.Common
 
         private static bool IsInFolder(Uri fileUri, string folderName)
         {
-            return fileUri.Segments[1].Trim('/') == tempFolderName;
+            return fileUri.Segments[1].Trim('/') == folderName;
         }
 
         public static async Task<BitmapImage> GetResizedBitmapImageAsync(this StorageFile storageFile, FileSize fileSize = FileSize.Small)
