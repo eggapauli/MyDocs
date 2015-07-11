@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.IO;
 using MyDocs.Common.Model.Logic;
+using System.Linq;
 
 namespace MyDocs.WindowsStore.Service
 {
@@ -64,11 +65,17 @@ namespace MyDocs.WindowsStore.Service
 
         private async Task<Logic.SubDocument> DeserializePhotosAsync(ZipArchive archive, Logic.Document document, string fileName)
         {
-            // Folders must be separated by "/", not by "\\"
-            //var path = Path.Combine(document.GetHumanReadableDescription(), fileName);
-            var path = document.GetHumanReadableDescription() + "/" + fileName;
-            var dirEntry = archive.GetEntry(document.GetHumanReadableDescription());
-            var entry = archive.GetEntry(path);
+            // It seems that the folder separator for archive
+            // switches between "/" and "\\", so we simply try both
+            var entry = new[] { "/", "\\" }.Select(separator =>
+                string.Format("{0}{1}{2}",
+                    document.GetHumanReadableDescription(),
+                    separator,
+                    fileName)
+            )
+            .Select(archive.GetEntry)
+            .FirstOrDefault(e => e != null);
+
             if (entry == null) {
                 // TODO refine
                 throw new Exception("Entry not found.");
