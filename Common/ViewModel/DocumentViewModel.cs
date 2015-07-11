@@ -271,39 +271,31 @@ namespace MyDocs.Common.ViewModel
         // TODO set options for import (overwrite existing documents, delete documents before importing, ...)
         private async Task ImportDocumentsAsync()
         {
-            string error = null;
             try
             {
                 await licenseService.Unlock("ExportImportDocuments");
                 await importDocumentService.ImportDocuments();
+                await uiService.ShowNotificationAsync("importFinished");
             }
             catch (LicenseStatusException e)
             {
                 if (e.LicenseStatus == LicenseStatus.Locked)
                 {
-                    error = "importLocked";
+                    await uiService.ShowErrorAsync("importLocked");
                 }
                 else if (e.LicenseStatus == LicenseStatus.Error)
                 {
-                    error = "importUnlockError";
+                    await uiService.ShowErrorAsync("importUnlockError");
                 }
             }
             catch (ImportManifestNotFoundException)
             {
-                error = "documentDescriptionFileNotFound";
+                await uiService.ShowErrorAsync("documentDescriptionFileNotFound");
             }
             catch (Exception)
             {
                 // TODO refine errors
-                error = "importError";
-            }
-            if (error != null)
-            {
-                await uiService.ShowErrorAsync(error);
-            }
-            else
-            {
-                await uiService.ShowNotificationAsync("importFinished");
+                await uiService.ShowErrorAsync("importError");
             }
         }
 
