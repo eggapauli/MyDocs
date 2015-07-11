@@ -19,7 +19,6 @@ namespace MyDocs.WindowsStore.Service
 
         public async Task<IEnumerable<Photo>> ExtractPages(StorageFile file, Document document)
         {
-            // TODO ask the user for a password if the file is password-protected
             var doc = await PdfDocument.LoadFromFileAsync(file);
 
             var folder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(document.Id.ToString(), CreationCollisionOption.OpenIfExists);
