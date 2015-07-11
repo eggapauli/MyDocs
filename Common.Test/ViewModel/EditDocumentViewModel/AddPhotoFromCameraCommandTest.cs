@@ -23,7 +23,7 @@ namespace MyDocs.Common.Test.ViewModel
         {
             var testFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Images/UnitTestLogo.scale-100.png"));
             var cameraService = new CameraServiceMock();
-            cameraService.GetPhotoForDocumentFunc = _ => Task.FromResult(new Photo(testFile));
+            cameraService.GetPhotoFunc = () => Task.FromResult(testFile);
             var sut = CreateSut(cameraService: cameraService);
             sut.EditingDocument = new Document();
 
@@ -36,7 +36,7 @@ namespace MyDocs.Common.Test.ViewModel
         public void ShouldNotAddNullPhoto()
         {
             var cameraService = new CameraServiceMock();
-            cameraService.GetPhotoForDocumentFunc = _ => Task.FromResult<Photo>(null);
+            cameraService.GetPhotoFunc = () => Task.FromResult<StorageFile>(null);
             var sut = CreateSut(cameraService: cameraService);
             sut.EditingDocument = new Document();
 
@@ -49,7 +49,7 @@ namespace MyDocs.Common.Test.ViewModel
         public void ShouldNotAddPhotoFromCameraWhenServiceCallFails()
         {
             var cameraService = new CameraServiceMock();
-            cameraService.GetPhotoForDocumentFunc = _ => { throw new Exception("Test"); };
+            cameraService.GetPhotoFunc = () => { throw new Exception("Test"); };
             var sut = CreateSut(cameraService: cameraService);
             sut.EditingDocument = new Document();
 
@@ -61,9 +61,9 @@ namespace MyDocs.Common.Test.ViewModel
         [TestMethod]
         public void ViewModelShouldBeBusyWhileAddingPhotoFromCamera()
         {
-            var tcs = new TaskCompletionSource<Photo>();
+            var tcs = new TaskCompletionSource<StorageFile>();
             var cameraService = new CameraServiceMock();
-            cameraService.GetPhotoForDocumentFunc = _ => tcs.Task;
+            cameraService.GetPhotoFunc = () => tcs.Task;
             var sut = CreateSut(cameraService: cameraService);
 
             sut.IsBusy.Should().BeFalse();

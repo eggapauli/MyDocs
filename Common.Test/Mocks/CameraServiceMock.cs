@@ -2,16 +2,17 @@
 using System.Threading.Tasks;
 using MyDocs.Common.Model.View;
 using System;
+using Windows.Storage;
 
 namespace Common.Test.Mocks
 {
     class CameraServiceMock : ICameraService
     {
-        public Func<Document, Task<Photo>> GetPhotoForDocumentFunc =
-            delegate { return Task.FromResult<Photo>(null); };
-        public Task<Photo> GetPhotoForDocumentAsync(Document document)
+        public Func<Task<StorageFile>> GetPhotoFunc =
+            delegate { return Task.FromResult<StorageFile>(null); };
+        public Task<StorageFile> GetPhoto()
         {
-            return GetPhotoForDocumentFunc(document);
+            return GetPhotoFunc();
         }
     }
 }

@@ -18,7 +18,8 @@ namespace MyDocs.Common.Test.ViewModel
             INavigationService navigationService = null,
             ILicenseService licenseService = null,
             IExportDocumentService exportDocumentService = null,
-            IImportDocumentService importDocumentService = null)
+            IImportDocumentService importDocumentService = null,
+            IFileOpenPickerService fileOpenPickerService = null)
         {
             documentService = documentService ?? new DocumentServiceMock(Enumerable.Empty<Document>());
             uiService = uiService ?? new UserInterfaceServiceMock();
@@ -26,7 +27,8 @@ namespace MyDocs.Common.Test.ViewModel
             licenseService = licenseService ?? new LicenseServiceMock();
             exportDocumentService = exportDocumentService ?? new ExportDocumentServiceMock();
             importDocumentService = importDocumentService ?? new ImportDocumentServiceMock();
-            var sut = new DocumentViewModel(documentService, uiService, navigationService, licenseService, exportDocumentService, importDocumentService);
+            fileOpenPickerService = fileOpenPickerService ?? new FileOpenPickerServiceMock();
+            var sut = new DocumentViewModel(documentService, uiService, navigationService, licenseService, exportDocumentService, importDocumentService, fileOpenPickerService);
             return sut;
         }
 

@@ -112,11 +112,6 @@
     <AppxPackageIncludePrivateSymbols>true</AppxPackageIncludePrivateSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <!--A reference to the entire .Net Framework and Windows SDK are automatically included-->
-    <SDKReference Include="MSTestFramework, Version=14.0" />
-    <SDKReference Include="TestPlatform, Version=14.0" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Mocks\CameraServiceMock.cs" />
     <Compile Include="Mocks\DocumentServiceMock.cs" />
     <Compile Include="Mocks\ExportDocumentServiceMock.cs" />
@@ -216,6 +211,14 @@
       <Project>{6666ff12-6c2c-4aed-a1dd-f1e1f08445f8}</Project>
       <Name>Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="MSTestFramework, Version=11.0">
+      <Name>MSTest for Managed Projects</Name>
+    </SDKReference>
+    <SDKReference Include="TestPlatform, Version=11.0">
+      <Name>Microsoft Visual Studio Test Core</Name>
+    </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
