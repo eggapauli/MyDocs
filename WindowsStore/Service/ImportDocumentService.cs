@@ -71,7 +71,7 @@ namespace MyDocs.WindowsStore.Service
             var entry = archive.GetEntry(path);
             if (entry == null) {
                 // TODO refine
-                throw new Exception("Entry no found.");
+                throw new Exception("Entry not found.");
             }
             // TODO inject more specific service for extracting files
             var photoFile = await settingsService.PhotoFolder.CreateFileAsync(fileName);
