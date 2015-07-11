@@ -1,8 +1,6 @@
 ﻿using MyDocs.Common.Contract.Service;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -17,15 +15,7 @@ namespace MyDocs.WindowsStore.Service
             filePicker.FileTypeFilter.Add("*");
             filePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
             filePicker.ViewMode = PickerViewMode.List;
-
-            var files = await filePicker.PickMultipleFilesAsync();
-            var folder = ApplicationData.Current.TemporaryFolder;
-            var tasks = files.Select(file =>
-            {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.Name);
-                return file.CopyAsync(folder, fileName).AsTask();
-            });
-            return await Task.WhenAll(tasks);
+            return await filePicker.PickMultipleFilesAsync();
         }
 
         public async Task<StorageFile> PickImportFile()

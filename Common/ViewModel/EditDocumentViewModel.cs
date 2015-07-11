@@ -14,6 +14,7 @@ using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Windows.Storage;
 
 namespace MyDocs.Common.ViewModel
 {
@@ -259,14 +260,19 @@ namespace MyDocs.Common.ViewModel
             navigator.Navigate<IMainPage>(originalDocument.Id);
         }
 
+        private StorageFolder tempFolder = ApplicationData.Current.TemporaryFolder;
+
         private async Task AddPhotoFromCameraAsync()
         {
             try
             {
-                var photo = await cameraService.GetPhotoForDocumentAsync(EditingDocument);
-                if (photo != null)
+                var file = await cameraService.GetPhoto();
+                if (file != null)
                 {
-                    EditingDocument.AddSubDocument(new SubDocument(photo.File, new[] { photo }));
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.Name);
+                    await file.MoveAsync(tempFolder, fileName);
+                    var subDocument = new SubDocument(file, new[] { new Photo(file) });
+                    EditingDocument.AddSubDocument(subDocument);
                 }
             }
             // TODO refine
@@ -277,9 +283,17 @@ namespace MyDocs.Common.ViewModel
             }
         }
 
+
         private async Task AddPhotoFromFileAsync()
         {
-            var files = await filePicker.PickSubDocuments();
+            var originalFiles = await filePicker.PickSubDocuments();
+
+            var tasks = originalFiles.Select(file =>
+            {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.Name);
+                return file.CopyAsync(tempFolder, fileName).AsTask();
+            });
+            var files = await Task.WhenAll(tasks);
 
             var error = false;
             foreach (var file in files) {
