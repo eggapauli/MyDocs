@@ -21,7 +21,7 @@ namespace MyDocs.WindowsStore.Service
         {
             var doc = await PdfDocument.LoadFromFileAsync(file);
 
-            var folder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(document.Id.ToString(), CreationCollisionOption.OpenIfExists);
+            var folder = ApplicationData.Current.TemporaryFolder;
             var extractTasks = Enumerable.Range(0, (int)doc.PageCount)
                 .Select(i => ExtractPage(doc, file.Name, i, folder));
             var images = await Task.WhenAll(extractTasks);
