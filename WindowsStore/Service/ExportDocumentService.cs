@@ -41,7 +41,7 @@ namespace MyDocs.WindowsStore.Service
             using (var archive = new ZipArchive(zipFileStream, ZipArchiveMode.Create)) {
                 var metaInfoEntry = archive.CreateEntry("Documents.xml");
                 using (var metaInfoStream = metaInfoEntry.Open()) {
-                    var serializer = new DataContractSerializer(typeof(IEnumerable<Serializable.Document>)/*, "Documents", "http://mydocs.eggapauli"*/);
+                    var serializer = new DataContractSerializer(typeof(IEnumerable<Serializable.Document>), "Documents", "http://mydocs.eggapauli");
                     var serializedDocuments = documents.Select(Serializable.Document.FromModel);
                     serializer.WriteObject(metaInfoStream, serializedDocuments);
                 }
