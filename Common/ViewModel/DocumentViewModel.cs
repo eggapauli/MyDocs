@@ -26,6 +26,7 @@ namespace MyDocs.Common.ViewModel
         private readonly ILicenseService licenseService;
         private readonly IExportDocumentService exportDocumentService;
         private readonly IImportDocumentService importDocumentService;
+        private readonly IFileOpenPickerService filePickerService;
 
         #region Properties
 
@@ -106,7 +107,8 @@ namespace MyDocs.Common.ViewModel
             INavigationService navigationService,
             ILicenseService licenseService,
             IExportDocumentService exportDocumentService,
-            IImportDocumentService importDocumentService)
+            IImportDocumentService importDocumentService,
+            IFileOpenPickerService filePickerService)
         {
             this.documentService = documentService;
             this.navigationService = navigationService;
@@ -114,6 +116,7 @@ namespace MyDocs.Common.ViewModel
             this.licenseService = licenseService;
             this.exportDocumentService = exportDocumentService;
             this.importDocumentService = importDocumentService;
+            this.filePickerService = filePickerService;
 
             var viewCategories = documentService.GetDocuments()
                .Select(docs => docs
@@ -274,7 +277,12 @@ namespace MyDocs.Common.ViewModel
             try
             {
                 await licenseService.Unlock("ExportImportDocuments");
-                await importDocumentService.ImportDocuments();
+                var zipFile = await filePickerService.PickImportFile();
+                if (zipFile == null)
+                {
+                    return;
+                }
+                await importDocumentService.ImportDocuments(zipFile);
                 await uiService.ShowNotificationAsync("importFinished");
             }
             catch (LicenseStatusException e)

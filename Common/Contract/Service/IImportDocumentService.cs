@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace MyDocs.Common.Contract.Service
 {
     public interface IImportDocumentService
     {
-        Task ImportDocuments();
+        Task ImportDocuments(StorageFile file);
     }
 
     public class ImportManifestNotFoundException : Exception

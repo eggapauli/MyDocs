@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.IO;
 using MyDocs.Common.Model.Logic;
 using System.Linq;
+using Windows.Storage;
 
 namespace MyDocs.WindowsStore.Service
 {
@@ -28,13 +29,9 @@ namespace MyDocs.WindowsStore.Service
             this.settingsService = settingsService;
         }
 
-        public async Task ImportDocuments()
+        public async Task ImportDocuments(StorageFile file)
         {
-            var zipFile = await fileOpenPickerService.PickImportFile();
-            if (zipFile == null) {
-                return;
-            }
-            using (var zipFileStream = (await zipFile.OpenReadAsync()).AsStream())
+            using (var zipFileStream = (await file.OpenReadAsync()).AsStream())
             using (var archive = new ZipArchive(zipFileStream, ZipArchiveMode.Read)) {
                 var metaInfoEntry = archive.GetEntry("Documents.xml");
                 if (metaInfoEntry == null) {
