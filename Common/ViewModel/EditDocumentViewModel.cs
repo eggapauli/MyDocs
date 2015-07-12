@@ -4,7 +4,6 @@ using MyDocs.Common.Model.View;
 using ReactiveUI;
 using Splat;
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
@@ -297,7 +296,7 @@ namespace MyDocs.Common.ViewModel
                     var pages =
                         pageExtractor.SupportsExtension(Path.GetExtension(file.Name)) ?
                         await pageExtractor.ExtractPages(file, EditingDocument.ToLogic()) :
-                        null;
+                        Enumerable.Empty<Model.Logic.Photo>();
                     EditingDocument.AddSubDocument(new SubDocument(file, pages.Select(Photo.FromLogic)));
                 }
                 catch (Exception) {
