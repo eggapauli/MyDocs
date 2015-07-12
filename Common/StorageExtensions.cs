@@ -114,5 +114,27 @@ namespace MyDocs.Common
         {
             return new[] { ".bmp", ".gif", ".jpeg", ".jpg", ".png" }.Contains(Path.GetExtension(file.Path), StringComparer.OrdinalIgnoreCase);
         }
+
+        public static async Task MoveRecursive(this IStorageFolder source, IStorageFolder destination)
+        {
+            var moveFileTasks = Task.Run(async () =>
+            {
+                var files = await source.GetFilesAsync();
+                var tasks = files.Select(file => file.MoveAsync(destination).AsTask());
+                await Task.WhenAll(tasks);
+            });
+            var moveFolderTasks = Task.Run(async () =>
+            {
+                var folders = await source.GetFoldersAsync();
+                var tasks = folders.Select(async sourceSubFolder =>
+                {
+                    var destinationSubFolder = await destination.CreateFolderAsync(sourceSubFolder.Name, CreationCollisionOption.OpenIfExists);
+                    await MoveRecursive(sourceSubFolder, destinationSubFolder);
+                });
+                await Task.WhenAll(tasks);
+            });
+            await Task.WhenAll(moveFileTasks, moveFolderTasks);
+            await source.DeleteAsync(StorageDeleteOption.PermanentDelete);
+        }
     }
 }
