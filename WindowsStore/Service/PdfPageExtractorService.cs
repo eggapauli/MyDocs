@@ -21,14 +21,15 @@ namespace MyDocs.WindowsStore.Service
         {
             var doc = await PdfDocument.LoadFromFileAsync(file);
 
-            var folder = ApplicationData.Current.TemporaryFolder;
+            var baseFolder = await file.GetParentAsync();
+            var folder = await baseFolder.CreateFolderAsync(Path.GetFileNameWithoutExtension(file.Name));
             var extractTasks = Enumerable.Range(0, (int)doc.PageCount)
                 .Select(i => ExtractPage(doc, file.Name, i, folder));
             var images = await Task.WhenAll(extractTasks);
             return images.Select(image => new Photo(image));
         }
 
-        private async Task<StorageFile> ExtractPage(PdfDocument doc, string fileName, int pageNumber, StorageFolder folder)
+        private async Task<StorageFile> ExtractPage(PdfDocument doc, string fileName, int pageNumber, IStorageFolder folder)
         {
             var pageFileName = Path.ChangeExtension(fileName, ".jpg");
             var image = await folder.CreateFileAsync(pageFileName, CreationCollisionOption.GenerateUniqueName);
