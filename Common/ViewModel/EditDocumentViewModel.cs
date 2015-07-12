@@ -217,7 +217,7 @@ namespace MyDocs.Common.ViewModel
         {
             AddPhotoFromCameraCommand = this.CreateAsyncCommand(_ => AddPhotoFromCameraAsync());
             AddPhotoFromFileCommand = this.CreateAsyncCommand(_ => AddPhotoFromFileAsync());
-            RemovePhotoCommand = this.CreateCommand(_ => RemovePhoto(), this.WhenAnyValue(x => x.SelectedPhoto).Select(x => x != null));
+            RemovePhotoCommand = this.CreateAsyncCommand(_ => RemovePhoto(), this.WhenAnyValue(x => x.SelectedPhoto).Select(x => x != null));
             SaveDocumentCommand = this.CreateAsyncCommand(_ => SaveDocumentAsync(),
                 this.WhenAnyValue(
                     x => x.EditingDocument.Tags,
@@ -309,9 +309,10 @@ namespace MyDocs.Common.ViewModel
             }
         }
 
-        private void RemovePhoto()
+        private async Task RemovePhoto()
         {
             EditingDocument.RemovePhoto(SelectedPhoto);
+            await SelectedPhoto.File.DeleteAsync(StorageDeleteOption.PermanentDelete);
             SelectedPhoto = null;
         }
 
