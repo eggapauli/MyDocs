@@ -19,7 +19,8 @@ namespace MyDocs.Common.Test.ViewModel
             ICameraService cameraService = null,
             IFileOpenPickerService filePicker = null,
             ISettingsService settingsService = null,
-            IPageExtractorService pageExtractor = null)
+            IPageExtractorService pageExtractor = null,
+            ISubDocumentService subDocumentManager = null)
         {
             documentService = documentService ?? new DocumentServiceMock(Enumerable.Empty<Document>());
             navigator = navigator ?? new NavigationServiceMock();
@@ -28,7 +29,8 @@ namespace MyDocs.Common.Test.ViewModel
             filePicker = filePicker ?? new FileOpenPickerServiceMock();
             settingsService = settingsService ?? new SettingsServiceMock();
             pageExtractor = pageExtractor ?? new PageExtractorMock();
-            return new EditDocumentViewModel(documentService, navigator, uiService, cameraService, filePicker, settingsService, pageExtractor);
+            subDocumentManager = subDocumentManager ?? new SubDocumentManagerMock();
+            return new EditDocumentViewModel(documentService, navigator, uiService, cameraService, filePicker, settingsService, pageExtractor, subDocumentManager);
         }
 
         private void WaitForCommand()

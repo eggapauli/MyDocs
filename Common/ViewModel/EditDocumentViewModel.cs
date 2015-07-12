@@ -27,6 +27,7 @@ namespace MyDocs.Common.ViewModel
         private readonly IFileOpenPickerService filePicker;
         private readonly ISettingsService settingsService;
         private readonly IPageExtractorService pageExtractor;
+        private readonly ISubDocumentService subDocumentManager;
 
         #region Properties
 
@@ -141,7 +142,8 @@ namespace MyDocs.Common.ViewModel
             ICameraService cameraService,
             IFileOpenPickerService filePicker,
             ISettingsService settingsService,
-            IPageExtractorService pageExtractor)
+            IPageExtractorService pageExtractor,
+            ISubDocumentService subDocumentManager)
         {
             this.documentService = documentService;
             this.navigator = navigator;
@@ -150,6 +152,7 @@ namespace MyDocs.Common.ViewModel
             this.filePicker = filePicker;
             this.settingsService = settingsService;
             this.pageExtractor = pageExtractor;
+            this.subDocumentManager = subDocumentManager;
 
             CreateCommands();
             CreateDesignTimeData();
@@ -266,11 +269,10 @@ namespace MyDocs.Common.ViewModel
         {
             try
             {
-                var file = await cameraService.GetPhoto();
-                if (file != null)
+                var originalFile = await cameraService.GetPhoto();
+                if (originalFile != null)
                 {
-                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.Name);
-                    await file.MoveAsync(tempFolder, fileName);
+                    var file = await subDocumentManager.StoreCameraFileForDocument(originalFile, EditingDocument.Id);
                     var subDocument = new SubDocument(file, new[] { new Photo(file) });
                     EditingDocument.AddSubDocument(subDocument);
                 }
@@ -287,13 +289,7 @@ namespace MyDocs.Common.ViewModel
         private async Task AddPhotoFromFileAsync()
         {
             var originalFiles = await filePicker.PickSubDocuments();
-
-            var tasks = originalFiles.Select(file =>
-            {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.Name);
-                return file.CopyAsync(tempFolder, fileName).AsTask();
-            });
-            var files = await Task.WhenAll(tasks);
+            var files = await subDocumentManager.StoreUserFilesForDocument(originalFiles, EditingDocument.Id);
 
             var error = false;
             foreach (var file in files) {

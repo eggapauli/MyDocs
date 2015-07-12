@@ -36,7 +36,7 @@ namespace MyDocs.WindowsStore.Common
     {
         public override async Task Run(IBackgroundTaskInstance taskInstance, CancellationToken ct)
         {
-            IDocumentService documentService = new DocumentService(new JsonDocumentDb());
+            IDocumentService documentService = new DocumentService(new JsonDocumentDb(new SubDocumentService()));
             await documentService.RemoveOutdatedDocuments();
         }
     }

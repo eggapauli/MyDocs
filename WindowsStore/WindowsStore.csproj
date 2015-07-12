@@ -152,6 +152,7 @@
     <Compile Include="Service\Design\DesignDocumentService.cs" />
     <Compile Include="Service\DocumentService.cs" />
     <Compile Include="Service\NavigationService.cs" />
+    <Compile Include="Service\SubDocumentService.cs" />
     <Compile Include="Service\TranslatorService.cs" />
     <Compile Include="Service\FileOpenPickerService.cs" />
     <Compile Include="Pages\SettingsPage.xaml.cs">
