@@ -105,10 +105,12 @@ namespace JsonNetDal
             await WriteDocuments(docs.Where(d => d.Id != dbDoc.Id).Concat(Enumerable.Repeat(dbDoc, 1)));
         }
 
+        public Task Delete(Guid documentId)
         {
+            return Delete(Enumerable.Repeat(documentId, 1));
         }
 
-        public async Task Remove(Guid documentId)
+        public async Task Delete(IEnumerable<Guid> documentIds)
         {
             var docs = await ReadDocuments();
             var remainingDocs = docs.Where(d => !documentIds.Contains(d.Id));

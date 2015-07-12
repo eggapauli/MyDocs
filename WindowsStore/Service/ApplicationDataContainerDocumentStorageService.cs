@@ -94,7 +94,7 @@ namespace MyDocs.WindowsStore.Service
             await Task.Yield();
         }
 
-        public async Task Remove(Guid documentId)
+        public async Task Delete(Guid documentId)
         {
             docsDataContainer.Values.Remove(documentId.ToString());
             try
@@ -103,6 +103,14 @@ namespace MyDocs.WindowsStore.Service
                 await folder.DeleteAsync(StorageDeleteOption.PermanentDelete);
             }
             catch (FileNotFoundException) { }
+        }
+
+        public async Task Delete(IEnumerable<Guid> documentIds)
+        {
+            foreach (var documentId in documentIds)
+            {
+                await Delete(documentId);
+            }
         }
     }
 }

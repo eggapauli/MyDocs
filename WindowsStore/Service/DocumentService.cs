@@ -83,7 +83,7 @@ namespace MyDocs.WindowsStore.Service
         public async Task DeleteCategoryAsync(string categoryName)
         {
             var documents = await documentDb.GetDocuments(categoryName);
-            await Task.WhenAll(documents.Select(DeleteDocumentAsync));
+            await documentDb.Delete(documents.Select(d => d.Id));
         }
 
         public async Task RenameCategoryAsync(string oldName, string newName)
@@ -124,7 +124,7 @@ namespace MyDocs.WindowsStore.Service
 
         public async Task DeleteDocumentAsync(Document document)
         {
-            await documentDb.Remove(document.Id);
+            await documentDb.Delete(document.Id);
             // TODO raise event
             //Documents.Remove(document);
         }

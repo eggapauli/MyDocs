@@ -22,7 +22,8 @@ namespace MyDocs.Common.Contract.Service
 
         Task Save(Document document);
 
-        Task Remove(Guid documentId);
+        Task Delete(Guid documentId);
+        Task Delete(IEnumerable<Guid> documentIds);
     }
 
 
