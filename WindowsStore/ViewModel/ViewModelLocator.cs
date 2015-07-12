@@ -34,18 +34,15 @@ namespace MyDocs.WindowsStore.ViewModel
 
             var manuallyAddedTypes = new[]
             {
-                typeof(DesignDocumentService),
-                typeof(DocumentService),
-                typeof(PageExtractorListService),
-                typeof(PdfPageExtractorService),
-                typeof(ImagePageExtractorService),
+                typeof(IDocumentService),
+                typeof(IPageExtractorService)
             };
 
             var thisAssembly = typeof(ViewModelLocator).GetTypeInfo().Assembly;
 
             builder.RegisterAssemblyTypes(thisAssembly)
                 .Where(t => t.Name.EndsWith("Service"))
-                .Where(t => !manuallyAddedTypes.Contains(t))
+                .Where(t => !t.GetTypeInfo().ImplementedInterfaces.Intersect(manuallyAddedTypes).Any())
                 .AsImplementedInterfaces()
                 .SingleInstance();
 
