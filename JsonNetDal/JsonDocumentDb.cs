@@ -100,8 +100,8 @@ namespace JsonNetDal
         public async Task Save(Logic.Document document)
         {
             var docs = await ReadDocuments();
-            var dbDoc = Document.FromLogic(document);
-            await subDocumentService.StoreSubDocumentsPermanent(document.Id);
+            var doc = await subDocumentService.StoreSubDocumentsPermanent(document);
+            var dbDoc = Document.FromLogic(doc);
             await WriteDocuments(docs.Where(d => d.Id != dbDoc.Id).Concat(Enumerable.Repeat(dbDoc, 1)));
         }
 

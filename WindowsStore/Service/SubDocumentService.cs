@@ -1,11 +1,13 @@
 ﻿using MyDocs.Common;
 using MyDocs.Common.Contract.Service;
+using MyDocs.Common.Model.Logic;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.Storage.Search;
 
 namespace MyDocs.WindowsStore.Service
 {
@@ -30,11 +32,23 @@ namespace MyDocs.WindowsStore.Service
             return await Task.WhenAll(tasks);
         }
 
-        public async Task StoreSubDocumentsPermanent(Guid documentId)
+        public async Task<Document> StoreSubDocumentsPermanent(Document document)
         {
-            var tempFolder = await GetTemporaryDocumentFolder(documentId);
-            var permanentFolder = await GetPermanentDocumentFolder(documentId);
+            var tempFolder = await GetTemporaryDocumentFolder(document.Id);
+            var permanentFolder = await GetPermanentDocumentFolder(document.Id);
             await tempFolder.MoveRecursive(permanentFolder);
+            
+            var query = permanentFolder.CreateFileQueryWithOptions(new QueryOptions { FolderDepth = FolderDepth.Deep });
+            var files = await query.GetFilesAsync();
+            var subDocuments = document.SubDocuments.Select(sd =>
+            {
+                var file = files.Single(f => f.Name == sd.File.Name);
+                var photos = files
+                    .Where(f => sd.Photos.Select(p => p.File.Name).Contains(f.Name))
+                    .Select(f => new Photo(f));
+                return new SubDocument(sd.Title, file, photos);
+            });
+            return new Document(document.Id, document.Category, document.DateAdded, document.Lifespan, document.HasLimitedLifespan, document.Tags, subDocuments);
         }
 
         public async Task DeleteSubDocuments(Guid documentId)
