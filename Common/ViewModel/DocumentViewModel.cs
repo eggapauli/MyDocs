@@ -214,11 +214,7 @@ namespace MyDocs.Common.ViewModel
         {
             closeFlyoutsMessages.OnNext(new CloseFlyoutsMessage());
 
-            await documentService.DeleteDocumentAsync(selectedDocument.ToLogic());
-            foreach (var category in Categories.Where(c => c.Documents.Contains(selectedDocument)))
-            {
-                category.Documents = category.Documents.Remove(selectedDocument);
-            }
+            await documentService.DeleteDocumentAsync(SelectedDocument.ToLogic());
             SelectedDocument = null;
         }
 
