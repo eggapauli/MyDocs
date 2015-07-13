@@ -1,4 +1,5 @@
 ﻿using MyDocs.Common.Contract.Service;
+using MyDocs.Common.Model.Logic;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace Common.Test.Mocks
             throw new NotImplementedException();
         }
 
-        public Task StoreSubDocumentsPermanent(Guid documentId)
+        public Task<Document> StoreSubDocumentsPermanent(Document document)
         {
             throw new NotImplementedException();
         }
