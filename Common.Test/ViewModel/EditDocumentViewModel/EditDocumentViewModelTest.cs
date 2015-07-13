@@ -29,7 +29,7 @@ namespace MyDocs.Common.Test.ViewModel
             filePicker = filePicker ?? new FileOpenPickerServiceMock();
             settingsService = settingsService ?? new SettingsServiceMock();
             pageExtractor = pageExtractor ?? new PageExtractorMock();
-            subDocumentManager = subDocumentManager ?? new SubDocumentManagerMock();
+            subDocumentManager = subDocumentManager ?? new SubDocumentServiceMock();
             return new EditDocumentViewModel(documentService, navigator, uiService, cameraService, filePicker, settingsService, pageExtractor, subDocumentManager);
         }
 

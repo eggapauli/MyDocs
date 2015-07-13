@@ -120,7 +120,7 @@
     <Compile Include="Mocks\LicenseServiceMock.cs" />
     <Compile Include="Mocks\NavigationServiceMock.cs" />
     <Compile Include="Mocks\PageExtractorMock.cs" />
-    <Compile Include="Mocks\SubDocumentManagerMock.cs" />
+    <Compile Include="Mocks\SubDocumentServiceMock.cs" />
     <Compile Include="Mocks\TranslatorServiceMock.cs" />
     <Compile Include="Mocks\UserInterfaceServiceMock.cs" />
     <Compile Include="StorageExtensionsTest.cs" />

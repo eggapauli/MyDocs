@@ -26,7 +26,7 @@ namespace MyDocs.Common.ViewModel
         private readonly IFileOpenPickerService filePicker;
         private readonly ISettingsService settingsService;
         private readonly IPageExtractorService pageExtractor;
-        private readonly ISubDocumentService subDocumentManager;
+        private readonly ISubDocumentService subDocumentService;
 
         #region Properties
 
@@ -142,7 +142,7 @@ namespace MyDocs.Common.ViewModel
             IFileOpenPickerService filePicker,
             ISettingsService settingsService,
             IPageExtractorService pageExtractor,
-            ISubDocumentService subDocumentManager)
+            ISubDocumentService subDocumentService)
         {
             this.documentService = documentService;
             this.navigator = navigator;
@@ -151,7 +151,7 @@ namespace MyDocs.Common.ViewModel
             this.filePicker = filePicker;
             this.settingsService = settingsService;
             this.pageExtractor = pageExtractor;
-            this.subDocumentManager = subDocumentManager;
+            this.subDocumentService = subDocumentService;
 
             CreateCommands();
             CreateDesignTimeData();
@@ -271,7 +271,7 @@ namespace MyDocs.Common.ViewModel
                 var originalFile = await cameraService.GetPhoto();
                 if (originalFile != null)
                 {
-                    var file = await subDocumentManager.StoreCameraFileForDocument(originalFile, EditingDocument.Id);
+                    var file = await subDocumentService.StoreCameraFileForDocument(originalFile, EditingDocument.Id);
                     var subDocument = new SubDocument(file, new[] { new Photo(file) });
                     EditingDocument.AddSubDocument(subDocument);
                 }
@@ -288,7 +288,7 @@ namespace MyDocs.Common.ViewModel
         private async Task AddPhotoFromFileAsync()
         {
             var originalFiles = await filePicker.PickSubDocuments();
-            var files = await subDocumentManager.StoreUserFilesForDocument(originalFiles, EditingDocument.Id);
+            var files = await subDocumentService.StoreUserFilesForDocument(originalFiles, EditingDocument.Id);
 
             var error = false;
             foreach (var file in files) {
