@@ -10,7 +10,7 @@ namespace MyDocs.Common.Model.View
     public class SubDocument : ReactiveObject
     {
         private readonly string title;
-        private readonly IStorageFile file;
+        private readonly StorageFile file;
         private IImmutableList<Photo> photos;
 
         public string Title
@@ -18,7 +18,7 @@ namespace MyDocs.Common.Model.View
             get { return title; }
         }
 
-        public IStorageFile File
+        public StorageFile File
         {
             get { return file; }
         }
@@ -29,7 +29,7 @@ namespace MyDocs.Common.Model.View
             set { this.RaiseAndSetIfChanged(ref photos, value); }
         }
 
-        public SubDocument(IStorageFile file, IEnumerable<Photo> photos)
+        public SubDocument(StorageFile file, IEnumerable<Photo> photos)
         {
             this.file = file;
             Photos = photos.ToImmutableList();
